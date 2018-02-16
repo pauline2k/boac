@@ -1,9 +1,3 @@
-from datetime import datetime
-
-from flask import current_app as app
-import pytz
-
-
 """Generic utilities."""
 
 
@@ -20,8 +14,11 @@ def get(_dict, key, default_value=None):
     return _dict[key] if key in _dict else default_value
 
 
-def localize_datetime(dt):
-    return dt.astimezone(pytz.timezone(app.config['TIMEZONE']))
+def vacuum_whitespace(str):
+    """Collapse multiple-whitespace sequences into a single space; remove leading and trailing whitespace."""
+    if not str:
+        return None
+    return ' '.join(str.split())
 
 
 def tolerant_remove(_list, item):
@@ -47,15 +44,3 @@ def to_bool_or_none(arg):
         s = False if s == 'false' else s
         s = None if s not in [True, False] else s
     return None if s is None else bool(s)
-
-
-def utc_timestamp_to_localtime(str):
-    utc_datetime = pytz.utc.localize(datetime.strptime(str, '%Y-%m-%dT%H:%M:%SZ'))
-    return localize_datetime(utc_datetime)
-
-
-def vacuum_whitespace(str):
-    """Collapse multiple-whitespace sequences into a single space; remove leading and trailing whitespace."""
-    if not str:
-        return None
-    return ' '.join(str.split())
