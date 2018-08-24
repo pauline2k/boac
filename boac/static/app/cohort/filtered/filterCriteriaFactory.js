@@ -66,7 +66,7 @@
         },
         {
           available: authService.canViewAsc(),
-          defaultValue: false,
+          defaultValue: (authService.isAscUser() ? false : null),
           handler: utilService.lenientBoolean,
           depth: 1,
           key: 'isInactiveAsc',
@@ -75,7 +75,7 @@
         },
         {
           available: authService.canViewAsc(),
-          defaultValue: false,
+          defaultValue: null,
           depth: 1,
           handler: utilService.lenientBoolean,
           key: 'inIntensiveCohort',
