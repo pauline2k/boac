@@ -44,3 +44,10 @@ export function search(
     })
     .then(response => response.data, () => null);
 }
+
+export function getTeamGroups() {
+  let apiBaseUrl = store.getters['context/apiBaseUrl'];
+  return axios
+    .get(`${apiBaseUrl}/api/team_groups/all`)
+    .then(response => response.data, () => null);
+}
