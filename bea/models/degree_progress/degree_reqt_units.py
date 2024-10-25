@@ -24,42 +24,18 @@ ENHANCEMENTS, OR MODIFICATIONS.
 """
 
 
-class DegreeCourse(object):
+class DegreeReqtUnits(object):
 
     def __init__(self, data):
         self.data = data
 
     @property
-    def course_id(self):
-        return self.data.get('course_id')
+    def reqt_id(self):
+        return self.data.get('reqt_id')
 
-    @course_id.setter
-    def course_id(self, value):
-        self.data['course_id'] = value
-
-    @property
-    def color(self):
-        return self.data.get('color')
-
-    @color.setter
-    def color(self, value):
-        self.data['color'] = value
-
-    @property
-    def column_num(self):
-        return self.data.get('column_num')
-
-    @column_num.setter
-    def column_num(self, value):
-        self.data['column_num'] = value
-
-    @property
-    def is_transfer_course(self):
-        return self.data.get('is_transfer_course')
-
-    @is_transfer_course.setter
-    def is_transfer_course(self, value):
-        self.data['is_transfer_course'] = value
+    @reqt_id.setter
+    def reqt_id(self, value):
+        self.data['reqt_id'] = value
 
     @property
     def name(self):
@@ -70,17 +46,17 @@ class DegreeCourse(object):
         self.data['name'] = value
 
     @property
-    def units(self):
-        return self.data.get('units')
+    def unit_count(self):
+        return self.data.get('unit_count')
 
-    @units.setter
-    def units(self, value):
-        self.data['units'] = value
+    @unit_count.setter
+    def unit_count(self, value):
+        self.data['unit_count'] = value
 
     @property
-    def units_reqts(self):
-        return self.data.get('units_reqts')
+    def units_completed(self):
+        return self.data.get('units_completed')
 
-    @units_reqts.setter
-    def units_reqts(self, value):
-        self.data['units_reqts'] = value
+    @units_completed.setter
+    def units_completed(self, value):
+        self.data['units_completed'] = value

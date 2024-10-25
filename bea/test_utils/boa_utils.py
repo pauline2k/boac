@@ -30,7 +30,7 @@ from bea.models.advisor_role import AdvisorRole
 from bea.models.alert import Alert
 from bea.models.cohorts_and_groups.cohort import Cohort
 from bea.models.cohorts_and_groups.filtered_cohort import FilteredCohort
-from bea.models.degree_progress_perm import DegreeProgressPerm
+from bea.models.degree_progress.degree_check_perms import DegreeCheckPerms
 from bea.models.department import Department
 from bea.models.department_membership import DepartmentMembership
 from bea.models.notes_and_appts.note import Note
@@ -128,9 +128,9 @@ def get_authorized_users():
         is_blocked = v[0]['is_blocked']
         degree_progress_automated = v[0]['deg_prog_automated']
         if v[0]['deg_prog_perm'] == 'read':
-            degree_progress_perm = DegreeProgressPerm.READ
+            degree_progress_perm = DegreeCheckPerms.READ
         elif v[0]['deg_prog_perm'] == 'read_write':
-            degree_progress_perm = DegreeProgressPerm.WRITE
+            degree_progress_perm = DegreeCheckPerms.WRITE
         else:
             degree_progress_perm = None
 
@@ -228,9 +228,9 @@ def get_dept_advisors(dept, membership=None):
                     dept_memberships.append(dept)
 
         if row['deg_prog_perm'] == 'read':
-            degree_progress_perm = DegreeProgressPerm.READ
+            degree_progress_perm = DegreeCheckPerms.READ
         elif row['deg_prog_perm'] == 'read_write':
-            degree_progress_perm = DegreeProgressPerm.WRITE
+            degree_progress_perm = DegreeCheckPerms.WRITE
         else:
             degree_progress_perm = None
 

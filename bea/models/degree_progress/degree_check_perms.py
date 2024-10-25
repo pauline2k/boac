@@ -24,63 +24,14 @@ ENHANCEMENTS, OR MODIFICATIONS.
 """
 
 
-class DegreeCourse(object):
+class DegreeCheckPerm(object):
 
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, desc, user_perm):
+        self.desc = desc
+        self.user_perm = user_perm
 
-    @property
-    def course_id(self):
-        return self.data.get('course_id')
 
-    @course_id.setter
-    def course_id(self, value):
-        self.data['course_id'] = value
+class DegreeCheckPerms(object):
 
-    @property
-    def color(self):
-        return self.data.get('color')
-
-    @color.setter
-    def color(self, value):
-        self.data['color'] = value
-
-    @property
-    def column_num(self):
-        return self.data.get('column_num')
-
-    @column_num.setter
-    def column_num(self, value):
-        self.data['column_num'] = value
-
-    @property
-    def is_transfer_course(self):
-        return self.data.get('is_transfer_course')
-
-    @is_transfer_course.setter
-    def is_transfer_course(self, value):
-        self.data['is_transfer_course'] = value
-
-    @property
-    def name(self):
-        return self.data.get('name')
-
-    @name.setter
-    def name(self, value):
-        self.data['name'] = value
-
-    @property
-    def units(self):
-        return self.data.get('units')
-
-    @units.setter
-    def units(self, value):
-        self.data['units'] = value
-
-    @property
-    def units_reqts(self):
-        return self.data.get('units_reqts')
-
-    @units_reqts.setter
-    def units_reqts(self, value):
-        self.data['units_reqts'] = value
+    READ = DegreeCheckPerm('Read-only', 'Degree Progress (read)')
+    WRITE = DegreeCheckPerm('Read and write', 'Degree Progress (read/write)')

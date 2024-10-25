@@ -99,7 +99,7 @@ class Page(object):
             els_text.append(text.strip())
         return els_text
 
-    def value(self, locator):
+    def el_value(self, locator):
         return self.element(locator).get_attribute('value')
 
     def is_present(self, locator):
@@ -194,6 +194,7 @@ class Page(object):
                 message=f'Failed waiting for element to be clickable: {str(locator)}',
             )
         time.sleep(addl_pause or sleep_default)
+        WebDriverManager.get_browser_logs(self.driver)
         try:
             self.element(locator).click()
         except (exceptions.ElementClickInterceptedException, exceptions.ElementNotInteractableException) as error:
@@ -358,8 +359,10 @@ class Page(object):
                 return True
             else:
                 app.logger.info('Link did not open in a new window')
-                app.logger.info(
-                    f'Expecting page title {expected_page_title}, but visible page title is {self.driver.title()}')
+                if self.driver.title != expected_page_title:
+                    app.logger.info(
+                        f'Expecting page title {expected_page_title}, but visible page title is {self.driver.title}')
+                self.driver.back()
                 return False
         finally:
             if len(self.window_handles()) > 1:

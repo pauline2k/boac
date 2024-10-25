@@ -60,6 +60,7 @@ class BoaPages(CreateNoteModal, SearchForm):
 
     HOME_LINK = (By.ID, 'home-header')
     HEADER_DROPDOWN = (By.ID, 'header-dropdown-under-name')
+    DEGREE_CHECKS_LINK = (By.ID, 'header-menu-degree-check')
     FLIGHT_DATA_RECORDER_LINK = (By.ID, 'header-menu-analytics')
     FLIGHT_DECK_LINK = (By.ID, 'header-menu-flight-deck')
     PAX_MANIFEST_LINK = (By.ID, 'header-menu-passengers')
@@ -78,6 +79,13 @@ class BoaPages(CreateNoteModal, SearchForm):
         if not self.is_present(BoaPages.LOG_OUT_LINK) or not self.element(BoaPages.LOG_OUT_LINK).is_displayed():
             app.logger.info('Clicking header menu button')
             self.click_header_dropdown()
+
+    def click_degree_checks(self):
+        app.logger.info('Clicking degree checks link in the header')
+        if not self.is_present(BoaPages.HEADER_DROPDOWN):
+            self.driver.get(f'{boa_utils.get_boa_base_url()}')
+        self.open_menu()
+        self.wait_for_page_and_click(self.DEGREE_CHECKS_LINK)
 
     def log_out(self):
         app.logger.info('Logging out')

@@ -38,7 +38,7 @@ from boac.externals import data_loch
 from flask import current_app as app
 
 
-def get_advising_note_author(uid):
+def get_advising_note_author_data(uid):
     sql = f"""SELECT sid,
                      first_name,
                      last_name
@@ -47,13 +47,19 @@ def get_advising_note_author(uid):
     app.logger.info(sql)
     result = data_loch.safe_execute_rds(sql)
     if result:
-        data = {
+        return {
             'uid': str(uid),
             'sid': str(result[0]['sid']),
             'first_name': result[0]['first_name'],
             'last_name': result[0]['last_name'],
         }
-        return User(data=data)
+    else:
+        return {}
+
+
+def get_advising_note_author(uid):
+    data = get_advising_note_author_data(uid)
+    return User(data=data)
 
 
 def get_all_advising_note_authors():
