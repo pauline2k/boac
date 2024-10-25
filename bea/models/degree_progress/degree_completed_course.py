@@ -30,7 +30,7 @@ class DegreeCompletedCourse(DegreeCourse):
 
     @property
     def ccn(self):
-        return self.data['ccn']
+        return self.data.get('ccn')
 
     @ccn.setter
     def ccn(self, value):
@@ -38,7 +38,7 @@ class DegreeCompletedCourse(DegreeCourse):
 
     @property
     def course_copies(self):
-        return self.data['course_copies']
+        return self.data.get('course_copies')
 
     @course_copies.setter
     def course_copies(self, value):
@@ -46,15 +46,23 @@ class DegreeCompletedCourse(DegreeCourse):
 
     @property
     def course_orig(self):
-        return self.data['course_orig']
+        return self.data.get('course_orig')
 
     @course_orig.setter
     def course_orig(self, value):
         self.data['course_orig'] = value
 
     @property
+    def course_reqt(self):
+        return self.data.get('course_reqt')
+
+    @course_reqt.setter
+    def course_reqt(self, value):
+        self.data['course_reqt'] = value
+
+    @property
     def degree_check(self):
-        return self.data['degree_check']
+        return self.data.get('degree_check')
 
     @degree_check.setter
     def degree_check(self, value):
@@ -62,47 +70,39 @@ class DegreeCompletedCourse(DegreeCourse):
 
     @property
     def grade(self):
-        return self.data['grade']
+        return self.data.get('grade')
 
     @grade.setter
     def grade(self, value):
         self.data['grade'] = value
 
     @property
+    def is_manual(self):
+        return self.data.get('is_manual')
+
+    @is_manual.setter
+    def is_manual(self, value):
+        self.data['is_manual'] = value
+
+    @property
     def junk(self):
-        return self.data['junk']
+        return self.data.get('junk')
 
     @junk.setter
     def junk(self, value):
         self.data['junk'] = value
 
     @property
-    def manual(self):
-        return self.data['manual']
-
-    @manual.setter
-    def manual(self, value):
-        self.data['manual'] = value
-
-    @property
     def note(self):
-        return self.data['note']
+        return self.data.get('note')
 
     @note.setter
     def note(self, value):
         self.data['note'] = value
 
     @property
-    def req_course(self):
-        return self.data['req_course']
-
-    @req_course.setter
-    def req_course(self, value):
-        self.data['req_course'] = value
-
-    @property
     def term_id(self):
-        return self.data['term_id']
+        return self.data.get('term_id')
 
     @term_id.setter
     def term_id(self, value):
@@ -110,16 +110,16 @@ class DegreeCompletedCourse(DegreeCourse):
 
     @property
     def units_orig(self):
-        return self.data['units_orig']
+        return self.data.get('units_orig')
 
     @units_orig.setter
     def units_orig(self, value):
         self.data['units_orig'] = value
 
     @property
-    def waitlisted(self):
-        return self.data['waitlisted']
+    def is_wait_listed(self):
+        return self.data.get('is_wait_listed')
 
-    @waitlisted.setter
-    def waitlisted(self, value):
-        self.data['waitlisted'] = value
+    @is_wait_listed.setter
+    def is_wait_listed(self, value):
+        self.data['is_wait_listed'] = value

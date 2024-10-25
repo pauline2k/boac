@@ -24,42 +24,42 @@ ENHANCEMENTS, OR MODIFICATIONS.
 """
 
 
-class DegreeCourse(object):
+class DegreeCheckTemplate(object):
 
     def __init__(self, data):
         self.data = data
 
     @property
-    def course_id(self):
-        return self.data.get('course_id')
+    def template_id(self):
+        return self.data.get('template_id')
 
-    @course_id.setter
-    def course_id(self, value):
-        self.data['course_id'] = value
-
-    @property
-    def color(self):
-        return self.data.get('color')
-
-    @color.setter
-    def color(self, value):
-        self.data['color'] = value
+    @template_id.setter
+    def template_id(self, value):
+        self.data['template_id'] = value
 
     @property
-    def column_num(self):
-        return self.data.get('column_num')
+    def categories(self):
+        return self.data.get('categories') or []
 
-    @column_num.setter
-    def column_num(self, value):
-        self.data['column_num'] = value
+    @categories.setter
+    def categories(self, value):
+        self.data['categories'] = value
 
     @property
-    def is_transfer_course(self):
-        return self.data.get('is_transfer_course')
+    def created_date(self):
+        return self.data.get('created_date')
 
-    @is_transfer_course.setter
-    def is_transfer_course(self, value):
-        self.data['is_transfer_course'] = value
+    @created_date.setter
+    def created_date(self, value):
+        self.data['created_date'] = value
+
+    @property
+    def deleted_date(self):
+        return self.data.get('deleted_date')
+
+    @deleted_date.setter
+    def deleted_date(self, value):
+        self.data['deleted_date'] = value
 
     @property
     def name(self):
@@ -70,17 +70,25 @@ class DegreeCourse(object):
         self.data['name'] = value
 
     @property
-    def units(self):
-        return self.data.get('units')
+    def unit_reqts(self):
+        return self.data.get('unit_reqts') or []
 
-    @units.setter
-    def units(self, value):
-        self.data['units'] = value
+    @unit_reqts.setter
+    def unit_reqts(self, value):
+        self.data['unit_reqts'] = value
 
     @property
-    def units_reqts(self):
-        return self.data.get('units_reqts')
+    def updated_by(self):
+        return self.data.get('updated_by')
 
-    @units_reqts.setter
-    def units_reqts(self, value):
-        self.data['units_reqts'] = value
+    @updated_by.setter
+    def updated_by(self, value):
+        self.data['updated_by'] = value
+
+    @property
+    def updated_date(self):
+        return self.data.get('updated_date')
+
+    @updated_date.setter
+    def updated_date(self, value):
+        self.data['updated_date'] = value

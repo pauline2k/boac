@@ -24,42 +24,45 @@ ENHANCEMENTS, OR MODIFICATIONS.
 """
 
 
-class DegreeCourse(object):
+class DegreeReqtCategory(object):
 
     def __init__(self, data):
         self.data = data
 
     @property
-    def course_id(self):
-        return self.data.get('course_id')
+    def category_id(self):
+        return self.data.get('category_id')
 
-    @course_id.setter
-    def course_id(self, value):
-        self.data['course_id'] = value
-
-    @property
-    def color(self):
-        return self.data.get('color')
-
-    @color.setter
-    def color(self, value):
-        self.data['color'] = value
+    @category_id.setter
+    def category_id(self, value):
+        self.data['category_id'] = value
 
     @property
     def column_num(self):
-        return self.data.get('column_num')
+        if self.parent:
+            return self.parent.column_num
+        else:
+            return self.data.get('column_num')
 
     @column_num.setter
     def column_num(self, value):
         self.data['column_num'] = value
 
     @property
-    def is_transfer_course(self):
-        return self.data.get('is_transfer_course')
+    def course_reqts(self):
+        return self.data.get('course_reqts') or []
 
-    @is_transfer_course.setter
-    def is_transfer_course(self, value):
-        self.data['is_transfer_course'] = value
+    @course_reqts.setter
+    def course_reqts(self, value):
+        self.data['course_reqts'] = value
+
+    @property
+    def desc(self):
+        return self.data.get('desc')
+
+    @desc.setter
+    def desc(self, value):
+        self.data['desc'] = value
 
     @property
     def name(self):
@@ -70,16 +73,24 @@ class DegreeCourse(object):
         self.data['name'] = value
 
     @property
-    def units(self):
-        return self.data.get('units')
+    def parent(self):
+        return self.data.get('parent')
 
-    @units.setter
-    def units(self, value):
-        self.data['units'] = value
+    @parent.setter
+    def parent(self, value):
+        self.data['parent'] = value
+
+    @property
+    def sub_categories(self):
+        return self.data.get('sub_categories') or []
+
+    @sub_categories.setter
+    def sub_categories(self, value):
+        self.data['sub_categories'] = value
 
     @property
     def units_reqts(self):
-        return self.data.get('units_reqts')
+        return self.data.get('units_reqts') or []
 
     @units_reqts.setter
     def units_reqts(self, value):

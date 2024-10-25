@@ -23,16 +23,31 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 ENHANCEMENTS, OR MODIFICATIONS.
 """
 
-from enum import Enum
+from bea.models.degree_progress.degree_course import DegreeCourse
 
 
-class DegreeProgressPerm(Enum):
+class DegreeReqtCourse(DegreeCourse):
 
-    READ = {
-        'desc': 'Read-only',
-        'user_perm': 'Degree Progress (read)',
-    }
-    WRITE = {
-        'desc': 'Read and write',
-        'user_perm': 'Degree Progress (read/write)',
-    }
+    @property
+    def completed_course(self):
+        return self.data.get('completed_course')
+
+    @completed_course.setter
+    def completed_course(self, value):
+        self.data['completed_course'] = value
+
+    @property
+    def is_placeholder(self):
+        return self.data.get('is_placeholder')
+
+    @is_placeholder.setter
+    def is_placeholder(self, value):
+        self.data['is_placeholder'] = value
+
+    @property
+    def parent(self):
+        return self.data.get('parent')
+
+    @parent.setter
+    def parent(self, value):
+        self.data['parent'] = value

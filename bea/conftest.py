@@ -33,6 +33,8 @@ from bea.pages.api_student_page import ApiStudentPage
 from bea.pages.calnet_page import CalNetPage
 from bea.pages.class_page import ClassPage
 from bea.pages.curated_students_page import CuratedStudentsPage
+from bea.pages.degree_template_mgmt_page import DegreeTemplateMgmtPage
+from bea.pages.degree_template_page import DegreeTemplatePage
 from bea.pages.draft_notes_page import DraftNotesPage
 from bea.pages.filtered_admits_page import FilteredAdmitsPage
 from bea.pages.filtered_students_page import FilteredStudentsPage
@@ -77,6 +79,8 @@ def page_objects(request):
     calnet_page = CalNetPage(driver, headless)
     class_page = ClassPage(driver, headless)
     curated_students_page = CuratedStudentsPage(driver, headless)
+    degree_template_mgmt_page = DegreeTemplateMgmtPage(driver, headless)
+    degree_template_page = DegreeTemplatePage(driver, headless)
     draft_notes_page = DraftNotesPage(driver, headless)
     filtered_admits_page = FilteredAdmitsPage(driver, headless)
     filtered_students_page = FilteredStudentsPage(driver, headless)
@@ -100,6 +104,8 @@ def page_objects(request):
             setattr(cls.obj, 'calnet_page', calnet_page)
             setattr(cls.obj, 'class_page', class_page)
             setattr(cls.obj, 'curated_students_page', curated_students_page)
+            setattr(cls.obj, 'degree_template_mgmt_page', degree_template_mgmt_page)
+            setattr(cls.obj, 'degree_template_page', degree_template_page)
             setattr(cls.obj, 'draft_notes_page', draft_notes_page)
             setattr(cls.obj, 'filtered_admits_page', filtered_admits_page)
             setattr(cls.obj, 'filtered_students_page', filtered_students_page)

@@ -373,6 +373,78 @@
     },
     "degree_checks": [
         {
+            "name": "Templates",
+            "unit_reqts": [
+                {
+                    "name": "Unit Req 0",
+                    "unit_count": "12"
+                },
+                {
+                    "name": "Unit Req 1",
+                    "unit_count": "49"
+                },
+                {
+                    "name": "Unit Req 2",
+                    "unit_count": "5"
+                }
+            ],
+            "categories": [
+                {
+                    "name": "Category 1",
+                    "desc": "Category 1 Description",
+                    "column_num": 1,
+                    "courses": [
+                        {
+                            "name": "CAT 001",
+                            "units": "5-6",
+                            "unit_reqts": [
+                                {
+                                    "reqt": "Unit Req 1"
+                                }
+                            ]
+                        }
+                    ],
+                    "unit_reqts": [],
+                    "sub_categories": [
+                        {
+                            "name": "Subcategory 1.1",
+                            "desc": "Subcategory 1.1 Description en.wikipedia.org/wiki/Teena_Marie",
+                            "unit_reqts": [],
+                            "courses": [
+                                {
+                                    "name": "SUBCAT 001",
+                                    "units": "4",
+                                    "unit_reqts": [
+                                        {
+                                            "reqt": "Unit Req 1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "SUBCAT 002",
+                                    "units": "4.57",
+                                    "unit_reqts": [
+                                        {
+                                            "reqt": "Unit Req 1"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Category 2",
+                    "column_num": 1,
+                    "sub_categories": [
+                        {
+                            "name": "Subcategory 2.1"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "name": "Course Workflows",
             "unit_reqts": [
                 {
