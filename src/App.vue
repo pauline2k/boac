@@ -19,7 +19,6 @@ const contextStore = useContextStore()
 
 <style>
 @import "@/assets/styles/global.css";
-@import "@/assets/styles/ckeditor-custom.css";
 @import 'v-calendar/style.css';
 @import "@/assets/styles/vcalendar-custom.css";
 </style>

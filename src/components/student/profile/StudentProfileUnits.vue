@@ -23,7 +23,7 @@
           <StudentUnitsChart
             v-if="cumulativeUnits || currentEnrolledUnits"
             class="flex-grow-0 student-units-chart"
-            :cumulative-units="cumulativeUnits"
+            :cumulative-units="cumulativeUnits || 0"
             :current-enrolled-units="currentEnrolledUnits || 0"
             :student="student"
           />
