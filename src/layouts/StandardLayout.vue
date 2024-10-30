@@ -98,7 +98,7 @@ import SidebarFooter from '@/components/sidebar/SidebarFooter.vue'
 import PlaneGoRound from '@/layouts/shared/PlaneGoRound.vue'
 import ServiceAnnouncement from '@/layouts/shared/ServiceAnnouncement'
 import Sidebar from '@/components/sidebar/Sidebar'
-import {onBeforeUnmount, onMounted, ref, watch} from 'vue'
+import {onBeforeUnmount, onMounted, ref, useTemplateRef, watch} from 'vue'
 import {get, split} from 'lodash'
 import {putFocusNextTick, scrollTo} from '@/lib/utils'
 import {storeToRefs} from 'pinia'
@@ -111,7 +111,7 @@ const hideFooter = ref(false)
 const {currentUser, loading} = storeToRefs(contextStore)
 const noteStore = useNoteStore()
 const route = useRoute()
-const serviceAlert = ref(null)
+const serviceAlert = useTemplateRef('serviceAlert')
 const serviceAlertOffset = ref(0)
 const showSidebar = ref(true)
 
@@ -141,7 +141,7 @@ const setHideFooter = value => hideFooter.value = value
 const setServiceAlertOffset = () => {
   let counter = 0
   const setOffset = setInterval(() => {
-    const height = get(serviceAlert.value, '$el.clientHeight')
+    const height = get(serviceAlert.value.ref, 'clientHeight')
     if (height) {
       serviceAlertOffset.value = `${height}px`
     }

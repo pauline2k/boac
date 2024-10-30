@@ -19,7 +19,7 @@
         {{ option.name }}
       </option>
     </select>
-    <div v-if="selected.length" class="w-100">
+    <div v-if="size(selected)" class="w-100">
       <label
         :for="`column-${position}-unit-requirement-list`"
         class="sr-only"
@@ -62,7 +62,7 @@
 
 <script setup>
 import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
-import {cloneDeep, includes, map, remove, size} from 'lodash'
+import {includes, map, remove, size} from 'lodash'
 import {mdiCloseCircleOutline} from '@mdi/js'
 import {ref, watch} from 'vue'
 import {useDegreeStore} from '@/stores/degree-edit-session/index'
@@ -79,33 +79,31 @@ const props = defineProps({
     required: false,
     type: Array
   },
-  onUnitRequirementsChange: {
-    required: true,
-    type: Function
-  },
   position: {
     required: true,
     type: Number
   }
 })
 
-const model = ref(null)
-const selected = ref(cloneDeep(props.initialUnitRequirements))
+const model = ref()
+const selected = ref(props.initialUnitRequirements)
 
 watch(model, () => {
   if (model.value) {
-    alertScreenReader(`${model.value.name} selected`)
     selected.value.push(model.value)
-    props.onUnitRequirementsChange(selected.value)
-    model.value = null
+    alertScreenReader(`${model.value.name} selected`)
   }
+})
+
+watch(() => props.initialUnitRequirements, value => {
+  selected.value = value
+  alertScreenReader('Requirement Fulfillments updated.')
 })
 
 const removeUnitRequirement = (item, index) => {
   const lastItemIndex = size(selected.value) - 1
   alertScreenReader(`${item.name} removed`)
   selected.value = remove(selected.value, selected => selected.id !== item.id)
-  props.onUnitRequirementsChange(selected.value)
   if (lastItemIndex > 0) {
     const nextFocusIndex = (index === lastItemIndex ) ? index - 1 : index
     putFocusNextTick(`column-${props.position}-unit-requirement-remove-${nextFocusIndex}`)

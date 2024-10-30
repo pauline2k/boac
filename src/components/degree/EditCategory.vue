@@ -92,10 +92,8 @@
         </label>
         <div>
           <SelectUnitFulfillment
-            :ref="`column-${position}-unit-requirement-select`"
             :disable="isSaving"
             :initial-unit-requirements="selectedUnitRequirements"
-            :on-unit-requirements-change="(value) => selectedUnitRequirements = value"
             :position="position"
           />
         </div>
@@ -128,11 +126,11 @@
             v-model="selectedParentCategory"
             class="select-menu w-100"
             :disabled="isSaving"
+            @change="onChangeParentCategory"
           >
             <option
               :id="`column-${position}-parent-select-option-null`"
               :value="null"
-              @select="onChangeParentCategory"
             >
               Choose...
             </option>
@@ -143,7 +141,6 @@
               :aria-label="`${category.categoryType} ${category.name}`"
               :disabled="disableLocationOption(category)"
               :value="category"
-              @select="onChangeParentCategory"
             >
               {{ category.name }}
             </option>
@@ -185,7 +182,7 @@ import ProgressButton from '@/components/util/ProgressButton.vue'
 import SelectUnitFulfillment from '@/components/degree/SelectUnitFulfillment'
 import UnitsInput from '@/components/degree/UnitsInput'
 import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
-import {clone, differenceBy, each, every, filter, get, includes, isEmpty, map, reject, some} from 'lodash'
+import {each, every, filter, get, includes, isEmpty, map, reject, some, unionBy} from 'lodash'
 import {computed, onMounted, ref, watch} from 'vue'
 import {createDegreeCategory, updateCategory} from '@/api/degree'
 import {findCategoryById, flattenCategories, getItemsForCoursesTable, isCampusRequirement, validateUnitRange} from '@/lib/degree-progress'
@@ -223,7 +220,7 @@ const isSaving = ref(false)
 const name = ref(get(props.existingCategory, 'name', ''))
 const selectedCategoryType = ref(get(props.existingCategory, 'categoryType'))
 const selectedParentCategory = ref(undefined)
-const selectedUnitRequirements = ref(clone(get(props.existingCategory, 'unitRequirements', [])))
+const selectedUnitRequirements = ref(get(props.existingCategory, 'unitRequirements', []))
 const unitsLower = ref(get(props.existingCategory, 'unitsLower'))
 const unitsUpper = ref(get(props.existingCategory, 'unitsUpper'))
 
@@ -297,14 +294,11 @@ const isCampusRequirements = category => {
 
 const onChangeParentCategory = option => {
   alertScreenReader(option ? `${selectedParentCategory.value.name} selected` : 'Unselected')
-  const existingUnitRequirements = selectedUnitRequirements.value
+  const initialUnitRequirements = get(props.existingCategory, 'unitRequirements', [])
   const parentUnitRequirements = get(selectedParentCategory.value, 'unitRequirements')
 
   if (option) {
-    const inheritedUnitRequirements = differenceBy(parentUnitRequirements, existingUnitRequirements, 'id')
-    each(inheritedUnitRequirements, unitRequirement => {
-      this.$refs[`column-${option.position}-unit-requirement-select`].onChangeUnitRequirement(unitRequirement)
-    })
+    selectedUnitRequirements.value = unionBy(parentUnitRequirements, initialUnitRequirements, 'id')
     putFocusNextTick(`column-${props.position}-create-requirement-btn`)
   } else {
     each(parentUnitRequirements, unitRequirement => {
