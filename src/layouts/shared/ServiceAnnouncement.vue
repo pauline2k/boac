@@ -2,6 +2,7 @@
   <h2 v-if="announcement && announcement.isPublished" id="service-announcement-label" class="sr-only">BOA Service Alert</h2>
   <div
     v-if="announcement && announcement.isPublished"
+    ref="serviceAlert"
     aria-labelledby="service-announcement-label"
   >
     <v-expand-transition>
@@ -39,9 +40,13 @@ import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
 import {mdiClose} from '@mdi/js'
 import {storeToRefs} from 'pinia'
 import {useContextStore} from '@/stores/context'
+import {useTemplateRef} from 'vue'
 
 const contextStore = useContextStore()
 const {announcement, dismissedServiceAnnouncement} = storeToRefs(contextStore)
+const serviceAlertRef = useTemplateRef('serviceAlert')
+
+defineExpose({ref: serviceAlertRef})
 
 const toggle = () => {
   if (dismissedServiceAnnouncement.value) {

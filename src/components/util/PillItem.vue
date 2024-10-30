@@ -22,7 +22,7 @@
         :icon="mdiCloseCircle"
         title="Remove"
         variant="text"
-        @click.stop.prevent="$emit('close-clicked')"
+        @click.stop.prevent="emit('closeClicked')"
       />
     </template>
   </v-chip>
@@ -31,7 +31,7 @@
 <script setup>
 import {mdiCloseCircle} from '@mdi/js'
 
-defineEmits('close-clicked')
+const emit = defineEmits(['closeClicked'])
 
 defineProps({
   ariaLabel: {
