@@ -152,14 +152,16 @@ import EditBatchNoteModal from '@/components/note/EditBatchNoteModal'
 import TimelineDate from '@/components/student/profile/TimelineDate'
 import vuetify from '@/plugins/vuetify'
 import {alertScreenReader, putFocusNextTick, studentRoutePath} from '@/lib/utils'
-import {computed, onMounted, onBeforeUnmount, ref} from 'vue'
+import {computed, onMounted, onBeforeUnmount, ref, watch} from 'vue'
 import {DateTime} from 'luxon'
 import {deleteNote, getMyDraftNotes} from '@/api/notes'
 import {each, find, findIndex, get, size, trim, truncate} from 'lodash'
 import {mdiPaperclip, mdiTrashCan} from '@mdi/js'
 import {useContextStore} from '@/stores/context'
+import {useNoteStore} from '@/stores/note-edit-session'
 
 const contextStore = useContextStore()
+const noteStore = useNoteStore()
 const config = contextStore.config
 const currentUser = contextStore.currentUser
 const eventHandlers = {
@@ -182,6 +184,12 @@ const myDraftNotes = ref(undefined)
 const selectedNote = ref(undefined)
 
 contextStore.loadingStart()
+
+watch(() => noteStore.isSaving, (newValue, oldValue) => {
+  if (newValue === false && oldValue === true) {
+    reloadDraftNotes()
+  }
+})
 
 onMounted(() => {
   headers.push(
