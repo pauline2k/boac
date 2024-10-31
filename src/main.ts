@@ -37,7 +37,7 @@ app.use(axiosPlugin, {baseUrl: apiBaseUrl})
   })
   .directive('linkified', {
     // See https://github.com/Hypercontext/linkifyjs?tab=readme-ov-file#installation-and-usage
-    beforeMount: el => el.innerHTML = linkifyHtml(el.innerHTML, {defaultProtocol: 'https'})
+    beforeMount: el => el.innerHTML = linkifyHtml(el.innerHTML, {defaultProtocol: 'https', target: '_blank'})
   })
 
 more(Highcharts)
