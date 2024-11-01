@@ -62,7 +62,7 @@
                 <ContactMethod />
               </div>
               <div key="1" class="pt-4">
-                <ManuallySetDate />
+                <ManuallySetDate container-id="new-note-modal-container" />
               </div>
             </TransitionGroup>
             <AdvisingNoteAttachments
