@@ -716,8 +716,8 @@ table {
   width: 28px !important;
 }
 .th-course {
-  max-width: 40% !important;
-  width: 40% !important;
+  max-width: 50% !important;
+  width: 50% !important;
 }
 .th-fullfilment {
   max-width: 83px !important;
@@ -728,8 +728,8 @@ table {
   width: 46px !important;
 }
 .th-note {
-  max-width: 40% !important;
-  width: 40% !important;
+  max-width: 25% !important;
+  width: 25% !important;
 }
 .th-satisfied {
   width: 100px;
