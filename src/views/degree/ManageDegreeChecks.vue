@@ -18,27 +18,33 @@
     <h1 id="page-header" class="mb-2">
       Degree Checks
     </h1>
-    <div v-if="currentUser.canEditDegreeProgress" class="font-weight-medium mb-3">
-      <router-link
-        id="degree-check-create-link"
-        class="w-25"
+    <div v-if="currentUser.canEditDegreeProgress" class="align-center d-flex font-weight-medium mb-3">
+      <v-btn
+        id="degree-check-create-btn"
+        class="font-size-16 letter-spacing-normal px-0 text-no-wrap"
+        color="primary"
+        density="comfortable"
         to="/degree/new"
+        variant="text"
       >
-        <div class="align-center d-flex flex-nowrap float-left">
-          <v-icon aria-hidden="true" :icon="mdiPlus" size="20" />
-          <div class="pl-1 text-no-wrap">
+        <div class="align-center d-flex">
+          <v-icon color="primary" :icon="mdiPlus" />
+          <div>
             Create new degree check
           </div>
         </div>
-      </router-link>
-      <span v-if="size(degreeTemplates)" class="mx-2">|</span>
-      <router-link
+      </v-btn>
+      <div v-if="size(degreeTemplates)" class="mx-2">|</div>
+      <v-btn
         v-if="size(degreeTemplates)"
-        id="degree-check-batch-link"
+        id="degree-check-batch-btn"
+        class="font-size-16 letter-spacing-normal px-0 text-no-wrap"
+        color="primary"
+        density="comfortable"
+        text="Batch degree checks"
         to="/degree/batch"
-      >
-        <span class="text-no-wrap">Batch degree checks</span>
-      </router-link>
+        variant="text"
+      />
     </div>
     <div v-if="!contextStore.loading">
       <div v-if="!degreeTemplates.length">
@@ -229,6 +235,7 @@
 <script setup>
 import AreYouSureModal from '@/components/util/AreYouSureModal'
 import CloneTemplateModal from '@/components/degree/CloneTemplateModal'
+import ProgressButton from '@/components/util/ProgressButton.vue'
 import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
 import {clone, filter as _filter, get, map, size} from 'lodash'
 import {computed, onMounted, ref} from 'vue'
@@ -237,7 +244,6 @@ import {deleteDegreeTemplate, getDegreeTemplates, updateDegreeTemplate} from '@/
 import {mdiPlus} from '@mdi/js'
 import {useContextStore} from '@/stores/context'
 import {useRoute} from 'vue-router'
-import ProgressButton from '@/components/util/ProgressButton.vue'
 
 const contextStore = useContextStore()
 const currentUser = contextStore.currentUser
