@@ -757,4 +757,7 @@ table {
   min-width: 20px;
   text-align: center;
 }
+.text-strikethrough {
+  text-decoration: line-through;
+}
 </style>
