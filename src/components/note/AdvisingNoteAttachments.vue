@@ -91,7 +91,7 @@
         <PillItem
           :id="`${idPrefix}attachment-${index}`"
           :aria-label="isDownloadable ? `Download attachment ${attachment.displayName}` : null"
-          :closable="!isReadOnly && currentUser.uid === noteAuthorUid"
+          :closable="!isReadOnly && (currentUser.uid === noteAuthorUid || noteStore.mode === 'editTemplate')"
           :disabled="disabled"
           :href="downloadUrl(attachment)"
           :icon="mdiPaperclip"
@@ -116,6 +116,7 @@ import {computed, onBeforeMount, onBeforeUnmount, reactive, ref, watch} from 'vu
 import {each, size} from 'lodash'
 import {mdiAlert, mdiPaperclip} from '@mdi/js'
 import {useContextStore} from '@/stores/context'
+import {useNoteStore} from '@/stores/note-edit-session'
 
 const props = defineProps({
   add: {
@@ -160,6 +161,7 @@ const props = defineProps({
 })
 
 const contextStore = useContextStore()
+const noteStore = useNoteStore()
 
 const attachmentFileInput = ref(null)
 const attachmentError = ref(undefined)
