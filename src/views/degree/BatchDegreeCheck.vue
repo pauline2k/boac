@@ -9,7 +9,7 @@
       </router-link>
     </div>
     <div>
-      <div aria-live="polite" class="font-italic font-size-14 pb-2 student-count-alerts" role="alert">
+      <div aria-live="polite" class="font-italic font-size-14 pb-2 student-count-alerts">
         <span
           v-if="!isEmpty(sidsToInclude)"
           id="target-student-count-alert"

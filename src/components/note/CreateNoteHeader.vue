@@ -14,18 +14,22 @@
           }[noteStore.mode] }}</span>
           <span v-if="'createBatch' === noteStore.mode" class="sr-only">Create Notes</span>
         </ModalHeader>
-        <transition
-          aria-live="polite"
-          name="bounce"
-          role="alert"
-        >
-          <span
-            v-if="noteStore.isAutoSavingDraftNote && !suppressAutoSaveDraftNoteAlert"
-            class="text-success font-size-12 font-weight-bold mb-1 ml-2"
-          >
-            DRAFT SAVED
-          </span>
-        </transition>
+        <div aria-live="polite" class="d-flex justify-center w-100">
+          <transition name="bounce">
+            <div
+              v-show="noteStore.isAutoSavingDraftNote && !suppressAutoSaveDraftNoteAlert"
+              :aria-hidden="isAutoSaveAlertPaused"
+              class="text-success font-size-14 font-weight-bold ml-2"
+            >
+              SAVING DRAFT
+            </div>
+          </transition>
+          <v-btn
+            class="sr-only"
+            :text="isAutoSaveAlertPaused ? 'Resume Auto-Save Notifications' : 'Pause Auto-Save Notifications'"
+            @click="() => isAutoSaveAlertPaused = !isAutoSaveAlertPaused"
+          />
+        </div>
       </div>
     </div>
     <div id="templates-menu" class="px-6">
@@ -255,11 +259,12 @@ const props = defineProps({
 
 const error = ref('')
 const isSaving = ref(false)
+const isAutoSaveAlertPaused = ref(false)
 const noteStore = useNoteStore()
-const updatedTemplateTitle = ref(undefined)
 const suppressAutoSaveDraftNoteAlert = ref(false)
 const templateToDelete = ref(undefined)
 const templateToRename = ref(undefined)
+const updatedTemplateTitle = ref(undefined)
 
 const isDeleteTemplateDialogOpen = computed(() => {
   return !!templateToDelete.value
@@ -269,7 +274,11 @@ const isRenameTemplateDialogOpen = computed(() => {
   return !!templateToRename.value
 })
 
-watch(() => noteStore.isAutoSavingDraftNote, value => value && setTimeout(() => suppressAutoSaveDraftNoteAlert.value = !suppressAutoSaveDraftNoteAlert.value, 5000))
+watch(() => noteStore.isAutoSavingDraftNote, value => {
+  if (value) {
+    setTimeout(() => suppressAutoSaveDraftNoteAlert.value = !suppressAutoSaveDraftNoteAlert.value, 5000)
+  }
+})
 
 const cancel = template => {
   resetTemplate(template, template.title)

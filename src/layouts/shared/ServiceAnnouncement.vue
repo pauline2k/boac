@@ -7,7 +7,7 @@
   >
     <v-expand-transition>
       <div v-if="!dismissedServiceAnnouncement" class="align-center bg-service-announcement d-flex font-weight-medium py-4 px-6">
-        <div aria-live="polite" role="alert" class="d-inline-block pr-1 service-announcement-container w-100">
+        <div aria-live="polite" class="d-inline-block pr-1 service-announcement-container w-100">
           <span
             id="service-announcement-banner"
             v-html="announcement.text"

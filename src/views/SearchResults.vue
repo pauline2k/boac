@@ -28,7 +28,7 @@
         v-if="hasSearchResults"
         aria-live="polite"
         class="sr-only"
-        role="alert"
+        role="status"
       >
         Search results include {{ describe('Admits', results.totalAdmitCount) }}
         {{ describe('student', results.totalStudentCount) }}
