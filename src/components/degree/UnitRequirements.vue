@@ -318,6 +318,12 @@ const toggleExpanded = item => {
   const value = !item.isExpanded
   item.isExpanded = value
   each(item.children, child => child.isExpanded = value)
+  // In addition to setting the children's expanded value, we also want to find the children in the main array and set their expanded state.
+  items.value.forEach(itemInArray => {
+    if (itemInArray.parent?.id === item.id) { // The question mark (optional chaining) here is because some of the items do not have a parent. We only want this IF statement for items that do have a parent.
+      itemInArray.isExpanded = value
+    }
+  })
 }
 </script>
 
