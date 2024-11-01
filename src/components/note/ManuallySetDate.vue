@@ -10,7 +10,7 @@
     <div class="date-input-container">
       <AccessibleDateInput
         aria-label="&quot;set&quot; date"
-        container-id="new-note-modal-container"
+        :container-id="containerId"
         :disabled="isSaving || boaSessionExpired"
         :get-value="() => model.setDate ? DateTime.fromFormat(model.setDate, 'yyyy-MM-dd').toJSDate() : null"
         id-prefix="manually-set-date"
@@ -26,6 +26,13 @@ import AccessibleDateInput from '@/components/util/AccessibleDateInput'
 import {DateTime} from 'luxon'
 import {storeToRefs} from 'pinia'
 import {useNoteStore} from '@/stores/note-edit-session'
+
+defineProps({
+  containerId: {
+    required: true,
+    type: String
+  },
+})
 
 const noteStore = useNoteStore()
 const {boaSessionExpired, isSaving, model} = storeToRefs(noteStore)

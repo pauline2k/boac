@@ -9,7 +9,7 @@
         color="info"
         density="compact"
         fade
-        role="alert"
+        role="status"
         variant="tonal"
       >
         <span class="font-weight-bold">Success!</span> {{ successMessage }}

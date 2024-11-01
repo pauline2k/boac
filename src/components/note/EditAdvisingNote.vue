@@ -1,5 +1,6 @@
 <template>
   <v-form
+    :id="`note-${noteId}-edit-form`"
     ref="editNoteForm"
     class="edit-advising-note-container edit-note-form"
     @submit.prevent="save"
@@ -56,7 +57,10 @@
       :disabled="isSaving || boaSessionExpired"
     />
     <ContactMethod class="mt-3" :disabled="isSaving || boaSessionExpired" />
-    <ManuallySetDate class="mt-3" :disabled="isSaving || boaSessionExpired" />
+    <ManuallySetDate
+      class="mt-3"
+      :container-id="`note-${noteId}-edit-form`"
+    />
     <AdvisingNoteAttachments
       v-if="size(noteStore.model.attachments)"
       aria-labelledby="edit-note-attachments-list-label"
