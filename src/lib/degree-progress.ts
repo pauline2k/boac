@@ -2,6 +2,8 @@ import {concat, each, filter, find, get, includes, isEmpty, isNil, map, startsWi
 import {DegreeProgressCourses} from '@/stores/degree-edit-session'
 import {useDegreeStore} from '@/stores/degree-edit-session'
 
+export const MAX_UNITS_ALLOWED: 10 = 10
+
 export function categoryHasCourse(category, course): boolean {
   let courses: any[] = []
   const extractCourses = c => {

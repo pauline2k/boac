@@ -30,8 +30,8 @@
           :aria-label="`Course Units${showUnitsUpperInput ? ', Start of Range' : ''}`"
           :disabled="disable"
           hide-details
-          maxlength="3"
-          min-width="60"
+          maxlength="4"
+          min-width="70"
           @keydown.enter="onSubmit"
           @keyup.esc="onEscape"
           @update:model-value="setUnitsLower"
@@ -44,12 +44,12 @@
         <v-text-field
           :id="`upper-${inputId}`"
           v-model="unitsUpperModel"
-          :aria-invalid="!isValidUnits(unitsUpper)"
+          :aria-invalid="!isValidUnits(unitsUpper, MAX_UNITS_ALLOWED)"
           aria-label="Course Units, End of Range"
           :disabled="disable"
           hide-details
-          maxlength="3"
-          min-width="60"
+          maxlength="4"
+          min-width="70"
           @keydown.enter="onSubmit"
           @update:model-value="setUnitsUpper"
         />
@@ -65,7 +65,7 @@
 
 <script setup>
 import {putFocusNextTick} from '@/lib/utils'
-import {isValidUnits} from '@/lib/degree-progress'
+import {isValidUnits, MAX_UNITS_ALLOWED} from '@/lib/degree-progress'
 import {onMounted, ref} from 'vue'
 
 const props = defineProps({

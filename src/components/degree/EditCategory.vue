@@ -185,7 +185,7 @@ import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
 import {each, every, filter, get, includes, isEmpty, map, reject, some, unionBy} from 'lodash'
 import {computed, onMounted, ref, watch} from 'vue'
 import {createDegreeCategory, updateCategory} from '@/api/degree'
-import {findCategoryById, flattenCategories, getItemsForCoursesTable, isCampusRequirement, validateUnitRange} from '@/lib/degree-progress'
+import {findCategoryById, flattenCategories, getItemsForCoursesTable, isCampusRequirement, MAX_UNITS_ALLOWED, validateUnitRange} from '@/lib/degree-progress'
 import {refreshDegreeTemplate} from '@/stores/degree-edit-session/utils'
 import {useDegreeStore} from '@/stores/degree-edit-session/index'
 import {useContextStore} from '@/stores/context'
@@ -253,10 +253,9 @@ const disableSaveButton = computed(() => {
 })
 
 const unitsErrorMessage = computed(() => {
-  const maxUnitsAllowed = 10
   const validate = selectedCategoryType.value === 'Course Requirement' && (!!unitsLower.value || !!unitsUpper.value)
-  const message = validateUnitRange(unitsLower.value, unitsUpper.value, maxUnitsAllowed).message
-  return validate ? (message === 'Invalid' ? `Units must be between 1 and ${maxUnitsAllowed}` : message) : null
+  const message = validateUnitRange(unitsLower.value, unitsUpper.value, MAX_UNITS_ALLOWED).message
+  return validate ? (message === 'Invalid' ? `Units must be between 1 and ${MAX_UNITS_ALLOWED}` : message) : null
 })
 
 const cancel = () => {
