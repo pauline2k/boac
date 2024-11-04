@@ -660,7 +660,7 @@ def get_members_with_alerts(cohort, cohort_member_alerts):
 def set_degree_sis_course_id(degree, course):
     sql = f"""SELECT id
                 FROM degree_progress_courses
-               WHERE degree_check_id = '{degree.degree_id}'
+               WHERE degree_check_id = '{degree.check_id}'
                  AND term_id = '{course.term_id}'
                  AND section_id = '{course.ccn}'"""
     app.logger.info(sql)

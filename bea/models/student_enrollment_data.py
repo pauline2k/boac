@@ -28,7 +28,6 @@ from datetime import timedelta
 import re
 
 from bea.models.degree_progress.degree_completed_course import DegreeCompletedCourse
-from bea.test_utils import boa_utils
 from bea.test_utils import utils
 
 
@@ -328,7 +327,8 @@ class EnrollmentData(object):
     def degree_progress_in_prog_courses(self, degree_check):
         courses = []
         term_id = utils.get_current_term().sis_id
-        for course in self.courses(self.current_term()):
+        term = next(filter(lambda t: self.term_id(t) == term_id, self.enrollment_terms()))
+        for course in self.courses(term):
             data = self.sis_course_data(course)
             if not data['grade']:
                 primary_section = self.sis_section_data(self.course_primary_section(course))
@@ -351,7 +351,7 @@ class EnrollmentData(object):
             for course in self.courses(term):
                 data = self.sis_course_data(course)
                 primary_section = self.sis_section_data(self.course_primary_section(course))
-                if not float(data['units_completed']) == 0:
+                if data['grade']:
                     course = DegreeCompletedCourse({
                         'ccn': primary_section['ccn'],
                         'degree_check': degree_check,
@@ -361,7 +361,6 @@ class EnrollmentData(object):
                         'units': data['units_completed'],
                         'units_orig': data['units_completed'],
                     })
-                    boa_utils.set_degree_sis_course_id(degree_check, course)
                     courses.append(course)
         courses.sort(key=lambda c: c.name)
         return courses

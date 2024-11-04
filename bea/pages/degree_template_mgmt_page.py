@@ -64,6 +64,7 @@ class DegreeTemplateMgmtPage(BoaPages):
         self.click_create_degree()
         self.enter_degree_name(template.name)
         self.click_save_new_degree()
+        self.when_present((By.XPATH, f'//h1[text()="{template.name}"]'), utils.get_short_timeout())
         boa_degree_progress_utils.set_new_template_id(template)
 
     def click_batch_degree_checks(self):

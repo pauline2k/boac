@@ -49,7 +49,7 @@ def get_all_students(opts=None):
         clause = f"""
                 JOIN student.student_enrollment_terms
                   ON student.student_enrollment_terms.sid = student.student_profile_index.sid
-               WHERE student.student_enrollment_terms.term_id = '{utils.get_current_term().code}'
+               WHERE student.student_enrollment_terms.term_id = '{utils.get_current_term().sis_id}'
         """
     elif opts and opts.get('include_inactive'):
         clause = ''

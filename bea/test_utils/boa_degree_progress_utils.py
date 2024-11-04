@@ -22,9 +22,10 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 "AS IS". REGENTS HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES,
 ENHANCEMENTS, OR MODIFICATIONS.
 """
-
 from datetime import datetime
+import time
 
+from bea.models.degree_progress.degree_check import DegreeCheck
 from bea.models.degree_progress.degree_check_template import DegreeCheckTemplate
 from bea.test_utils import utils
 from boac import db, std_commit
@@ -115,10 +116,14 @@ def get_degree_id_by_name(degree, student):
     return result['id']
 
 
-def set_unit_reqt_id(template, unit_reqt):
+def degree_id(degree):
+    return degree.check_id if isinstance(degree, DegreeCheck) else degree.template_id
+
+
+def set_unit_reqt_id(degree, unit_reqt):
     sql = f"""SELECT id
                 FROM degree_progress_unit_requirements
-               WHERE name = '{unit_reqt.name}' AND template_id = '{template.template_id}'"""
+               WHERE name = '{unit_reqt.name}' AND template_id = '{degree_id(degree)}'"""
     app.logger.info(sql)
     result = db.session.execute(text(sql)).first()
     std_commit(allow_test_environment=True)
@@ -126,11 +131,12 @@ def set_unit_reqt_id(template, unit_reqt):
     app.logger.info(f'Unit reqt id is {unit_reqt.reqt_id}')
 
 
-def set_course_reqt_id(template, course_reqt):
+def set_course_reqt_id(degree, course_reqt):
     sql = f"""SELECT id
                 FROM degree_progress_categories
                WHERE name = '{course_reqt.name}'
-                 AND template_id = '{template.template_id}'"""
+                 AND template_id = '{degree_id(degree)}'"""
+    app.logger.info(sql)
     result = db.session.execute(text(sql)).first()
     std_commit(allow_test_environment=True)
     course_reqt.course_id = result['id']
@@ -143,17 +149,19 @@ def set_dummy_course_reqt_id(course_reqt):
                WHERE category_type = 'Placeholder: Course Copy'
                  AND parent_category_id = '{course_reqt.parent.category_id}'
                  AND name = '{course_reqt.completed_course.name}'"""
+    app.logger.info(sql)
     result = db.session.execute(text(sql)).first()
     std_commit(allow_test_environment=True)
     course_reqt.course_id = result['id']
     app.logger.info(f'Course reqt id is {course_reqt.course_id}')
 
 
-def set_category_id(template, category):
+def set_category_id(degree, category):
     sql = f"""SELECT id
                 FROM degree_progress_categories
                WHERE name = '{category.name}'
-                 AND template_id = '{template.template_id}'"""
+                 AND template_id = '{degree_id(degree)}'"""
+    app.logger.info(sql)
     result = db.session.execute(text(sql)).first()
     std_commit(allow_test_environment=True)
     category.category_id = result['id']
@@ -163,7 +171,7 @@ def set_category_id(template, category):
 def set_degree_manual_course_id(degree, course):
     sql = f"""SELECT max(id) AS id
                 FROM degree_progress_courses
-               WHERE degree_check_id = '{degree.id}'
+               WHERE degree_check_id = '{degree.check_id}'
                  AND display_name = '{course.name}'"""
     app.logger.info(sql)
     result = db.session.execute(text(sql)).first()
@@ -175,7 +183,7 @@ def set_degree_manual_course_id(degree, course):
 def set_degree_sis_course_id(degree, course):
     sql = f"""SELECT id
                 FROM degree_progress_courses
-               WHERE degree_check_id = '{degree.id}'
+               WHERE degree_check_id = '{degree.check_id}'
                  AND term_id = '{course.term_id}'
                  AND section_id = '{course.ccn}'"""
     app.logger.info(sql)
@@ -188,7 +196,7 @@ def set_degree_sis_course_id(degree, course):
 def set_degree_sis_course_copy_id(degree, course):
     sql = f"""SELECT max(id) AS id
                 FROM degree_progress_courses
-               WHERE degree_check_id = '{degree.id}'
+               WHERE degree_check_id = '{degree.check_id}'
                  AND term_id = '{course.course_orig.term_id}'
                  AND section_id = '{course.course_orig.ccn}'"""
     app.logger.info(sql)
@@ -198,15 +206,18 @@ def set_degree_sis_course_copy_id(degree, course):
     course.course_id = result['id']
 
 
-def update_degree_course_grade(course, student, grade):
+def update_degree_course_grade(degree, course, student, grade):
     sql = f"""UPDATE degree_progress_courses
                  SET grade = '{grade}'
                WHERE section_id = {course.ccn}
-                 AND sid = '{student.sis_id}'
-                 AND term_id = '{course.term_id}'"""
+                 AND sid = '{student.sid}'
+                 AND term_id = '{course.term_id}'
+                 AND degree_check_id = '{degree.check_id}'"""
     app.logger.info(sql)
     db.session.execute(text(sql))
     std_commit(allow_test_environment=True)
+    course.grade = grade
+    time.sleep(utils.get_short_timeout())
 
 
 def set_degree_check_ids(degree_check):
@@ -218,7 +229,7 @@ def set_degree_check_ids(degree_check):
     result = db.session.execute(text(sql)).first()
     std_commit(allow_test_environment=True)
     app.logger.info(f"Degree check id is {result['id']}")
-    degree_check.template_id = result['id']
+    degree_check.check_id = result['id']
     degree_check.created_date = datetime.today()
     for units in degree_check.unit_reqts:
         set_unit_reqt_id(degree_check, units)
