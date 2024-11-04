@@ -35,8 +35,8 @@ from selenium.webdriver.common.by import By
 
 class DegreeTemplateMgmtPage(BoaPages):
 
-    CREATE_DEGREE_CHECK_LINK = By.ID, 'degree-check-create-link'
-    BATCH_DEGREE_CHECK_LINK = By.ID, 'degree-check-batch-link'
+    CREATE_DEGREE_CHECK_LINK = By.ID, 'degree-check-create-btn'
+    BATCH_DEGREE_CHECK_LINK = By.ID, 'degree-check-batch-btn'
     CREATE_DEGREE_SAVE_BUTTON = By.ID, 'start-degree-btn'
     CREATE_DEGREE_NAME_INPUT = By.ID, 'create-degree-input'
     DUPE_NAME_MSG = By.XPATH, '//span[contains(., "already exists. Please choose a different name.")]'
@@ -64,6 +64,7 @@ class DegreeTemplateMgmtPage(BoaPages):
         self.click_create_degree()
         self.enter_degree_name(template.name)
         self.click_save_new_degree()
+        self.when_present((By.XPATH, f'//h1[text()="{template.name}"]'), utils.get_short_timeout())
         boa_degree_progress_utils.set_new_template_id(template)
 
     def click_batch_degree_checks(self):

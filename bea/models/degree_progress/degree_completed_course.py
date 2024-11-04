@@ -38,7 +38,7 @@ class DegreeCompletedCourse(DegreeCourse):
 
     @property
     def course_copies(self):
-        return self.data.get('course_copies')
+        return self.data.get('course_copies') or []
 
     @course_copies.setter
     def course_copies(self, value):
@@ -77,20 +77,20 @@ class DegreeCompletedCourse(DegreeCourse):
         self.data['grade'] = value
 
     @property
+    def is_junk(self):
+        return self.data.get('is_junk')
+
+    @is_junk.setter
+    def is_junk(self, value):
+        self.data['is_junk'] = value
+
+    @property
     def is_manual(self):
         return self.data.get('is_manual')
 
     @is_manual.setter
     def is_manual(self, value):
         self.data['is_manual'] = value
-
-    @property
-    def junk(self):
-        return self.data.get('junk')
-
-    @junk.setter
-    def junk(self, value):
-        self.data['junk'] = value
 
     @property
     def note(self):
@@ -123,3 +123,15 @@ class DegreeCompletedCourse(DegreeCourse):
     @is_wait_listed.setter
     def is_wait_listed(self, value):
         self.data['is_wait_listed'] = value
+
+    def generate_course_copy(self):
+        return DegreeCompletedCourse({
+            'ccn': self.ccn,
+            'course_orig': self,
+            'grade': self.grade,
+            'is_manual': self.is_manual,
+            'name': self.name,
+            'note': None,
+            'term_id': self.term_id,
+            'units': self.units,
+        })

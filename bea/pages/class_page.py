@@ -40,7 +40,7 @@ class ClassPage(ListViewStudentPages,
                 CuratedModal):
     # COURSE DATA
 
-    COURSE_CODE = By.ID, 'course-header'
+    COURSE_CODE = By.ID, 'page-header'
     COURSE_DETAILS = By.XPATH, '//h2[text()="Details"]/..'
     COURSE_TITLE = By.CLASS_NAME, 'course-section-title'
     TERM_NAME = By.CLASS_NAME, 'course-term-name'

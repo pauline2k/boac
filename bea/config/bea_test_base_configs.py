@@ -392,11 +392,11 @@ class BEATestBaseConfigs(object):
                     'intended_majors': [{'major': app.config['TEST_DEFAULT_COHORT_MAJOR']}],
                 }
             cohort_filter = CohortFilter(dept=self.dept, data=data)
-            self.default_cohort = FilteredCohort
-            self.default_cohort.name = f'Cohort {self.test_id}'
-            self.default_cohort.search_criteria = cohort_filter
-            filtered_sids = nessie_filter_students_utils.get_cohort_result(self, self.default_cohort.search_criteria)
-            self.default_cohort.members = [s for s in self.students if s.sid in filtered_sids]
+        self.default_cohort = FilteredCohort
+        self.default_cohort.name = f'Cohort {self.test_id}'
+        self.default_cohort.search_criteria = cohort_filter
+        filtered_sids = nessie_filter_students_utils.get_cohort_result(self, self.default_cohort.search_criteria)
+        self.default_cohort.members = [s for s in self.students if s.sid in filtered_sids]
 
     def set_search_cohorts(self, opts):
         test_data = utils.parse_test_data()

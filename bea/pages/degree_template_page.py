@@ -234,8 +234,8 @@ class DegreeTemplatePage(BoaPages):
         return By.XPATH, f'{self.col_reqt_unit_reqt_pill_xpath(unit_reqt)}//button'
 
     def select_col_reqt_unit_reqt(self, unit_reqt):
-        app.logger.info(f'Selecting column requirement unit fulfillment {unit_reqt}')
-        self.wait_for_select_and_click_option(self.COL_REQT_COURSE_UNITS_REQT_SELECT, unit_reqt)
+        app.logger.info(f'Selecting column requirement unit fulfillment {unit_reqt.name}')
+        self.wait_for_select_and_click_option(self.COL_REQT_COURSE_UNITS_REQT_SELECT, unit_reqt.name)
 
     def remove_col_reqt_unit_reqt(self, unit_reqt):
         app.logger.info(f'Removing unit fulfillment {unit_reqt.name}')
@@ -258,6 +258,9 @@ class DegreeTemplatePage(BoaPages):
 
     def col_reqt_unit_input_0_value(self):
         return self.el_value(self.COL_REQT_UNIT_NUM_INPUT_0)
+
+    def wait_for_units_invalid_error_msg(self):
+        self.when_present(self.COL_REQT_COURSE_UNITS_ERROR_MSG, 1)
 
     def wait_for_units_numeric_error_msg(self):
         self.when_present(self.COL_REQT_COURSE_UNITS_NUM_ERROR_MSG, 1)
@@ -285,7 +288,7 @@ class DegreeTemplatePage(BoaPages):
             else:
                 self.enter_col_reqt_units('')
         for u_reqt in reqt.units_reqts:
-            self.select_col_reqt_unit_reqt(u_reqt.name)
+            self.select_col_reqt_unit_reqt(u_reqt)
 
     def save_col_reqt(self):
         self.click_create_col_reqt()
@@ -295,6 +298,8 @@ class DegreeTemplatePage(BoaPages):
     def create_col_reqt(self, reqt, template):
         if not reqt.column_num:
             reqt.column_num = reqt.parent.column_num or reqt.parent.parent.column_num
+        for unit_reqt in reqt.units_reqts:
+            unit_reqt = next(filter(lambda u: unit_reqt.name in u.name, template.unit_reqts))
         self.click_add_col_reqt_button(reqt.column_num)
         if isinstance(reqt, DegreeReqtCategory):
             if reqt.parent:
