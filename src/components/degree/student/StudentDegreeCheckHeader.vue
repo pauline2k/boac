@@ -82,33 +82,37 @@
       </v-container>
     </div>
     <div class="border-b-md pl-6">
-      <v-container class="border-b-sm px-0" fluid>
+      <v-container class="px-0" fluid>
         <v-row align="start">
-          <v-col class="border-e-sm pb-0 pt-1" cols="7">
-            <div v-if="isEditingNote || noteBody" class="align-center d-flex justify-space-between">
-              <div>
-                <h3 id="degree-notes-header" class="font-size-20 font-weight-bold text-no-wrap mr-3">Degree Notes</h3>
-              </div>
-              <div class="align-center d-flex justify-content-end pr-4">
-                <label for="degree-note-print-toggle" class="font-size-14 font-weight-500 pr-2 text-surface-variant text-right">
+          <v-col
+            class="align-self-stretch border-e-sm pb-0 pt-1"
+            :class="{'border-b-sm': $vuetify.display.xs}"
+            cols="12"
+            sm="6"
+          >
+            <div v-if="isEditingNote || noteBody" class="align-center d-flex flex-wrap justify-space-between">
+              <h3 id="degree-notes-header" class="font-size-20 font-weight-bold text-no-wrap mr-3">Degree Notes</h3>
+              <label for="degree-note-print-toggle" class="d-flex flex-grow-1 justify-end align-center pr-2">
+                <span class="font-size-14 font-weight-500 text-no-wrap text-surface-variant">
                   Show notes when printed?
-                </label>
+                </span>
                 <div
-                  class="align-center d-flex pr-2"
+                  class="align-center d-flex pl-2"
                   :class="{'text-success': degreeStore.includeNotesWhenPrint, 'text-error': !degreeStore.includeNotesWhenPrint}"
                 >
-                  <div class="font-size-14 font-weight-bold toggle-label-width pr-2">
+                  <div class="font-size-14 font-weight-bold toggle-label-width">
                     {{ degreeStore.includeNotesWhenPrint ? 'Yes' : 'No' }}
                   </div>
                   <v-switch
                     id="degree-note-print-toggle"
                     v-model="notesWhenPrintModel"
+                    class="ml-2"
                     color="success"
                     density="compact"
                     hide-details
                   />
                 </div>
-              </div>
+              </label>
             </div>
             <v-btn
               v-if="currentUser.canEditDegreeProgress && !isEditingNote && !noteBody"
@@ -120,30 +124,7 @@
               variant="text"
               @click="editNote"
             />
-          </v-col>
-          <v-col class="align-center d-flex py-1" cols="5">
-            <h3 class="font-size-20 font-weight-bold px-2 text-no-wrap">In-progress courses</h3>
-            <div v-if="degreeStore.courses.inProgress.length" class="text-no-wrap">
-              [<v-btn
-                id="show-upper-units-input"
-                aria-controls="in-progress-courses"
-                :aria-expanded="showInProgressCourses"
-                :aria-label="`${showInProgressCourses ? 'Hide' : 'Show'} in-progress courses`"
-                class="px-0 text-primary"
-                density="compact"
-                flat
-                size="small"
-                style="min-width: 36px !important;"
-                :text="showInProgressCourses ? 'hide' : 'show'"
-                variant="text"
-                @click="() => showInProgressCourses = !showInProgressCourses"
-              />]
-            </div>
-          </v-col>
-        </v-row>
-        <v-row align-v="start">
-          <v-col class="border-e-sm py-1" cols="7">
-            <div v-if="noteBody && !isEditingNote && (noteUpdatedAt || noteUpdatedBy)" class="font-size-14 pr-2 text-no-wrap">
+            <div v-if="noteBody && !isEditingNote && (noteUpdatedAt || noteUpdatedBy)" class="font-size-14 pr-2 pb-1">
               <span
                 v-if="noteUpdatedBy"
                 id="degree-note-updated-by"
@@ -166,18 +147,17 @@
                 class="degree-note-body"
                 v-html="noteBody"
               />
-              <div class="mt-2">
-                <v-btn
-                  v-if="currentUser.canEditDegreeProgress"
-                  id="edit-degree-note-btn"
-                  class="font-weight-bold pl-0"
-                  color="primary"
-                  :disabled="degreeStore.disableButtons"
-                  text="Edit degree note"
-                  variant="text"
-                  @click="editNote"
-                />
-              </div>
+              <v-btn
+                v-if="currentUser.canEditDegreeProgress"
+                id="edit-degree-note-btn"
+                class="font-weight-bold my-2"
+                color="primary"
+                density="comfortable"
+                :disabled="degreeStore.disableButtons"
+                text="Edit degree note"
+                variant="text"
+                @click="editNote"
+              />
             </div>
             <div v-if="isEditingNote">
               <v-textarea
@@ -213,7 +193,26 @@
               </div>
             </div>
           </v-col>
-          <v-col class="pb-2 pt-1" cols="5">
+          <v-col class="justify-center d-flex flex-column py-1" cols="12" sm="6">
+            <div class="d-flex align-center pt-1 pb-2">
+              <h3 class="font-size-20 font-weight-bold px-2 text-no-wrap">In-progress courses</h3>
+              <div v-if="degreeStore.courses.inProgress.length" class="text-no-wrap px-1">
+                [<v-btn
+                  id="show-upper-units-input"
+                  aria-controls="in-progress-courses"
+                  :aria-expanded="showInProgressCourses"
+                  :aria-label="`${showInProgressCourses ? 'Hide' : 'Show'} in-progress courses`"
+                  class="px-0 text-primary"
+                  density="compact"
+                  flat
+                  size="small"
+                  style="min-width: 36px !important;"
+                  :text="showInProgressCourses ? 'hide' : 'show'"
+                  variant="text"
+                  @click="() => showInProgressCourses = !showInProgressCourses"
+                />]
+              </div>
+            </div>
             <v-expand-transition v-if="degreeStore.courses.inProgress.length">
               <v-data-table
                 v-show="showInProgressCourses"
@@ -227,7 +226,7 @@
                     style: $vuetify.display.mdAndUp ? 'max-width: 200px;' : ''
                   }
                 }"
-                class="mb-0 w-100"
+                class="no-scrollbar mb-0 w-100"
                 density="compact"
                 disable-sort
                 :headers="[
@@ -302,7 +301,6 @@ const noteUpdatedAt = computed(() => {
 
 watch(notesWhenPrintModel, () => {
   degreeStore.setIncludeNotesWhenPrint(notesWhenPrintModel.value)
-  alertScreenReader(`Note will ${notesWhenPrintModel.value ? '' : 'not'} be included in printable page.`)
 })
 
 const inProgressCourses = computed(() => {
@@ -379,6 +377,9 @@ const saveNote = () => {
 <style scoped>
 .degree-note-body {
   white-space: pre-line;
+}
+:deep(.no-scrollbar .v-table__wrapper) {
+  overflow: hidden;
 }
 .toggle-label-width {
   width: 36px;

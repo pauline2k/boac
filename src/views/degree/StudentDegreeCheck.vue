@@ -9,7 +9,7 @@
         />
       </div>
       <StudentDegreeCheckHeader :student="student" />
-      <v-container class="pt-3 pr-0" fluid>
+      <v-container class="pt-2 pr-0" fluid>
         <v-row>
           <v-col>
             <v-row>
