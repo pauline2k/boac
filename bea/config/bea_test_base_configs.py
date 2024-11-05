@@ -502,7 +502,7 @@ class BEATestBaseConfigs(object):
                     'column_num': cat_course_reqt_data.get('column_num'),
                     'is_transfer_course': cat_course_reqt_data.get('transfer_course'),
                     'units': cat_course_reqt_data.get('units'),
-                    'units_reqts': cat_course_unit_reqts,
+                    'unit_reqts': cat_course_unit_reqts,
                 }))
         return cat_course_reqts
 
@@ -511,7 +511,7 @@ class BEATestBaseConfigs(object):
         for child in children:
             child.parent = parent
             child.column_num = parent.column_num
-            child.units_reqts += [r for r in parent.units_reqts if r not in child.units_reqts]
+            child.unit_reqts += [r for r in parent.unit_reqts if r not in child.unit_reqts]
 
     def set_degree_template_attributes(self, template):
         data = template.data

@@ -78,9 +78,9 @@ class DegreeCourse(object):
         self.data['units'] = value
 
     @property
-    def units_reqts(self):
-        return self.data.get('units_reqts')
+    def unit_reqts(self):
+        return self.data.get('unit_reqts')
 
-    @units_reqts.setter
-    def units_reqts(self, value):
-        self.data['units_reqts'] = value
+    @unit_reqts.setter
+    def unit_reqts(self, value):
+        self.data['unit_reqts'] = value
