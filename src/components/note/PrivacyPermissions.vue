@@ -7,6 +7,7 @@
       v-model="isPrivate"
       aria-describedby="privacy-permissions-label"
       color="primary"
+      density="compact"
       :disabled="disabled"
       hide-details
       @change="onChange"

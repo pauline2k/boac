@@ -137,7 +137,6 @@
         </tr>
         <template v-for="(message, index) in messagesVisible" :key="index">
           <tr
-            v-if="(message.isPrivate && currentUser.canAccessPrivateNotes) || isUndefined(message.isPrivate) || !message.isPrivate"
             :id="`permalink-${message.type}-${message.id}`"
             :aria-labelledby="getRowAriaLabelledBy(message, index)"
             :aria-rowindex="index + 1"
@@ -429,7 +428,6 @@ import {
   get,
   includes,
   isEmpty,
-  isUndefined,
   map,
   remove,
   size,

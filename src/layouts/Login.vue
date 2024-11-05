@@ -107,7 +107,7 @@ h1 {
   text-align: center;
 }
 .contact-us {
-  margin: 0px 33px 12px 33px;
+  margin: 10px 33px 12px 33px;
   text-align: left;
 }
 .copyright {

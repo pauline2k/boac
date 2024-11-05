@@ -8,7 +8,7 @@
               id="user-filter-options"
               v-model="filterType"
               class="select-menu w-100"
-              :disabled="isBecoming || isFetching"
+              :disabled="isBecomingUid || isFetching"
             >
               <option
                 v-for="option in [
@@ -34,7 +34,7 @@
               :class="{'demo-mode-blur': contextStore.currentUser.inDemoMode}"
               color="body"
               density="compact"
-              :disabled="isBecoming"
+              :disabled="isBecomingUid"
               hide-details
               :hide-no-data="!!(size(autocompleteInput) < 3 || isFetching || isSuggesting || suggestedUsers.length)"
               :items="suggestedUsers"
@@ -67,7 +67,7 @@
                 v-model="filterBy.deptCode"
                 aria-label="department"
                 class="select-menu mb-1"
-                :disabled="isBecoming || isFetching"
+                :disabled="isBecomingUid || isFetching"
                 @update:model-value="fetchUsers('user-permission-options')"
               >
                 <option
@@ -86,7 +86,7 @@
                 v-model="filterBy.role"
                 aria-label="user permissions"
                 class="select-menu mb-1"
-                :disabled="isBecoming || isFetching"
+                :disabled="isBecomingUid || isFetching"
                 @update:model-value="fetchUsers('user-status-options')"
               >
                 <option
@@ -111,7 +111,7 @@
                 v-model="filterBy.status"
                 aria-label="user status"
                 class="select-menu"
-                :disabled="isBecoming || isFetching"
+                :disabled="isBecomingUid || isFetching"
                 @update:model-value="fetchUsers('user-status-options')"
               >
                 <option
@@ -142,6 +142,7 @@
               id="quick-link-ce3-advisors"
               class="font-size-16 px-0"
               color="primary"
+              :disabled="isBecomingUid"
               min-width="60"
               variant="text"
               @click="quickLink('advisor', 'ZCEEE', 'quick-link-ce3-advisors')"
@@ -157,6 +158,7 @@
               id="quick-link-coe-advisors"
               class="font-size-16 px-0"
               color="primary"
+              :disabled="isBecomingUid"
               exact
               min-width="220"
               variant="text"
@@ -173,6 +175,7 @@
               id="quick-link-qcadv-advisors"
               class="font-size-16 px-0"
               color="primary"
+              :disabled="isBecomingUid"
               exact
               min-width="140"
               variant="text"
@@ -253,6 +256,7 @@
                   :class="{'align-start': column.align === 'start', 'icon-visible': isSorted(column)}"
                   color="body"
                   density="compact"
+                  :disabled="isBecomingUid"
                   variant="plain"
                   @click="() => toggleSort(column)"
                 >
@@ -290,7 +294,7 @@
             :after-cancel="afterCancelUpdateUser"
             :after-update-user="afterEditUserProfile"
             :departments="departments"
-            :disabled="isBecoming"
+            :disabled="isBecomingUid"
             :profile="item"
           />
         </template>
@@ -364,17 +368,18 @@
         </template>
         <template #item.becomeUser="{ item }">
           <v-btn
-            v-if="canBecome(item) && !isBecoming"
+            v-if="canBecome(item) && item.uid !== isBecomingUid"
             :id="`become-${item.uid}`"
             :aria-label="`Log in as ${item.name}`"
-            class="text-primary"
+            :class="{'text-primary': !isBecomingUid}"
+            :disabled="isBecomingUid"
             flat
             :icon="mdiLoginVariant"
             size="sm"
             @click="() => become(item.uid)"
           />
           <v-progress-circular
-            v-if="isBecoming"
+            v-if="item.uid === isBecomingUid"
             color="primary"
             indeterminate
             size="16"
@@ -414,8 +419,6 @@ const contextStore = useContextStore()
 
 const autocompleteInput = ref(undefined)
 const expanded = ref([])
-const isBecoming = ref(false)
-const itemsPerPage = 10
 const filterBy = ref({
   deptCode: 'QCADV',
   role: null,
@@ -423,8 +426,10 @@ const filterBy = ref({
   status: null
 })
 const filterType = ref('search')
+const isBecomingUid = ref(undefined)
 const isFetching = ref(false)
 const isSuggesting = ref(false)
+const itemsPerPage = 10
 const sortBy = ref('lastName')
 const sortDesc = ref(false)
 const suggestedUsers = ref([])
@@ -460,10 +465,9 @@ const afterEditUserProfile = profile => {
 }
 
 const become = uid => {
-  isBecoming.value = true
+  isBecomingUid.value = uid
   becomeUser(uid).then(() => {
     window.location.href = '/'
-    isBecoming.value = false
   })
 }
 
