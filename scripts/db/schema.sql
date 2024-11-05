@@ -409,7 +409,8 @@ CREATE TYPE note_contact_types AS ENUM (
     'Online same day',
     'Online scheduled',
     'In-person same day',
-    'In person scheduled',
+    'In-person scheduled',
+    'Group event',
     'Admin'
 );
 

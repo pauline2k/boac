@@ -34,7 +34,7 @@
               :class="{'demo-mode-blur': contextStore.currentUser.inDemoMode}"
               color="body"
               density="compact"
-              :disabled="isBecomingUid"
+              :disabled="!!isBecomingUid"
               hide-details
               :hide-no-data="!!(size(autocompleteInput) < 3 || isFetching || isSuggesting || suggestedUsers.length)"
               :items="suggestedUsers"
@@ -142,7 +142,7 @@
               id="quick-link-ce3-advisors"
               class="font-size-16 px-0"
               color="primary"
-              :disabled="isBecomingUid"
+              :disabled="!!isBecomingUid"
               min-width="60"
               variant="text"
               @click="quickLink('advisor', 'ZCEEE', 'quick-link-ce3-advisors')"
@@ -158,7 +158,7 @@
               id="quick-link-coe-advisors"
               class="font-size-16 px-0"
               color="primary"
-              :disabled="isBecomingUid"
+              :disabled="!!isBecomingUid"
               exact
               min-width="220"
               variant="text"
@@ -175,7 +175,7 @@
               id="quick-link-qcadv-advisors"
               class="font-size-16 px-0"
               color="primary"
-              :disabled="isBecomingUid"
+              :disabled="!!isBecomingUid"
               exact
               min-width="140"
               variant="text"
@@ -256,7 +256,7 @@
                   :class="{'align-start': column.align === 'start', 'icon-visible': isSorted(column)}"
                   color="body"
                   density="compact"
-                  :disabled="isBecomingUid"
+                  :disabled="!!isBecomingUid"
                   variant="plain"
                   @click="() => toggleSort(column)"
                 >
@@ -294,7 +294,7 @@
             :after-cancel="afterCancelUpdateUser"
             :after-update-user="afterEditUserProfile"
             :departments="departments"
-            :disabled="isBecomingUid"
+            :disabled="!!isBecomingUid"
             :profile="item"
           />
         </template>
@@ -372,7 +372,7 @@
             :id="`become-${item.uid}`"
             :aria-label="`Log in as ${item.name}`"
             :class="{'text-primary': !isBecomingUid}"
-            :disabled="isBecomingUid"
+            :disabled="!!isBecomingUid"
             flat
             :icon="mdiLoginVariant"
             size="sm"

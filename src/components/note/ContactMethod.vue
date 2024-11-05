@@ -40,21 +40,14 @@
 
 <script setup>
 import {alertScreenReader} from '@/lib/utils'
+import {useContextStore} from '@/stores/context'
 import {useNoteStore} from '@/stores/note-edit-session'
 
+const contactOptions = useContextStore().config.noteContactTypes
 const noteStore = useNoteStore()
-const contactOptions = [
-  'Email',
-  'Phone',
-  'Online same day',
-  'Online scheduled',
-  'In-person same day',
-  'In person scheduled',
-  'Admin'
-]
 
 const onChangeContactType = value => {
-  alertScreenReader(value)
+  alertScreenReader(`'${value}' selected`)
   noteStore.setContactType(value)
 }
 </script>
