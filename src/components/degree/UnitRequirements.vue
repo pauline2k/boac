@@ -71,30 +71,24 @@
                 {{ item.name }}
               </div>
               <div v-if="degreeStore.sid && !printable">
-                <div v-if="item.type === 'course'" class="pl-3">
+                <div v-if="item.type === 'course'" class="pl-6 pb-2">
                   {{ item.name }}
                 </div>
-                <a
+                <button
                   v-if="item.type === 'unitRequirement'"
                   :id="`unit-requirement-${item.id}-toggle`"
-                  class="border-0 pa-0 text-decoration-none unit-requirement-toggle"
-                  :class="{'shadow-none': !item.isExpanded}"
-                  href="#"
+                  class="align-start d-flex text-left text-primary unit-requirement-toggle"
                   @click.prevent="toggleExpanded(item)"
                 >
-                  <div class="align-start d-flex">
-                    <v-icon :icon="item.isExpanded ? mdiMenuDown : mdiMenuRight" />
-                    <div>
-                      <span class="sr-only">{{ `${item.isExpanded ? 'Hide' : 'Show'} fulfillments of ` }}</span>
-                      {{ item.name }}
-                    </div>
-                  </div>
-                </a>
+                  <v-icon color="primary" :icon="item.isExpanded ? mdiMenuDown : mdiMenuRight" />
+                  <span class="sr-only">{{ `${item.isExpanded ? 'Hide' : 'Show'} fulfillments of ` }}</span>
+                  {{ item.name }}
+                </button>
                 <v-expand-transition>
                   <div
                     v-if="item.isExpanded && item.type === 'unitRequirement' && !item.children.length"
                     :id="`unit-requirement-${item.id}-no-courses`"
-                    class="text-surface-variant pl-6 py-2"
+                    class="text-surface-variant pl-6 pb-2"
                   >
                     No courses
                   </div>
@@ -102,7 +96,7 @@
               </div>
             </td>
             <td
-              class="pr-3 text-right"
+              class="pr-3 py-1 text-right"
               :class="{
                 'font-size-12': printable,
                 'font-size-16': !printable
@@ -124,14 +118,15 @@
             </td>
             <td
               v-if="currentUser.canEditDegreeProgress && !degreeStore.sid && !printable"
-              class="align-center d-flex font-size-16 justify-end px-0"
+              class="align-start d-flex font-size-16 justify-end pr-1 py-1"
             >
               <div>
                 <v-btn
                   :id="`unit-requirement-${item.id}-edit-btn`"
                   :aria-label="`Edit ${item.name}`"
-                  class="action-btn ml-1"
+                  class="mr-1"
                   :class="{'text-primary': !degreeStore.disableButtons}"
+                  color="transparent"
                   density="compact"
                   :disabled="degreeStore.disableButtons"
                   flat
@@ -145,8 +140,9 @@
                 <v-btn
                   :id="`unit-requirement-${item.id}-delete-btn`"
                   :aria-label="`Delete ${item.name}`"
-                  class="action-btn"
+                  class="mr-1"
                   :class="{'text-primary': !degreeStore.disableButtons}"
+                  color="transparent"
                   density="compact"
                   :disabled="degreeStore.disableButtons"
                   flat
@@ -342,20 +338,17 @@ th {
   height: 20px;
   padding-bottom: 5px;
 }
-.action-btn {
-  margin: 0 1px 0 0;
-}
 .th-actions {
   width: 10%;
 }
 .th-completed {
-  width: 20%;
+  width: 25%;
 }
 .th-min-units {
   width: 20% !important;
 }
 .th-name {
-  width: 60%;
+  width: 55%;
 }
 .th-units {
   width: 15%;
