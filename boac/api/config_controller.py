@@ -35,6 +35,7 @@ from boac.lib.util import process_input_from_rich_text_editor, to_bool_or_none
 from boac.merged.sis_terms import current_term_id, current_term_name, future_term_id
 from boac.models.degree_progress_category import degree_progress_category_type
 from boac.models.degree_progress_course import ACCENT_COLOR_CODES
+from boac.models.note import note_contact_type_enum
 from boac.models.tool_setting import ToolSetting
 from flask import current_app as app, request
 from flask_login import current_user
@@ -68,6 +69,7 @@ def app_config():
         'gaMeasurementId': app.config['GA_MEASUREMENT_ID'],
         'isDemoModeAvailable': app.config['DEMO_MODE_AVAILABLE'],
         'maxAttachmentsPerNote': app.config['NOTES_ATTACHMENTS_MAX_PER_NOTE'],
+        'noteContactTypes': note_contact_type_enum.enums,
         'notesDraftAutoSaveInterval': app.config['NOTES_DRAFT_AUTO_SAVE_INTERVAL'],
         'pingFrequency': app.config['PING_FREQUENCY'],
         'supportEmailAddress': app.config['BOAC_SUPPORT_EMAIL'],
