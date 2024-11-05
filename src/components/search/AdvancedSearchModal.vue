@@ -223,7 +223,7 @@
                         model.author = author
                       }"
                       @update:search="onUpdateAdvisorSearch"
-                      @blur="onClearAdvisorSearch"
+                      @blur="onAdvisorSearchBlur"
                     >
                       <template #append-inner>
                         <v-progress-circular
@@ -270,7 +270,7 @@
                       @update:menu="isOpen => isFocusLockDisabled = isOpen"
                       @update:model-value="student => model.student = student"
                       @update:search="onUpdateStudentSearch"
-                      @blur="onClearStudentSearch"
+                      @blur="onStudentSearchBlur"
                     >
                       <template #append-inner>
                         <v-progress-circular
@@ -417,6 +417,9 @@ const noteStudentInput = ref()
 const suggestedAdvisors = ref([])
 const suggestedStudents = ref([])
 
+const advisorSearchText = ref('')
+const studentSearchText = ref('')
+
 const allOptionsUnchecked = computed(() => {
   const m = model.value
   return (!currentUser.canAccessAdmittedStudents || !m.includeAdmits) && !m.includeCourses && !m.includeNotes && !m.includeStudents
@@ -497,13 +500,28 @@ const onClearAdvisorSearch = () => {
   isFetchingAdvisors.value = false
 }
 
+const onAdvisorSearchBlur = () => {
+  if (!advisorSearchText.value || advisorSearchText.value.length === 0) {
+    onClearAdvisorSearch()
+  }
+}
+
 const onClearStudentSearch = () => {
   suggestedStudents.value = []
   isFetchingStudents.value = false
 }
 
+const onStudentSearchBlur = () => {
+  if (!studentSearchText.value || studentSearchText.value.length === 0) {
+    onClearStudentSearch()
+  }
+}
+
+
+
 const onUpdateAdvisorSearch = debounce(query => {
   const q = trim(query)
+  advisorSearchText.value = q
   if (size(q) > 1) {
     isFetchingAdvisors.value = true
     findAdvisorsByName(q, 20, new AbortController()).then(results => {
@@ -515,6 +533,7 @@ const onUpdateAdvisorSearch = debounce(query => {
 
 const onUpdateStudentSearch = debounce(query => {
   const q = trim(query)
+  studentSearchText.value = q
   if (size(q) > 1) {
     isFetchingStudents.value = true
     findStudentsByNameOrSid(q, 20, new AbortController()).then(results => {
