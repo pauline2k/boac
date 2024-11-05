@@ -141,7 +141,7 @@ const setHideFooter = value => hideFooter.value = value
 const setServiceAlertOffset = () => {
   let counter = 0
   const setOffset = setInterval(() => {
-    const height = get(serviceAlert.value.ref, 'clientHeight')
+    const height = get(serviceAlert.value, 'ref.clientHeight')
     if (height) {
       serviceAlertOffset.value = `${height}px`
     }
