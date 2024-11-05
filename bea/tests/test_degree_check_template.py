@@ -289,7 +289,7 @@ class TestColumnReqtSubCategoryCourseCreation:
         assert self.degree_template_page.is_col_reqt_create_enabled()
 
     def test_sub_cat_course_creation_unit_reqt_fulfillment_selection(self):
-        reqt = template.categories[0].sub_categories[0].course_reqts[0].units_reqts[0]
+        reqt = template.categories[0].sub_categories[0].course_reqts[0].unit_reqts[0]
         self.degree_template_page.select_col_reqt_unit_reqt(reqt.name)
         self.degree_template_page.when_present(
             self.degree_template_page.col_reqt_unit_reqt_remove_button(reqt), 1)
@@ -310,7 +310,7 @@ class TestColumnReqtSubCategoryCourseCreation:
 
     def test_sub_cat_course_creation_unit_reqts_saved(self):
         actual = self.degree_template_page.visible_template_course_reqt_fulfillment(sub_cat_1_course_1)
-        utils.assert_actual_includes_expected(actual, sub_cat_1_course_1.units_reqts[0].name)
+        utils.assert_actual_includes_expected(actual, sub_cat_1_course_1.unit_reqts[0].name)
 
 
 @pytest.mark.usefixtures('page_objects')
@@ -335,7 +335,7 @@ class TestColumnReqtSubCategoryCourseEditing:
         assert self.degree_template_page.is_col_reqt_create_enabled()
 
     def test_sub_cat_course_editing_unit_reqt_fulfillment_not_required(self):
-        self.degree_template_page.remove_col_reqt_unit_reqt(sub_cat_1_course_1.units_reqts[0])
+        self.degree_template_page.remove_col_reqt_unit_reqt(sub_cat_1_course_1.unit_reqts[0])
         assert self.degree_template_page.is_col_reqt_create_enabled()
 
     def test_sub_cat_course_editing_cancel(self):
@@ -345,7 +345,7 @@ class TestColumnReqtSubCategoryCourseEditing:
         sub_cat_1_course_1.name = f'EDITED {sub_cat_1_course_1.name}'
         sub_cat_1_course_1.parent = sub_cat_1
         sub_cat_1_course_1.units = ''
-        sub_cat_1_course_1.units_reqts = [template.unit_reqts[2]]
+        sub_cat_1_course_1.unit_reqts = [template.unit_reqts[2]]
         self.degree_template_page.click_edit_cat(sub_cat_1_course_1)
         self.degree_template_page.enter_col_reqt_metadata(sub_cat_1_course_1)
         self.degree_template_page.save_col_reqt()
@@ -363,7 +363,7 @@ class TestColumnReqtSubCategoryCourseEditing:
     def test_sub_cat_course_editing_unit_reqts_saved(self):
         utils.assert_actual_includes_expected(
             self.degree_template_page.visible_template_course_reqt_fulfillment(sub_cat_1_course_1),
-            sub_cat_1_course_1.units_reqts[0].name)
+            sub_cat_1_course_1.unit_reqts[0].name)
 
 
 @pytest.mark.usefixtures('page_objects')
@@ -473,9 +473,9 @@ class TestColumnReqtCategoryCourseCreation:
         assert self.degree_template_page.is_col_reqt_create_enabled()
 
     def test_cat_course_creation_unit_reqt_fulfillment_selection(self):
-        self.degree_template_page.select_col_reqt_unit_reqt(cat_1_course_1.units_reqts[0].name)
+        self.degree_template_page.select_col_reqt_unit_reqt(cat_1_course_1.unit_reqts[0].name)
         self.degree_template_page.when_present(
-            self.degree_template_page.col_reqt_unit_reqt_remove_button(cat_1_course_1.units_reqts[0]),
+            self.degree_template_page.col_reqt_unit_reqt_remove_button(cat_1_course_1.unit_reqts[0]),
             utils.get_short_timeout())
 
     def test_cat_course_creation_cancel(self):
@@ -495,7 +495,7 @@ class TestColumnReqtCategoryCourseCreation:
     def test_cat_course_creation_unit_reqts_saved(self):
         utils.assert_actual_includes_expected(
             self.degree_template_page.visible_template_course_reqt_fulfillment(cat_1_course_1),
-            cat_1_course_1.units_reqts[0].name)
+            cat_1_course_1.unit_reqts[0].name)
 
 
 @pytest.mark.usefixtures('page_objects')
@@ -523,7 +523,7 @@ class TestColumnReqtCategoryCourseEditing:
         assert self.degree_template_page.is_col_reqt_create_enabled()
 
     def test_cat_course_editing_unit_reqt_fulfillment_not_required(self):
-        self.degree_template_page.remove_col_reqt_unit_reqt(cat_1_course_1.units_reqts[0])
+        self.degree_template_page.remove_col_reqt_unit_reqt(cat_1_course_1.unit_reqts[0])
         assert self.degree_template_page.is_col_reqt_create_enabled()
 
     def test_cat_course_editing_cancel(self):
@@ -533,7 +533,7 @@ class TestColumnReqtCategoryCourseEditing:
         cat_1_course_1.name = f'EDITED {cat_1_course_1.name}'
         cat_1_course_1.parent = sub_cat_2
         self.degree_template_page.units = '10'
-        self.degree_template_page.units_reqts = [template.unit_reqts[2]]
+        self.degree_template_page.unit_reqts = [template.unit_reqts[2]]
         self.degree_template_page.click_edit_cat(cat_1_course_1)
         self.degree_template_page.enter_col_reqt_metadata(cat_1_course_1)
         self.degree_template_page.save_col_reqt()
@@ -549,7 +549,7 @@ class TestColumnReqtCategoryCourseEditing:
     def test_cat_course_editing_unit_reqts_saved(self):
         utils.assert_actual_includes_expected(
             self.degree_template_page.visible_template_course_reqt_fulfillment(cat_1_course_1),
-            cat_1_course_1.units_reqts[0].name)
+            cat_1_course_1.unit_reqts[0].name)
 
 
 @pytest.mark.usefixtures('page_objects')

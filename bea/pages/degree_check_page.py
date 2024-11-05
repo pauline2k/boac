@@ -121,35 +121,37 @@ class DegreeCheckPage(DegreeTemplatePage):
         self.when_visible(loc, utils.get_short_timeout())
         return self.element(loc).text
 
-    def wait_for_unit_reqt_update(self, reqt, expected):
+    def is_unit_reqt_updated(self, reqt, expected):
         tries = 3
         while tries > 0:
             try:
                 tries -= 1
+                app.logger.info(f'Expecting {expected}, got {self.visible_unit_reqt_completed(reqt)}')
                 assert self.visible_unit_reqt_completed(reqt) == str(expected)
+                reqt.units_completed = expected
+                return True
             except AssertionError:
                 if tries == 0:
-                    raise
+                    return False
 
     def are_units_added_to_unit_reqt(self, reqt, course):
-        expected = f'{reqt.units_completed + int(course.units)}'
-        self.wait_for_unit_reqt_update(reqt, expected)
-        reqt.units_completed += int(course.units)
+        expected = utils.formatted_units(float(reqt.units_completed) + float(course.units))
+        return self.is_unit_reqt_updated(reqt, expected)
 
-    def are_units_removed_from_unit_req(self, reqt, course):
-        expected = f'{reqt.units_completed - int(course.units)}'
-        self.wait_for_unit_reqt_update(reqt, expected)
-        reqt.units_completed -= int(course.units)
+    def are_units_removed_from_unit_reqt(self, reqt, course):
+        expected = utils.formatted_units(float(reqt.units_completed) - float(course.units))
+        return self.is_unit_reqt_updated(reqt, expected)
 
-    def is_unit_reqt_course(self, reqt, course):
-        return self.is_present((By.ID, f'unit-requirement-{reqt.reqt_id}-course-{course.course_id}'))
+    def is_unit_reqt_course_present(self, reqt, course):
+        return self.is_present((By.ID, f'unit-requirement-{reqt.reqt_id}-course-{course.ccn}'))
 
     def unit_reqt_course_units(self, reqt, course):
         if not self.is_present(
                 (By.XPATH, f'{self.unit_reqt_row_xpath(reqt)}//*[name()="svg"][@data-icon="caret-down"]')):
             self.wait_for_element_and_click((By.ID, f'unit-requirement-{reqt.reqt_id}-toggle'))
+            time.sleep(1)
         return self.el_text_if_exists(
-            (By.XPATH, f'//tr[@id="unit-requirement-{reqt.reqt_id}-course-{course.course_id}"]/td[3]'))
+            (By.XPATH, f'//tr[@id="unit-requirement-{reqt.reqt_id}-course-{course.ccn}"]/td[3]'))
 
     # COURSE REQUIREMENTS
 
@@ -337,7 +339,7 @@ class DegreeCheckPage(DegreeTemplatePage):
         return self.is_present(flag) and self.is_present(hover)
 
     def is_assigned_course_fulfill_flagged(self, course):
-        flag = By.XPATH, f'{self.assigned_course_xpath(course)}/td[contains(@class, "td-units")]//*[name()="title"]'
+        flag = By.XPATH, f'{self.assigned_course_xpath(course)}/td[contains(@class, "td-units")]//i'
         return self.is_present(flag)
 
     def assigned_course_grade(self, course):
@@ -354,9 +356,9 @@ class DegreeCheckPage(DegreeTemplatePage):
     def verify_assigned_course_fulfillment(self, course):
         self.click_edit_assigned_course(course)
         self.when_present(self.COL_REQT_COURSE_UNITS_REQT_SELECT, 1)
-        if course.units_reqts:
-            utils.assert_equivalence(len(self.elements(self.COL_REQT_COURSE_UNITS_REQT_PILL)), len(course.units_reqts))
-            for req in course.units_reqts:
+        if course.unit_reqts:
+            utils.assert_equivalence(len(self.elements(self.COL_REQT_COURSE_UNITS_REQT_PILL)), len(course.unit_reqts))
+            for req in course.unit_reqts:
                 self.when_present(self.col_reqt_unit_reqt_pill(req), 1)
         else:
             assert not self.elements(self.COL_REQT_COURSE_UNITS_REQT_PILL)
@@ -415,12 +417,12 @@ class DegreeCheckPage(DegreeTemplatePage):
             course_reqt = DegreeReqtCourse({
                 'is_dummy': True,
                 'parent': reqt,
-                'units_reqts': reqt.units_reqts,
+                'unit_reqts': reqt.unit_reqts,
             })
             reqt.course_reqts.append(course_reqt)
         course_reqt.completed_course = course
         course.course_reqt = course_reqt
-        course.units_reqts = course_reqt.units_reqts
+        course.unit_reqts = course_reqt.unit_reqts
         utils.assert_actual_includes_expected(self.assigned_course_name(course), course.name)
 
     # COURSE UN-ASSIGNMENT
@@ -444,7 +446,7 @@ class DegreeCheckPage(DegreeTemplatePage):
             else:
                 self.when_not_present(self.assigned_course_row(course), utils.get_short_timeout())
         course.course_reqt = None
-        course.units_reqts = []
+        course.unit_reqts = []
 
     # COURSE REASSIGNMENT
 
@@ -468,12 +470,12 @@ class DegreeCheckPage(DegreeTemplatePage):
             new_course_reqt = DegreeReqtCourse({
                 'is_dummy': True,
                 'parent': new_reqt,
-                'units_reqts': new_reqt.units_reqts,
+                'unit_reqts': new_reqt.unit_reqts,
             })
             new_reqt.course_reqts.append(new_course_reqt)
         new_course_reqt.completed_course = course
         course.course_reqt = new_course_reqt
-        course.units_reqts = new_course_reqt.units_reqts
+        course.unit_reqts = new_course_reqt.unit_reqts
 
         if isinstance(old_reqt, DegreeReqtCourse):
             utils.assert_equivalence(self.visible_course_reqt_name(old_reqt), old_reqt.name)
@@ -505,7 +507,7 @@ class DegreeCheckPage(DegreeTemplatePage):
                 self.when_not_present(el, 2)
                 old_reqt.course_reqts.remove(course.course_reqt)
         course.course_reqt = None
-        course.units_reqts = []
+        course.unit_reqts = []
 
     # COURSE CREATE / EDIT / DELETE
 
@@ -545,7 +547,7 @@ class DegreeCheckPage(DegreeTemplatePage):
         for i in range(button_count):
             self.elements(self.COL_REQT_COURSE_UNITS_REQT_REMOVE_BUTTON)[0].click()
             time.sleep(1)
-        for u_reqt in course.units_reqts:
+        for u_reqt in course.unit_reqts:
             self.select_col_reqt_unit_reqt(u_reqt)
 
     def select_color_option(self, color='none'):
@@ -704,7 +706,7 @@ class DegreeCheckPage(DegreeTemplatePage):
         })
         dest_reqt.course_reqts.append(dummy_reqt)
         copy.course_reqt = dummy_reqt
-        copy.units_reqts = dest_reqt.units_reqts
+        copy.unit_reqts = dest_reqt.unit_reqts
         if course.is_manual:
             boa_degree_progress_utils.set_degree_manual_course_id(course.degree_check, copy)
         else:
@@ -714,11 +716,6 @@ class DegreeCheckPage(DegreeTemplatePage):
         time.sleep(1)
         utils.assert_actual_includes_expected(self.assigned_course_name(copy), copy.name)
         dummy_reqt.completed_course = copy
-        app.logger.info(f'Original course: {vars(course)}')
-        app.logger.info(f'Copied course: {vars(copy)}')
-        app.logger.info(f'Copy dummy: {vars(dummy_reqt)}')
-        boa_degree_progress_utils.set_dummy_course_reqt_id(dummy_reqt)
-        return copy
 
     # COURSE REQT EDITS
 

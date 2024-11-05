@@ -287,7 +287,7 @@ class DegreeTemplatePage(BoaPages):
                 self.enter_col_reqt_units(reqt.units)
             else:
                 self.enter_col_reqt_units('')
-        for u_reqt in reqt.units_reqts:
+        for u_reqt in reqt.unit_reqts:
             self.select_col_reqt_unit_reqt(u_reqt)
 
     def save_col_reqt(self):
@@ -298,7 +298,7 @@ class DegreeTemplatePage(BoaPages):
     def create_col_reqt(self, reqt, template):
         if not reqt.column_num:
             reqt.column_num = reqt.parent.column_num or reqt.parent.parent.column_num
-        for unit_reqt in reqt.units_reqts:
+        for unit_reqt in reqt.unit_reqts:
             unit_reqt = next(filter(lambda u: unit_reqt.name in u.name, template.unit_reqts))
         self.click_add_col_reqt_button(reqt.column_num)
         if isinstance(reqt, DegreeReqtCategory):

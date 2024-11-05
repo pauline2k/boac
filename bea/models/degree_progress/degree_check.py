@@ -92,7 +92,7 @@ class DegreeCheck(DegreeCheckTemplate):
             'name': course_reqt.name,
             'transfer_course': True,
             'units': course_reqt.units,
-            'units_reqts': course_reqt.units_reqts,
+            'unit_reqts': course_reqt.unit_reqts,
         })
         course_reqt.completed_course = course
         course.course_reqt = course_reqt

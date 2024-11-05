@@ -89,9 +89,9 @@ class DegreeReqtCategory(object):
         self.data['sub_categories'] = value
 
     @property
-    def units_reqts(self):
-        return self.data.get('units_reqts') or []
+    def unit_reqts(self):
+        return self.data.get('unit_reqts') or []
 
-    @units_reqts.setter
-    def units_reqts(self, value):
-        self.data['units_reqts'] = value
+    @unit_reqts.setter
+    def unit_reqts(self, value):
+        self.data['unit_reqts'] = value
