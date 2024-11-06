@@ -90,7 +90,7 @@
       </div>
       <div
         v-if="openAndLoaded"
-        :class="{'pa-3': group.totalStudentCount, 'pb-4 px-3': !group.totalStudentCount}"
+        :class="{'px-6 pb-4': group.totalStudentCount, 'pb-4 px-3': !group.totalStudentCount}"
       >
         <router-link
           :id="`sortable-${keyword}-${group.id}-view-all`"
