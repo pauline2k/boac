@@ -172,8 +172,8 @@ class SearchForm(Page):
 
     # Author / Student
 
-    NOTE_AUTHOR = (By.ID, 'search-options-note-filters-author')
-    NOTE_STUDENT = (By.ID, 'search-options-note-filters-student')
+    NOTE_AUTHOR = (By.ID, 'search-options-note-author')
+    NOTE_STUDENT = (By.ID, 'search-options-note-student')
 
     def set_notes_author(self, name, alt_names=None):
         app.logger.info(f'Setting note search author name {name}')

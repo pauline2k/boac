@@ -10,6 +10,7 @@
           'search-focus-in': searchStore.isFocusOnSearch || searchStore.queryText,
           'search-focus-out': !searchStore.isFocusOnSearch && !searchStore.queryText
         }"
+        clearable
         :disabled="searchStore.isSearching"
         :get-value="() => queryTextModel"
         id-prefix="basic-search"

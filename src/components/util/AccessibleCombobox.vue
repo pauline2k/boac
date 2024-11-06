@@ -1,30 +1,37 @@
 <template>
-  <v-combobox
+  <component
+    :is="isAutocomplete ? 'v-autocomplete' : 'v-combobox'"
     :id="`${idPrefix}-input`"
     ref="container"
     v-model="model"
     :aria-required="required"
     autocomplete="list"
+    :base-color="color"
     bg-color="white"
     :class="clazz"
-    clearable
-    density="comfortable"
+    :clearable="clearable"
+    :color="color"
+    :density="density"
     :disabled="disabled"
     hide-details
     hide-no-data
     :items="items"
     :list-props="{ariaLive: 'off'}"
     :loading="isBusy"
+    :maxlength="maxlength"
     :menu-icon="null"
     :menu-props="mergedMenuProps"
+    :min-width="minWidth"
     persistent-clear
     :placeholder="placeholder || label"
+    return-object
     :type="inputType"
     variant="outlined"
+    @blur="isEmpty(query) ? onClear() : noop()"
     @keydown.enter.stop.prevent="onSubmit"
     @update:focused="onFocusInput"
     @update:menu="onToggleMenu"
-    @update:search="onFilterResults"
+    @update:search="onUpdateSearch"
   >
     <template #loader="{isActive}">
       <v-progress-circular
@@ -61,15 +68,18 @@
         @click="() => onSelectItem(item)"
         @focus="e => onFocusListItem(e, index)"
       >
-        {{ item.value }}
+        {{ item.props.title }}
       </v-list-item>
     </template>
-  </v-combobox>
+    <template #selection="{item}">
+      {{ item.props.title }}
+    </template>
+  </component>
   <span aria-live="polite" class="sr-only">{{ resultsSummary }}</span>
 </template>
 
 <script setup>
-import {filter, includes} from 'lodash'
+import {get, filter, includes, isEmpty, noop} from 'lodash'
 import {mdiCloseCircle} from '@mdi/js'
 import {nextTick, onMounted, ref} from 'vue'
 import {alertScreenReader, pluralize, putFocusNextTick} from '@/lib/utils'
@@ -85,9 +95,28 @@ const props = defineProps({
     required: false,
     type: [String, Object]
   },
+  clearable: {
+    required: true,
+    type: Boolean
+  },
+  color: {
+    default: undefined,
+    required: false,
+    type: String
+  },
+  density: {
+    default: 'comfortable',
+    required: false,
+    type: String
+  },
   disabled: {
     required: false,
     type: Boolean
+  },
+  filterResults: {
+    default: () => {},
+    required: false,
+    type: Function
   },
   getValue: {
     required: true,
@@ -101,6 +130,10 @@ const props = defineProps({
     default: 'text',
     required: false,
     type: String
+  },
+  isAutocomplete: {
+    required: false,
+    type: Boolean
   },
   isBusy: {
     required: false,
@@ -118,10 +151,25 @@ const props = defineProps({
     required: true,
     type: String
   },
+  maxlength: {
+    default: undefined,
+    required: false,
+    type: [String, Number]
+  },
   menuProps: {
     default: () => {},
     required: false,
     type: Object
+  },
+  minWidth: {
+    default: undefined,
+    required: false,
+    type: [String, Number]
+  },
+  onClear: {
+    default: () => {},
+    required: false,
+    type: Function
   },
   onToggleMenu: {
     default: () => {},
@@ -175,6 +223,7 @@ const model = defineModel({
   },
   type: String
 })
+const query = ref(undefined)
 const resultsSummary = ref(undefined)
 const resultsSummaryInterval = ref(undefined)
 
@@ -196,11 +245,14 @@ onMounted(() => {
 
 const onClearInput = () => {
   model.value = null
+  props.onClear()
   alertScreenReader('Cleared.')
   putFocusNextTick(`${props.idPrefix}-input`)
 }
 
-const onFilterResults = () => {
+const onUpdateSearch = q => {
+  query.value = q
+  props.filterResults(q)
   clearInterval(resultsSummaryInterval.value)
   resultsSummaryInterval.value = setInterval(setResultsSummary, 1000)
 }
@@ -238,7 +290,8 @@ const onFocusInput = isFocused => {
 }
 
 const onSelectItem = item => {
-  model.value = item.value
+  model.value = get(item.raw, 'value', item.raw)
+  container.value.search = ''
   nextTick(props.whenItemSelected)
 }
 
@@ -263,5 +316,8 @@ const setResultsSummary = () => {
   justify-content: flex-end;
   padding-right: 1px;
   top: 0;
+}
+:deep(.v-field) {
+  color: inherit !important;
 }
 </style>
