@@ -41,7 +41,7 @@ class SearchForm(Page):
 
     # SIMPLE SEARCH
 
-    SEARCH_INPUT = (By.ID, 'search-students-input')
+    SEARCH_INPUT = (By.ID, 'basic-search-input')
     SEARCH_BUTTON = (By.ID, 'go-search')
 
     def enter_simple_search(self, string):
@@ -75,7 +75,7 @@ class SearchForm(Page):
     # ADVANCED SEARCH
 
     OPEN_ADV_SEARCH_BUTTON = (By.ID, 'search-options-panel-toggle')
-    ADV_SEARCH_STUDENT_INPUT = (By.ID, 'advanced-search-students-input')
+    ADV_SEARCH_STUDENT_INPUT = (By.ID, 'advanced-search-input')
 
     def open_adv_search(self):
         app.logger.info('Opening advanced search')
