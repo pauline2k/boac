@@ -7,6 +7,7 @@
         aria-label="Open Advanced Search dialog"
         class="mx-1"
         :class="{'border-0': !isFocusAdvSearchButton}"
+        clearable
         color="white"
         :disabled="searchStore.isSearching"
         height="46"
@@ -47,6 +48,7 @@
             <AccessibleCombobox
               :key="searchStore.autocompleteInputResetKey"
               id-prefix="advanced-search"
+              clearable
               :get-value="() => model.queryText"
               input-type="search"
               :items="searchStore.searchHistory"
@@ -185,98 +187,62 @@
                     </v-radio-group>
                   </div>
                   <div class="pt-2 w-75" :class="{'w-100': $vuetify.display.xs}">
-                    <label class="form-control-label" for="search-options-note-filters-author">Advisor</label>
-                    <v-autocomplete
-                      id="search-options-note-filters-author"
-                      ref="noteAuthorInput"
-                      aria-label="Advisor name or S I D lookup. Expect auto suggest."
-                      autocomplete="list"
-                      base-color="primary"
+                    <label class="form-control-label" for="search-options-note-author-input">Advisor</label>
+                    <AccessibleCombobox
+                      id-prefix="search-options-note-author"
+                      aria-description="Advisor name or S I D lookup. Expect auto suggest."
                       :clearable="!isFetchingAdvisors"
-                      class="mt-1"
-                      :class="{'demo-mode-blur': currentUser.inDemoMode}"
+                      :clazz="{'mt-1': true, 'demo-mode-blur': currentUser.inDemoMode}"
                       color="primary"
                       density="compact"
                       :disabled="searchStore.isSearching || model.postedBy === 'you' || model.postedBy === 'yourDepartment'"
-                      hide-details
-                      hide-no-data
+                      :filter-results="suggestAdvisors"
+                      :get-value="() => model.postedBy === 'anyone' ? get(model.author, 'label') : null"
+                      is-autocomplete
+                      :is-busy="isFetchingAdvisors"
                       :items="suggestedAdvisors"
+                      label="Note Author Advisor"
+                      list-label="Note Author Advisors List"
                       :maxlength="56"
-                      :menu-icon="null"
                       :menu-props="{'content-class': currentUser.inDemoMode ? 'demo-mode-blur' : ''}"
                       min-width="12rem"
-                      :model-value="model.postedBy === 'anyone' ? model.author : null"
+                      :on-clear="onClearAdvisorSearch"
+                      :on-toggle-menu="isOpen => isFocusLockDisabled = isOpen"
                       placeholder="Enter name..."
-                      variant="outlined"
-                      @click:clear="onClearAdvisorSearch"
-                      @update:menu="isOpen => isFocusLockDisabled = isOpen"
-                      @update:model-value="author => {
+                      :set-value="author => {
                         model.postedBy = 'anyone'
                         model.author = author
                       }"
-                      @update:search="onUpdateAdvisorSearch"
-                      @blur="onAdvisorSearchBlur"
-                    >
-                      <template #append-inner>
-                        <v-progress-circular
-                          v-if="isFetchingAdvisors"
-                          color="pale-blue"
-                          indeterminate
-                          :size="16"
-                          :width="3"
-                        />
-                      </template>
-                      <template #selection>
-                        {{ model.author.label }}
-                      </template>
-                    </v-autocomplete>
+                    />
                   </div>
                   <div class="pt-3 w-75" :class="{'w-100': $vuetify.display.xs}">
-                    <label class="form-control-label" for="search-options-note-filters-student">
+                    <label class="form-control-label" for="search-options-note-student-input">
                       <span aria-hidden="true">Student (name or SID)</span>
                       <span class="sr-only">Student (name or S I D)</span>
                     </label>
-                    <v-autocomplete
-                      id="search-options-note-filters-student"
-                      ref="noteStudentInput"
-                      aria-label="Student name or S I D lookup. Expect auto suggest."
-                      autocomplete="list"
-                      base-color="primary"
+                    <AccessibleCombobox
+                      id-prefix="search-options-note-student"
+                      aria-description="Student name or S I D lookup. Expect auto suggest."
                       :clearable="!isFetchingStudents"
-                      class="mt-1"
-                      :class="{'demo-mode-blur': currentUser.inDemoMode}"
+                      :clazz="{'mt-1': true, 'demo-mode-blur': currentUser.inDemoMode}"
                       color="primary"
                       density="compact"
                       :disabled="searchStore.isSearching"
-                      hide-details
-                      hide-no-data
+                      :filter-results="suggestStudents"
+                      :get-value="() => get(model.student, 'label')"
+                      is-autocomplete
+                      :is-busy="isFetchingStudents"
                       :items="suggestedStudents"
+                      label="Note Students"
+                      list-label="Note Student List"
                       :maxlength="56"
-                      :menu-icon="null"
                       :menu-props="{'content-class': currentUser.inDemoMode ? 'demo-mode-blur' : ''}"
                       min-width="12rem"
-                      :model-value="model.student"
+                      :on-clear="onClearStudentSearch"
+                      :on-toggle-menu="isOpen => isFocusLockDisabled = isOpen"
                       placeholder="Enter name or SID..."
-                      variant="outlined"
-                      @click:clear="onClearStudentSearch"
-                      @update:menu="isOpen => isFocusLockDisabled = isOpen"
-                      @update:model-value="student => model.student = student"
-                      @update:search="onUpdateStudentSearch"
-                      @blur="onStudentSearchBlur"
-                    >
-                      <template #append-inner>
-                        <v-progress-circular
-                          v-if="isFetchingAdvisors"
-                          color="pale-blue"
-                          indeterminate
-                          :size="16"
-                          :width="3"
-                        />
-                      </template>
-                      <template #selection>
-                        {{ model.student.label }}
-                      </template>
-                    </v-autocomplete>
+                      :set-value="student => model.student = student"
+                    />
                   </div>
                   <div class="pt-3">
                     <label id="search-options-date-range-label" class="form-control-label">
@@ -369,10 +335,10 @@ import AccessibleCombobox from '@/components/util/AccessibleCombobox'
 import FocusLock from 'vue-focus-lock'
 import ProgressButton from '@/components/util/ProgressButton'
 import {addToSearchHistory, findAdvisorsByName} from '@/api/search'
-import {alertScreenReader, normalizeId, putFocusNextTick, scrollToTop, setComboboxAccessibleLabel} from '@/lib/utils'
-import {computed, nextTick, onUpdated, ref, watch} from 'vue'
+import {alertScreenReader, normalizeId, putFocusNextTick, scrollToTop} from '@/lib/utils'
+import {computed, ref, watch} from 'vue'
 import {DateTime} from 'luxon'
-import {debounce, isDate, map, size, trim} from 'lodash'
+import {debounce, get, isDate, map, size, trim} from 'lodash'
 import {findStudentsByNameOrSid} from '@/api/student'
 import {labelForSearchInput} from '@/lib/search'
 import {mdiTune} from '@mdi/js'
@@ -404,8 +370,6 @@ const isFocusAdvSearchButton = ref(false)
 const isFocusLockDisabled = ref(false)
 const isFetchingAdvisors = ref(false)
 const isFetchingStudents = ref(false)
-const noteAuthorInput = ref()
-const noteStudentInput = ref()
 const suggestedAdvisors = ref([])
 const suggestedStudents = ref([])
 
@@ -434,15 +398,6 @@ const validDateRange = computed(() => {
     return false
   } else {
     return (!m.fromDate || isDate(m.fromDate)) && (!m.toDate || isDate(m.toDate))
-  }
-})
-
-onUpdated(() => {
-  if (searchStore.showAdvancedSearch) {
-    nextTick(() => {
-      setComboboxAccessibleLabel(noteAuthorInput.value.$el, 'Search notes by author')
-      setComboboxAccessibleLabel(noteStudentInput.value.$el, 'Search notes by student')
-    })
   }
 })
 
@@ -499,48 +454,10 @@ const onClearAdvisorSearch = () => {
   isFetchingAdvisors.value = false
 }
 
-const onAdvisorSearchBlur = () => {
-  if (!advisorSearchText.value || advisorSearchText.value.length === 0) {
-    onClearAdvisorSearch()
-  }
-}
-
 const onClearStudentSearch = () => {
   suggestedStudents.value = []
   isFetchingStudents.value = false
 }
-
-const onStudentSearchBlur = () => {
-  if (!studentSearchText.value || studentSearchText.value.length === 0) {
-    onClearStudentSearch()
-  }
-}
-
-
-
-const onUpdateAdvisorSearch = debounce(query => {
-  const q = trim(query)
-  advisorSearchText.value = q
-  if (size(q) > 1) {
-    isFetchingAdvisors.value = true
-    findAdvisorsByName(q, 20, new AbortController()).then(results => {
-      suggestedAdvisors.value = map(results, result => ({title: result.label, value: result}))
-      isFetchingAdvisors.value = false
-    })
-  }
-}, 500)
-
-const onUpdateStudentSearch = debounce(query => {
-  const q = trim(query)
-  studentSearchText.value = q
-  if (size(q) > 1) {
-    isFetchingStudents.value = true
-    findStudentsByNameOrSid(q, 20, new AbortController()).then(results => {
-      suggestedStudents.value = map(results, result => ({title: result.label, value: result}))
-      isFetchingStudents.value = false
-    })
-  }
-}, 500)
 
 const openAdvancedSearch = () => {
   searchStore.setShowAdvancedSearch(true)
@@ -562,7 +479,6 @@ const reset = force => {
     m.includeNotes = currentUser.canAccessAdvisingData
     m.includeStudents = true
   }
-
 }
 
 const search = () => {
@@ -637,6 +553,31 @@ const search = () => {
   }
   scrollToTop()
 }
+
+const suggestAdvisors = debounce(query => {
+  const q = trim(query)
+  advisorSearchText.value = q
+  if (size(q) > 1) {
+    isFetchingAdvisors.value = true
+    findAdvisorsByName(q, 20, new AbortController()).then(results => {
+      suggestedAdvisors.value = map(results, result => ({title: result.label, value: result}))
+      isFetchingAdvisors.value = false
+    })
+  }
+}, 500)
+
+const suggestStudents = debounce(query => {
+  const q = trim(query)
+  studentSearchText.value = q
+  if (size(q) > 1) {
+    isFetchingStudents.value = true
+    findStudentsByNameOrSid(q, 20, new AbortController()).then(results => {
+      suggestedStudents.value = map(results, result => ({title: result.label, value: result}))
+      isFetchingStudents.value = false
+    })
+  }
+}, 500)
+
 </script>
 
 <style scoped>
