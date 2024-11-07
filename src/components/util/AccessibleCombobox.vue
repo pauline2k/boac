@@ -7,7 +7,7 @@
     :aria-required="required"
     autocomplete="list"
     :base-color="color"
-    bg-color="white"
+    bg-color="surface"
     :class="clazz"
     :clearable="clearable"
     :color="color"
@@ -71,7 +71,7 @@
         {{ item.props.title }}
       </v-list-item>
     </template>
-    <template #selection="{item}">
+    <template v-if="isAutocomplete" #selection="{item}">
       {{ item.props.title }}
     </template>
   </component>
@@ -100,7 +100,7 @@ const props = defineProps({
     type: Boolean
   },
   color: {
-    default: undefined,
+    default: 'on-surface',
     required: false,
     type: String
   },
@@ -291,7 +291,9 @@ const onFocusInput = isFocused => {
 
 const onSelectItem = item => {
   model.value = get(item.raw, 'value', item.raw)
-  container.value.search = ''
+  if (props.isAutocomplete) {
+    container.value.search = ''
+  }
   nextTick(props.whenItemSelected)
 }
 
