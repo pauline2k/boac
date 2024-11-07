@@ -62,9 +62,9 @@
         </thead>
         <tbody>
           <tr
-            v-for="item in _filter(items, row => row.type === 'unitRequirement' || row.isExpanded)"
+            v-for="(item, index) in _filter(items, row => row.type === 'unitRequirement' || row.isExpanded)"
             :id="item.type === 'course' ? `unit-requirement-${item.parent.id}-course-${item.id}` : `unit-requirement-${item.id}`"
-            :key="item.id"
+            :key="index"
           >
             <td class="overflow-wrap-break-word" :class="{'font-size-12': printable, 'font-size-16': !printable}">
               <div v-if="!degreeStore.sid || printable" class="mr-1">
