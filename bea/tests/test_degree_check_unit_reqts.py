@@ -27,6 +27,7 @@ import random
 from bea.config.bea_test_config import BEATestConfig
 from bea.models.degree_progress.degree_check import DegreeCheck
 from bea.models.degree_progress.degree_check_perms import DegreeCheckPerms
+from bea.test_utils import boa_degree_progress_utils
 from bea.test_utils import nessie_utils
 from bea.test_utils import utils
 import pytest
@@ -89,6 +90,7 @@ class TestUnassignedCourse:
 class TestCourseAssignedToCatWithUnits:
 
     def test_assign_completed_course(self):
+        boa_degree_progress_utils.set_degree_sis_course_id(degree_check, course)
         self.degree_check_page.click_cancel_course_edit()
         self.degree_check_page.assign_completed_course(course, cat_0)
 
@@ -278,6 +280,7 @@ class TestCourseCopyWithUnitsAssignedToCatSansUnits:
 
     def test_copy_course(self):
         self.degree_check_page.copy_course(course, course_copy_0, cat_2)
+        boa_degree_progress_utils.set_degree_sis_course_copy_id(degree_check, course_copy_0)
 
     def test_shows_category_unit_fulfillment(self):
         self.degree_check_page.verify_assigned_course_fulfillment(course_copy_0)
@@ -335,6 +338,7 @@ class TestCourseCopyWithUnitsAssignedToSubCatSansUnits:
 
     def test_copy_course(self):
         self.degree_check_page.copy_course(course, course_copy_1, sub_cat_3)
+        boa_degree_progress_utils.set_degree_sis_course_copy_id(degree_check, course_copy_1)
 
     def test_shows_sub_category_unit_fulfillment(self):
         self.degree_check_page.verify_assigned_course_fulfillment(course_copy_1)

@@ -71,7 +71,7 @@ class DegreeCourse(object):
 
     @property
     def units(self):
-        return self.data.get('units')
+        return self.data.get('units') or '0'
 
     @units.setter
     def units(self, value):

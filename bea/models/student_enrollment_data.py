@@ -58,7 +58,7 @@ class EnrollmentData(object):
 
     @staticmethod
     def term_units(term):
-        return utils.formatted_units(term['enrolledUnits'])
+        return term.get('enrolledUnits') and utils.formatted_units(term['enrolledUnits'])
 
     @staticmethod
     def _term_units_max(term):

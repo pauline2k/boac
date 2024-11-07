@@ -126,7 +126,7 @@ class DegreeCheckPage(DegreeTemplatePage):
         while tries > 0:
             try:
                 tries -= 1
-                app.logger.info(f'Expecting {expected}, got {self.visible_unit_reqt_completed(reqt)}')
+                app.logger.info(f'Checking for {expected}, got {self.visible_unit_reqt_completed(reqt)}')
                 assert self.visible_unit_reqt_completed(reqt) == str(expected)
                 reqt.units_completed = expected
                 return True
@@ -143,15 +143,15 @@ class DegreeCheckPage(DegreeTemplatePage):
         return self.is_unit_reqt_updated(reqt, expected)
 
     def is_unit_reqt_course_present(self, reqt, course):
-        return self.is_present((By.ID, f'unit-requirement-{reqt.reqt_id}-course-{course.ccn}'))
+        return self.is_present((By.ID, f'unit-requirement-{reqt.reqt_id}-course-{course.course_id}'))
 
     def unit_reqt_course_units(self, reqt, course):
-        if not self.is_present(
-                (By.XPATH, f'{self.unit_reqt_row_xpath(reqt)}//*[name()="svg"][@data-icon="caret-down"]')):
+        self.scroll_to_top()
+        if self.is_present((By.XPATH, f'{self.unit_reqt_row_xpath(reqt)}//button[contains(., "Show fulfillments of")]')):
             self.wait_for_element_and_click((By.ID, f'unit-requirement-{reqt.reqt_id}-toggle'))
             time.sleep(1)
         return self.el_text_if_exists(
-            (By.XPATH, f'//tr[@id="unit-requirement-{reqt.reqt_id}-course-{course.ccn}"]/td[3]'))
+            (By.XPATH, f'//tr[@id="unit-requirement-{reqt.reqt_id}-course-{course.course_id}"]/td[3]'))
 
     # COURSE REQUIREMENTS
 
