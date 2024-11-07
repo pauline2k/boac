@@ -40,6 +40,7 @@
       </label>
       <div class="pb-2">
         <SelectUnitFulfillment
+          :fulfilled-by="name"
           :disable="isSaving"
           :on-unit-requirements-change="onUnitRequirementsChange"
           :position="position"

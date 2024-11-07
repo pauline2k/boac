@@ -93,6 +93,7 @@
         <div>
           <SelectUnitFulfillment
             :disable="isSaving"
+            :fulfilled-by="name"
             :on-unit-requirements-change="onUnitRequirementsChange"
             :position="position"
             :selected-unit-requirements="selectedUnitRequirements"
