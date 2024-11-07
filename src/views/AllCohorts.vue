@@ -3,29 +3,26 @@
     <div class="mb-6">
       <h1 id="page-header">Everyone's Cohorts</h1>
       <div v-if="includesAdmittedStudents" class="pl-1">
-        <v-icon
-          aria-label="Star icon"
-          color="warning"
-          :icon="mdiStar"
-        />
-        denotes a cohort of admitted students.
+        <v-icon class="mr-1 vertical-bottom" color="warning" :icon="mdiStar" />
+        <span class="sr-only">Star icon</span>denotes a cohort of admitted students.
       </div>
     </div>
     <div v-if="!rows.length">
       <div>There are no saved cohorts</div>
     </div>
     <div v-for="(row, index) in rows" :key="index" class="mt-4">
-      <h2 class="page-section-header-sub">
+      <h2 :id="`cohorts-list-${index}-heading`" class="page-section-header-sub">
+        <span class="sr-only">Cohorts of</span>
         <span v-if="row.user.name">{{ row.user.name }}</span>
         <span v-if="!row.user.name">UID: {{ row.user.uid }}</span>
       </h2>
-      <ul>
+      <ul :aria-labelledby="`cohorts-list-${index}-heading`">
         <li v-for="cohort in row.cohorts" :key="cohort.id" class="ml-8">
-          <span v-if="cohort.domain === 'admitted_students'" class="mr-1 text-success">
-            <v-icon aria-label="Star icon" color="warning" :icon="mdiStar" />
-            <span class="sr-only">Admitted Students</span>
+          <span v-if="cohort.domain === 'admitted_students'" class="mr-1">
+            <v-icon class="vertical-bottom" color="warning" :icon="mdiStar" />
+            <span class="sr-only">Star: Admitted Students cohort</span>
           </span>
-          <router-link :to="`/cohort/${cohort.id}`">{{ cohort.name }}</router-link> ({{ cohort.totalStudentCount }})
+          <router-link :to="`/cohort/${cohort.id}`">{{ cohort.name }}</router-link> ({{ cohort.totalStudentCount }}<span class="sr-only">students</span>)
         </li>
       </ul>
     </div>
