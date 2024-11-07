@@ -29,6 +29,7 @@
       </label>
       <ul
         :id="`column-${position}-unit-requirement-list`"
+        :aria-label="`Unit Requirements Fulfilled by ${fulfilledBy}`"
         class="mb-2 list-no-bullets pl-0"
       >
         <li
@@ -74,6 +75,10 @@ const props = defineProps({
   disable: {
     required: false,
     type: Boolean
+  },
+  fulfilledBy: {
+    required: true,
+    type: String
   },
   onUnitRequirementsChange: {
     required: true,

@@ -55,7 +55,7 @@
         </div>
         <div class="align-start d-flex pt-3 w-100">
           <div>
-            <ul v-if="addedStudents.length" class="mb-2 list-no-bullets pl-0">
+            <ul v-if="addedStudents.length" aria-label="Students added to Degree Check" class="mb-2 list-no-bullets pl-0">
               <li
                 v-for="(addedStudent, index) in addedStudents"
                 :key="addedStudent.sid"
@@ -106,7 +106,12 @@
       >
         <v-alert-title class="font-size-16" :class="{'text-warning-darken-1': warning}" v-html="error || warning"></v-alert-title>
         <div v-if="size(sidsInError)">
-          <ul id="sids-not-found" class="mb-1 pl-6" :class="{'columns-list': size(sidsInError) > 5}">
+          <ul
+            id="sids-not-found"
+            aria-label="Students not found"
+            class="mb-1 pl-6"
+            :class="{'columns-list': size(sidsInError) > 5}"
+          >
             <li v-for="(sid, index) in sidsInError" :key="index">{{ sid }}</li>
           </ul>
         </div>
@@ -155,7 +160,7 @@
         <v-alert-title class="font-size-16 text-warning-darken-1">
           {{ pluralize('student', excludedStudents.length) }} currently {{ excludedStudents.length === 1 ? 'uses' : 'use' }} the {{ selectedTemplate.name }} degree check. The degree check will not be added to their student record.
         </v-alert-title>
-        <ul class="ml-5 mt-1 mb-0">
+        <ul aria-label="Students already using this Degree Check" class="ml-5 mt-1 mb-0">
           <li
             v-for="(student, index) in excludedStudents"
             :key="index"

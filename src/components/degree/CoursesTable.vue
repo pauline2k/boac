@@ -176,6 +176,7 @@
                 <div v-if="!printable && !isNoteVisible(bundle)" class="font-size-14 truncate-with-ellipsis">
                   <a
                     :id="`column-${position}-${bundle.key}-note`"
+                    :aria-label="truncate(getNote(bundle), {length: 30, separator: ' '})"
                     :aria-controls="`column-${position}-${bundle.key}-full-note`"
                     :aria-expanded="isNoteVisible(bundle)"
                     href
@@ -298,6 +299,8 @@
               <div class="font-size-12 text-no-wrap">
                 [<v-btn
                   :id="`column-${position}-${bundle.key}-hide-note-btn`"
+                  :aria-controls="`column-${position}-${bundle.key}-full-note`"
+                  :aria-expanded="true"
                   class="px-0 py-1 text-primary"
                   size="small"
                   text="Hide note"
@@ -354,7 +357,7 @@ import EditCourseRequirement from '@/components/degree/student/EditCourseRequire
 import {alertScreenReader, oxfordJoin, pluralize, putFocusNextTick} from '@/lib/utils'
 import {computed, ref} from 'vue'
 import {deleteCategory, deleteCourse, onDrop} from '@/stores/degree-edit-session/utils'
-import {each, every, find, get, includes, isEmpty, isNil, map, remove, size, xorBy} from 'lodash'
+import {each, every, find, get, includes, isEmpty, isNil, map, remove, size, truncate, xorBy} from 'lodash'
 import {
   findCategoryById,
   getAssignedCourses,
@@ -525,10 +528,9 @@ const getGrade = bundle => {
 }
 const getNote = bundle => bundle.course ? bundle.course.note : bundle.category.note
 
-const hideNote = (bundle, position, srAlert=true) => {
+const hideNote = (bundle, position, manageFocus=true) => {
   notesVisible.value = remove(notesVisible.value, key => bundle.key !== key)
-  if (srAlert) {
-    alertScreenReader('Note hidden')
+  if (manageFocus) {
     putFocusNextTick(`column-${position}-${bundle.key}-note`)
   }
 }
@@ -648,7 +650,6 @@ const onMouse = (stage, bundle) => {
 
 const showNote = (bundle, position) => {
   notesVisible.value.push(bundle.key)
-  alertScreenReader(`Showing note of "${bundle.name}" ${bundle.type}`)
   putFocusNextTick(`column-${position}-${bundle.key}-hide-note-btn`)
 }
 </script>
