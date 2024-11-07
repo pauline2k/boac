@@ -174,14 +174,13 @@ def in_op(arr):
 
 
 def formatted_units(units_as_num):
-    if units_as_num:
-        if units_as_num == 0:
-            return '0'
+    if units_as_num == 0:
+        return '0'
+    else:
+        if math.floor(units_as_num) == units_as_num:
+            return f'{math.floor(units_as_num)}'
         else:
-            if math.floor(units_as_num) == units_as_num:
-                return f'{math.floor(units_as_num)}'
-            else:
-                return f"{float('{:.3f}'.format(units_as_num))}"
+            return f"{float('{:.3f}'.format(units_as_num))}"
 
 
 def safe_key(parsed, key):

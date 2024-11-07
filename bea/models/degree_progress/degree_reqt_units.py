@@ -55,7 +55,7 @@ class DegreeReqtUnits(object):
 
     @property
     def units_completed(self):
-        return self.data.get('units_completed')
+        return self.data.get('units_completed') or '0'
 
     @units_completed.setter
     def units_completed(self, value):

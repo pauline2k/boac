@@ -728,19 +728,3 @@ def get_members_with_alerts(cohort, cohort_member_alerts):
         if member.alert_count != 0:
             alert_members.append(member)
     return alert_members
-
-
-# DEGREE PROGRESS
-
-def set_degree_sis_course_id(degree, course):
-    sql = f"""SELECT id
-                FROM degree_progress_courses
-               WHERE degree_check_id = '{degree.check_id}'
-                 AND term_id = '{course.term_id}'
-                 AND section_id = '{course.ccn}'"""
-    app.logger.info(sql)
-    result = db.session.execute(text(sql))
-    std_commit(allow_test_environment=True)
-    course_id = [row['id'] for row in result][0]
-    app.logger.info(f'Term {course.term_id} course {course.ccn} ID is {course_id}')
-    course.course_id = course_id
