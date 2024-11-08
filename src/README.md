@@ -145,6 +145,10 @@ A native table may be easier to style. Or, use `v-data-table` with header and it
 
 TODO: notes
 
+### v-menu
+
+- As seen in AccentColorSelect.vue, the activator button must be a <button> and not a <v-btn>. Using <v-btn> breaks keyboard accessibility in the menu while using JAWS. It seems due to the ::after psuedo-element that <v-btn> uses to facilitate its focus border style.
+
 ## Web Accessibility
 
 How code and verify the front-end, with accessibility always in mind:

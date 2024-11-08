@@ -21,6 +21,73 @@
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
 }
+.button-menu {
+  --v-btn-size: 1rem;
+  --v-btn-height: 44px;
+  align-items: center;
+  background-color: rgb(var(--v-theme-primary));
+  background-repeat: repeat;
+  border-color: rgba(var(--v-border-color),var(--v-border-opacity));
+  border-radius: 4px;
+  border-style: solid;
+  border-width: 0;
+  color: inherit;
+  display: inline-grid;
+  flex-shrink: 0;
+  font-weight: 400;
+  grid-template-areas: "prepend content append";
+  grid-template-columns: max-content auto max-content;
+  height: calc(var(--v-btn-height));
+  justify-content: center;
+  letter-spacing: 0.5px;
+  min-width: 78px;
+  outline: none;
+  padding: 0 20px;
+  position: relative;
+  text-indent: .0892857143em;
+  -webkit-user-select: none;
+  user-select: none;
+  vertical-align: middle;
+  &:disabled {
+    opacity: var(--v-disabled-opacity);
+    pointer-events: none;
+  }
+  &.button-menu-active {
+    background-color: lch(from rgb(var(--v-theme-primary)) 56 c h) !important;
+  }
+}
+@supports selector(:focus-visible) {
+  .button-menu:focus-visible {
+    background-color: lch(from rgb(var(--v-theme-primary)) 56 c h);
+    border: 2px solid rgba(255, 255, 255, var(--v-border-opacity)) !important;
+    &.button-menu-active {
+      background-color: lch(from rgb(var(--v-theme-primary)) 61 c h) !important;
+    }
+  }
+  .button-menu:hover:not(:disabled):not(:focus-visible) {
+    background-color: lch(from rgb(var(--v-theme-primary)) 52 c h);
+    border-width: 0px;
+    &.button-menu-active {
+      background-color: lch(from rgb(var(--v-theme-primary)) 59 c h) !important;
+    }
+  }
+}
+@supports not selector(:focus-visible) {
+  .button-menu:focus {
+    background-color: lch(from rgb(var(--v-theme-primary)) 56 c h);
+    border: 2px solid rgba(255, 255, 255, var(--v-border-opacity)) !important;
+    &.button-menu-active {
+      background-color: lch(from rgb(var(--v-theme-primary)) 61 c h) !important;
+    }
+  }
+  .button-menu:hover:not(:disabled):not(:focus) {
+    background-color: lch(from rgb(var(--v-theme-primary)) 52 c h);
+    border-width: 0px;
+    &.button-menu-active {
+      background-color: lch(from rgb(var(--v-theme-primary)) 59 c h) !important;
+    }
+  }
+}
 .checkbox {
   accent-color: rgb(var(--v-theme-primary));
   height: 20px;
