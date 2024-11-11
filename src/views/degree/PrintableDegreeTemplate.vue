@@ -180,7 +180,7 @@ onMounted(() => {
   }
 }
 pre {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: Verdana, "Open Sans", Roboto, Helvetica, Arial, sans-serif;
   font-size: 12px;
   margin: 0;
 }
