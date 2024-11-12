@@ -22,15 +22,18 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 "AS IS". REGENTS HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES,
 ENHANCEMENTS, OR MODIFICATIONS.
 """
+import json
 
-from bea.pages.page import Page
-from selenium.webdriver.common.by import By
+from bea.pages.api_page import ApiPage
+from bea.test_utils import boa_utils
+from bea.test_utils import utils
+from flask import current_app as app
 
 
-class ApiPage(Page):
+class ApiAdmitPage(ApiPage):
 
-    CONTENT = By.XPATH, '//pre'
-
-    @staticmethod
-    def message(parsed):
-        return parsed.get('message')
+    def hit_endpoint(self, admit):
+        app.logger.info(f'Hitting admit API endpoint for CS ID {admit.sid}')
+        self.driver.get(f'{boa_utils.get_boa_base_url()}/api/admit/by_sid/{admit.sid}')
+        self.when_present(self.CONTENT, utils.get_short_timeout())
+        return json.loads(self.element(self.CONTENT).text)

@@ -53,6 +53,10 @@ class SearchResultsPage(ListViewAdmitPages):
     ADMIT_RESULTS_BUTTON = By.ID, 'search-results-tab-admits'
     ADMIT_RESULTS_COUNT = By.ID, 'search-results-count-admits'
 
+    def are_admits_in_results(self):
+        self.wait_for_spinner()
+        return self.is_present(self.ADMIT_RESULTS_BUTTON)
+
     def admit_search_results_count(self):
         self.wait_for_spinner()
         return self.element(self.ADMIT_RESULTS_COUNT).text

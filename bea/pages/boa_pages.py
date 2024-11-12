@@ -41,6 +41,7 @@ class BoaPages(CreateNoteModal, SearchForm):
     SPINNER = (By.XPATH, '//*[@id="spinner-when-loading"]')
     MODAL = (By.CLASS_NAME, 'modal-content')
     NOT_FOUND = (By.XPATH, '//img[@alt="A silly boarding pass with the text, \'Error 404: Flight not found\'"]')
+    ERROR_403 = (By.XPATH, '//div[text()=" HTTP error status: 403"]')
 
     def wait_for_spinner(self):
         time.sleep(1)
@@ -52,6 +53,9 @@ class BoaPages(CreateNoteModal, SearchForm):
 
     def wait_for_boa_title(self, string):
         self.wait_for_title(f'{string} | BOA')
+
+    def wait_for_403(self):
+        self.when_present(self.ERROR_403, utils.get_short_timeout())
 
     def wait_for_404(self):
         Wait(self.driver, utils.get_short_timeout()).until(ec.visibility_of_element_located(self.NOT_FOUND))
@@ -91,6 +95,11 @@ class BoaPages(CreateNoteModal, SearchForm):
         app.logger.info('Clicking flight deck link in the header')
         self.open_menu()
         self.wait_for_page_and_click(self.FLIGHT_DECK_LINK)
+
+    def click_profile_link(self):
+        app.logger.info('Clicking profile link in the header')
+        self.open_menu()
+        self.wait_for_page_and_click(self.PROFILE_LINK)
 
     def log_out(self):
         app.logger.info('Logging out')

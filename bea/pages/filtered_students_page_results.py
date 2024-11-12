@@ -40,4 +40,4 @@ class FilteredStudentsPageResults(CohortPages):
     @staticmethod
     def set_cohort_members(test, cohort):
         expected_sids = nessie_filter_students_utils.cohort_by_last_name(test, cohort.search_criteria)
-        cohort.members = list(map(lambda s: s.sid in expected_sids, test.students))
+        cohort.members = [s for s in test.students if s.sid in expected_sids]

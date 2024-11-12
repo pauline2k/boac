@@ -282,7 +282,7 @@ def my_students_cond(cohort_filter, conditions_list, test):
         conditions_list.append(f"boac_advisor.advisor_students.advisor_sid = '{test.advisor.sid}'")
         if 'All' not in cohort_filter.cohort_owner_acad_plans:
             conditions_list.append(
-                f'boac_advisor.advisor_students.academic_plan_code IN ({utils.in_op(cohort_filter.cohort_owner_acad_plans)})"')
+                f'boac_advisor.advisor_students.academic_plan_code IN ({utils.in_op(cohort_filter.cohort_owner_acad_plans)})')
 
 
 def asc_cond(cohort_filter, conditions_list):

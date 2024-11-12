@@ -22,15 +22,21 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 "AS IS". REGENTS HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES,
 ENHANCEMENTS, OR MODIFICATIONS.
 """
+import json
 import time
 
-from bea.pages.page import Page
+from bea.pages.api_page import ApiPage
 from bea.test_utils import boa_utils
 from bea.test_utils import utils
 from flask import current_app as app
 
 
-class ApiAdminPage(Page):
+class ApiAdminPage(ApiPage):
+
+    def load_cachejob(self):
+        self.driver.get(f'{boa_utils.get_boa_base_url()}/api/admin/cachejob')
+        self.when_present(self.CONTENT, utils.get_short_timeout())
+        return json.loads(self.element(self.CONTENT).text)
 
     def reindex_notes(self):
         app.logger.info('Reindexing BOA notes')

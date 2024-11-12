@@ -336,7 +336,7 @@ def get_everyone_filtered_cohorts(dept=None, admits=False):
                              ON university_dept_members.authorized_user_id = authorized_users.id
                            JOIN university_depts
                              ON university_depts.id = university_dept_members.university_dept_id
-                          WHERE university_depts.dept_code = '{dept.code}'"""
+                          WHERE university_depts.dept_code = '{dept.value['code']}'"""
     else:
         dept_clause = ''
     conjunction = 'AND' if dept else 'WHERE'
@@ -374,7 +374,7 @@ def get_everyone_curated_groups(dept=None, admits=False):
                              ON university_dept_members.authorized_user_id = authorized_users.id
                            JOIN university_depts
                              ON university_depts.id = university_dept_members.university_dept_id
-                          WHERE university_depts.dept_code = '{dept.code}'"""
+                          WHERE university_depts.dept_code = '{dept.value['code']}'"""
     else:
         dept_clause = ''
     conjunction = 'AND' if dept else 'WHERE'

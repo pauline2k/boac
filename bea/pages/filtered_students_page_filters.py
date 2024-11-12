@@ -200,7 +200,7 @@ class FilteredStudentsPageFilters(FilteredStudentsPageResults):
 
         # Advising
         # TODO - 'My Curated Groups'
-        for plan in cohort.search_criteria.my_students:
+        for plan in cohort.search_criteria.cohort_owner_acad_plans:
             self.select_new_filter('My Students', plan)
 
         self.execute_search()
@@ -377,7 +377,7 @@ class FilteredStudentsPageFilters(FilteredStudentsPageResults):
 
             for n in filters.last_name:
                 assert self.is_present(self.existing_filter_loc('Last Name', n))
-            for m in filters.my_students:
+            for m in filters.cohort_owner_acad_plans:
                 assert self.is_present(self.existing_filter_loc('My Students', m))
 
         else:

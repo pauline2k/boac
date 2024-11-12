@@ -77,10 +77,11 @@ class ListViewStudentPages(Pagination, UserListPages):
         return By.ID, f'link-to-student-{student.uid}'
 
     def student_has_inactive_asc_flag(self, student):
-        self.is_present((By.XPATH, f'{self.student_row_xpath(student)}//div[contains(text(), "ASC INACTIVE")]'))
+        path = '//div[contains(@class, "student-teams")]//span[contains(text(), "(Inactive)")]'
+        return self.is_present((By.XPATH, f'{self.student_row_xpath(student)}{path}'))
 
     def student_has_inactive_coe_flag(self, student):
-        self.is_present((By.XPATH, f'{self.student_row_xpath(student)}//div[contains(text(), "CoE INACTIVE")]'))
+        return self.is_present((By.XPATH, f'{self.student_row_xpath(student)}//div[text()=" CoE INACTIVE "]'))
 
     def student_academic_standing(self, student):
         loc = By.XPATH, f'{self.student_row_xpath(student)}//div[@class="student-academic-standing"]'

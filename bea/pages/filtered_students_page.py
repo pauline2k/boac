@@ -23,7 +23,6 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 ENHANCEMENTS, OR MODIFICATIONS.
 """
 
-from bea.models.cohorts_and_groups.filtered_cohort import FilteredCohort
 from bea.pages.cohort_and_group_student_pages import CohortAndGroupStudentPages
 from bea.pages.curated_add_selector import CuratedAddSelector
 from bea.pages.curated_modal import CuratedModal
@@ -71,23 +70,6 @@ class FilteredStudentsPage(CohortAndGroupStudentPages,
     def load_everyone_cohorts_page(self):
         self.driver.get(f'{boa_utils.get_boa_base_url()}/cohorts/all')
         self.wait_for_boa_title('Cohorts')
-
-    def visible_everyone_cohorts(self):
-        self.click_view_everyone_cohorts()
-        self.wait_for_spinner()
-        cohorts = []
-        try:
-            Wait(self.driver, utils.get_short_timeout()).until(ec.presence_of_all_elements_located(self.EVERYONE_COHORT_LINK))
-            links = self.elements(self.EVERYONE_COHORT_LINK)
-            for link in links:
-                cohort = FilteredCohort({
-                    'cohort_id': link.get_attribute('href').replace(f'{boa_utils.get_boa_base_url()}/cohort/', ''),
-                    'name': link.text,
-                })
-                cohorts.append(cohort)
-        except TimeoutError:
-            app.logger.info('No cohorts visible')
-        return cohorts
 
     def click_history(self):
         app.logger.info('Clicking History')

@@ -49,7 +49,7 @@ class CuratedPages(CohortPages, CuratedModal):
 
     def hit_non_auth_group(self, group):
         self.driver.get(f'{boa_utils.get_boa_base_url()}/curated/{group.cohort_id}')
-        self.wait_for_404()
+        self.wait_for_403()
 
     def rename_group(self, group, new_name):
         app.logger.info(f'Changing the name of group ID {group.cohort_id} to {new_name}')

@@ -164,7 +164,7 @@ class CohortFilter(object):
 
     @property
     def cohort_owner_acad_plans(self):
-        return list(map(lambda d: d['plan'], self.data['cohort_owner_acad_plans'])) if self.data.get('cohort_owner_acad_plans') else None
+        return list(map(lambda d: d['plan'], self.data['cohort_owner_acad_plans'])) if self.data.get('cohort_owner_acad_plans') else []
 
     @cohort_owner_acad_plans.setter
     def cohort_owner_acad_plans(self, value):
@@ -329,17 +329,6 @@ class CohortFilter(object):
     @minors.setter
     def minors(self, value):
         self.data['minors'] = value
-
-    @property
-    def my_students(self):
-        if self.data.get('cohort_owner_academic_plans'):
-            return list(map(lambda p: p['plan'], self.data.get('cohort_owner_academic_plans')))
-        else:
-            return []
-
-    @my_students.setter
-    def my_students(self, value):
-        self.data['cohort_owner_academic_plans'] = value
 
     @property
     def transfer_student(self):

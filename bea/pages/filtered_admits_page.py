@@ -48,6 +48,10 @@ class FilteredAdmitsPage(CohortAndGroupAdmitPages,
     DEPEND_CHAR_ERROR_MSG = By.XPATH, '//div[text()="Dependents must be an integer greater than or equal to 0."]'
     DEPEND_LOGIC_ERROR_MSG = By.XPATH, '//div[text()="Dependents inputs must be in ascending order."]'
 
+    def hit_non_auth_cohort(self, cohort):
+        self.driver.get(f'{boa_utils.get_boa_base_url()}/cohort/{cohort.cohort_id}')
+        self.wait_for_404()
+
     def load_cohort(self, cohort):
         app.logger.info(f'Loading CE3 cohort {cohort.name}')
         self.driver.get(f'{boa_utils.get_boa_base_url()}/cohort/{cohort.cohort_id}')
