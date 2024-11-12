@@ -189,7 +189,7 @@ onMounted(() => {
   overflow: visible !important;
 }
 .units-chart-font-family {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: Verdana, "Open Sans", Roboto, Helvetica, Arial, sans-serif;
 }
 .units-chart-legend-series-1 {
   background-color: rgb(var(--v-theme-chart-series-1));

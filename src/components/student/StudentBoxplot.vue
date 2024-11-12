@@ -202,7 +202,8 @@ const getCourseDecile = index => {
 
 <style>
 .boxplot-tooltip-font-family {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: Verdana, "Open Sans", Roboto, Helvetica, Arial, sans-serif;
+
 }
 .boxplot-tooltip-header {
   background-color: rgb(var(--v-theme-surface-light));

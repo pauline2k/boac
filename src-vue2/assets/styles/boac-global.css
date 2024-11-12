@@ -405,7 +405,7 @@ select.form-control {
   z-index: 0 !important;
 }
 #content {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: Verdana, "Open Sans", Roboto, Helvetica, Arial, sans-serif;
 }
 #content a,
 #content .btn-link {
