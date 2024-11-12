@@ -1,13 +1,20 @@
-dist: focal
+dist: jammy
 sudo: required
 language: python
-python: "3.8"
+python: "3.11"
+
+addons:
+  postgresql: "13"
+  apt:
+    packages:
+    - postgresql-13
+    - postgresql-client-13
 
 services:
   - postgresql
 
 before_install:
-  - nvm install 18
+  - nvm install 20
   # Specify trust instead of peer authentication for Postgres
   - >-
     sudo sed -i
@@ -16,6 +23,12 @@ before_install:
     /etc/postgresql/13/main/pg_hba.conf
   # Restart the Postgres service
   - sudo service postgresql@13-main restart
+
+env:
+  global:
+    # See https://docs.travis-ci.com/user/database-setup/#using-a-different-postgresql-version
+    - PGPORT=5433
+    - PGVER=13
 
 install:
   - npm install

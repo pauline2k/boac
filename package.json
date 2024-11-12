@@ -1,8 +1,5 @@
 {
   "name": "BOA",
-  "engines": {
-    "node": "^18.0.0 || >=20.0.0"
-  },
   "scripts": {
     "build-vue": "vite build --outDir='dist/static'",
     "lint-vue": "./scripts/verify-read-only-src-vue2.sh && eslint . --ignore-path .eslint-ignore",
@@ -11,7 +8,7 @@
     "serve-vue": "vite --host --strictPort"
   },
   "dependencies": {
-    "@ckeditor/ckeditor5-build-classic": "42.0.2",
+    "@ckeditor/ckeditor5-build-classic": "43.3.1",
     "@ckeditor/ckeditor5-vue": "5.1.0",
     "@mdi/js": "7.4.47",
     "@popperjs/core": "2.11.8",
