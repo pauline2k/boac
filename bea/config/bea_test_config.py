@@ -307,3 +307,27 @@ class BEATestConfig(BEATestBaseConfigs):
     def user_role_admin(self):
         self.set_base_configs(dept=Department.ADMIN)
         self.set_search_cohorts(opts={'students': True})
+
+    def user_role_advisor(self):
+        self.set_note_attachments()
+        self.set_students()
+
+    def user_role_asc(self, test_config):
+        self.set_dept(dept=Department.ASC)
+        self.set_advisor()
+        self.set_students(students=test_config.students)
+
+    def user_role_ce3(self, test_config):
+        self.set_dept(dept=Department.ZCEEE)
+        self.set_advisor()
+        self.set_students(students=test_config.students)
+
+    def user_role_coe(self, test_config):
+        self.set_dept(dept=Department.COE)
+        self.set_advisor()
+        self.set_students(students=test_config.students)
+
+    def user_role_l_and_s(self, test_config):
+        self.set_dept(dept=Department.L_AND_S)
+        self.set_advisor()
+        self.set_students(students=test_config.students)

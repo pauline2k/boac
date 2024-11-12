@@ -28,6 +28,7 @@ import os
 from bea.models.term import Term
 from bea.pages.admit_page import AdmitPage
 from bea.pages.api_admin_page import ApiAdminPage
+from bea.pages.api_admit_page import ApiAdmitPage
 from bea.pages.api_notes_page import ApiNotesPage
 from bea.pages.api_student_page import ApiStudentPage
 from bea.pages.calnet_page import CalNetPage
@@ -78,6 +79,7 @@ def page_objects(request):
 
     admit_page = AdmitPage(driver, headless)
     api_admin_page = ApiAdminPage(driver, headless)
+    api_admit_page = ApiAdmitPage(driver, headless)
     api_notes_page = ApiNotesPage(driver, headless)
     api_student_page = ApiStudentPage(driver, headless)
     calnet_page = CalNetPage(driver, headless)
@@ -107,6 +109,7 @@ def page_objects(request):
             setattr(cls.obj, 'term', term)
             setattr(cls.obj, 'admit_page', admit_page)
             setattr(cls.obj, 'api_admin_page', api_admin_page)
+            setattr(cls.obj, 'api_admit_page', api_admit_page)
             setattr(cls.obj, 'api_notes_page', api_notes_page)
             setattr(cls.obj, 'api_student_page', api_student_page)
             setattr(cls.obj, 'calnet_page', calnet_page)

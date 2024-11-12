@@ -38,6 +38,14 @@ class ApiStudentPage(ApiPage):
         self.when_present(self.CONTENT, utils.get_short_timeout())
         return json.loads(self.element(self.CONTENT).text)
 
+    def asc_profile(self, student):
+        parsed = self.load_data(student)
+        return parsed and parsed.get('athleticsProfile')
+
+    def coe_profile(self, student):
+        parsed = self.load_data(student)
+        return parsed and parsed.get('coeProfile')
+
     def student_notes(self, student):
         parsed = self.load_data(student)
         timeline_items = parsed and parsed.get('notifications')
