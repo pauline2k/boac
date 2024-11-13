@@ -7,7 +7,7 @@
       <thead class="border-b-md">
         <tr class="sortable-table-header text-no-wrap">
           <th v-if="hasAssignedCourses && canEdit" class="px-0 th-assign">
-            <span v-if="hasAssignedCourses" class="sr-only">Options to re-assign course</span>
+            <span v-if="hasAssignedCourses" class="sr-only">Assign course</span>
             <span v-if="!hasAssignedCourses" class="sr-only">Recommended?</span>
           </th>
           <th v-if="!isCampusRequirements" class="th-course">Course</th>
@@ -58,7 +58,7 @@
               >
                 <CourseAssignmentMenu
                   v-if="bundle.course.categoryId"
-                  :after-course-assignment="course => putFocusNextTick(`assign-course-${course.id}-dropdown`, {cssSelector: 'button'})"
+                  :after-course-assignment="course => putFocusNextTick(`assign-course-${course.id}-btn`, {cssSelector: 'button'})"
                   :course="bundle.course"
                 />
               </div>

@@ -12,7 +12,6 @@
         <div>
           <ManageStudent
             :align-dropdown-right="true"
-            button-variant="flat"
             button-width="auto"
             domain="admitted_students"
             label="Add to Admission Group"
