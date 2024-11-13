@@ -113,9 +113,8 @@ const showModalProxy = computed(() => {
 
 watch(showModalProxy, isOpen => {
   if (isOpen) {
+    name.value = ''
     putFocusNextTick('create-curated-group-input')
-  } else {
-    cancelModal()
   }
 })
 

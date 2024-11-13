@@ -8,8 +8,7 @@
       <template #activator="{ props }">
         <button
           id="header-dropdown-under-name"
-          bg-primary
-          class="button-menu header-button-menu pr-0 pl-1 text-body-1 text-white"
+          class="button-menu header-button-menu bg-primary pr-0 pl-1 text-body-1 text-white"
           :class="{'button-menu-active': isMenuOpen}"
           v-bind="props"
         >

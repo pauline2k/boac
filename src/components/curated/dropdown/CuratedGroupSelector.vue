@@ -1,13 +1,13 @@
 <template>
   <div class="d-flex align-end">
     <label id="add-all-checkbox-label" :for="checkboxId" class="sr-only">
-      Select all students to add to a {{ domainLabel(false) }}
+      Select all students on this page to add to a {{ domainLabel(false) }}
     </label>
     <div class="checkbox-container" :class="{'checked-checkbox-container': size(sids)}">
       <input
         :id="checkboxId"
         v-model="isSelectAllChecked"
-        :aria-controls="dropdownId"
+        :aria-controls="`add-to-${idFragment}`"
         class="checkbox"
         :disabled="isSaving"
         :indeterminate="indeterminate"
@@ -15,91 +15,108 @@
         @update:model-value="toggle"
       />
     </div>
-    <v-menu
-      v-if="!!size(sids)"
-      :id="dropdownId"
-      :close-on-content-click="false"
-      :disabled="isConfirming || isSaving"
-    >
-      <template #activator="{props: menuProps}">
-        <v-btn
-          :id="isSaving ? `add-to-${idFragment}-confirmation` : `add-to-${idFragment}`"
-          :color="isConfirming ? 'success' : 'primary'"
-          slim
-          variant="flat"
-          v-bind="menuProps"
-        >
-          <div class="align-center d-flex">
-            <v-progress-circular
-              v-if="isSaving && !isConfirming"
-              indeterminate
-              size="14"
-              width="2"
-            />
-            <div v-if="!isConfirming" class="ml-1">
-              {{ isSaving ? 'Adding' : 'Add' }} to {{ domainLabel(true) }}
+    <div class="button-container">
+      <v-menu
+        :id="dropdownId"
+        :close-on-content-click="false"
+        :disabled="!size(sids) || isConfirming || isSaving"
+        @update:model-value="isOpen => isMenuOpen = isOpen"
+      >
+        <template #activator="{props: menuProps}">
+          <button
+            :id="`add-to-${idFragment}`"
+            class="button-menu bg-primary py-0 px-2 text-body-1 text-white"
+            :class="{'bg-success': isConfirming, 'button-menu-active': isMenuOpen}"
+            :disabled="!size(sids)"
+            v-bind="menuProps"
+          >
+            <div class="align-center d-flex">
+              <v-progress-circular
+                v-if="isSaving && !isConfirming"
+                indeterminate
+                size="14"
+                width="2"
+              />
+              <div v-if="!isConfirming" class="ml-1">
+                {{ isSaving ? 'Adding' : 'Add' }} <span class="sr-only">selected students</span> to {{ domainLabel(true) }}
+              </div>
+              <v-icon v-if="!isSaving && !isConfirming" :icon="mdiMenuDown" />
+              <div v-if="isConfirming" class="align-center d-flex">
+                <v-icon class="mr-1" :icon="mdiCheckBold" size="14" /><span>Added to {{ domainLabel(true) }}</span>
+              </div>
             </div>
-            <v-icon v-if="!isSaving && !isConfirming" :icon="mdiMenuDown" />
-            <div v-if="isConfirming" class="align-center d-flex">
-              <v-icon class="mr-1" :icon="mdiCheckBold" size="14" /><span>Added to {{ domainLabel(true) }}</span>
-            </div>
-          </div>
-        </v-btn>
-      </template>
-      <v-list class="overflow-x-hidden" density="compact" variant="flat">
-        <v-list-item v-if="!size(myCuratedGroups)" disabled>
-          <span class="px-3 py-1 text-no-wrap">You have no {{ domainLabel(false) }}s.</span>
-        </v-list-item>
-        <v-list-item
-          v-for="group in myCuratedGroups"
-          :key="group.id"
-          class="v-list-item-override py-0"
+          </button>
+        </template>
+        <v-list
+          v-model:selected="selectedCuratedGroups"
+          :aria-label="`Select one or more ${domainLabel(true)}s`"
+          class="overflow-x-hidden"
           density="compact"
-          @click.stop="onClickCuratedGroup(group)"
-          @keyup.enter="onClickCuratedGroup(group)"
+          select-strategy="leaf"
+          variant="flat"
         >
-          <template #prepend>
-            <v-checkbox
-              :id="`${idFragment}-${group.id}-checkbox`"
-              :model-value="!!find(selectedCuratedGroups, {'id': group.id})"
-              class="mr-7 w-100"
+          <v-list-item v-if="!size(myCuratedGroups)" disabled>
+            <span class="px-3 py-1 text-no-wrap">You have no {{ domainLabel(false) }}s.</span>
+          </v-list-item>
+          <v-list-item
+            v-for="group in myCuratedGroups"
+            :key="group.id"
+            :aria-checked="!!find(selectedCuratedGroups, {'id': group.id})"
+            class="v-list-item-override py-0"
+            density="compact"
+            role="checkbox"
+            :value="group"
+          >
+            <template #prepend="{isSelected}">
+              <v-list-item-action start>
+                <v-checkbox-btn
+                  :id="`${idFragment}-${group.id}-checkbox`"
+                  :model-value="isSelected"
+                  class="mr-7 w-100"
+                  color="primary"
+                  density="compact"
+                  hide-details
+                  role="presentation"
+                  tabindex="-1"
+                >
+                  <template #label>
+                    <span class="truncate-with-ellipsis ml-2">
+                      {{ group.name }}
+                    </span>
+                  </template>
+                </v-checkbox-btn>
+              </v-list-item-action>
+            </template>
+          </v-list-item>
+          <v-list-item>
+            <v-btn
+              :id="`submit-${idFragment}`"
+              :aria-label="`Add students to selected ${domainLabel(true)}s`"
+              class="px-6"
               color="primary"
-              density="compact"
-              hide-details
-            >
-              <template #label>
-                <span class="truncate-with-ellipsis ml-2">
-                  {{ group.name }}
-                </span>
-              </template>
-            </v-checkbox>
-          </template>
-        </v-list-item>
-        <v-list-item>
-          <v-btn
-            :id="`submit-${idFragment}`"
-            :aria-label="`Add students to selected ${domainLabel(true)}s`"
-            class="px-6"
-            color="primary"
-            :disabled="!size(selectedCuratedGroups) || isConfirming || isSaving"
-            height="32"
-            text="Add"
-            @click="onSubmit"
-          />
-        </v-list-item>
-        <v-list-item class="border-t-sm mt-2 pt-2" density="compact">
-          <v-btn
-            :id="`create-${idFragment}`"
-            :aria-label="`Create a new ${domainLabel(false)}`"
-            color="primary"
-            :prepend-icon="mdiPlus"
-            :text="`Create New ${domainLabel(true)}`"
-            variant="text"
-            @click.stop="showModal = true"
-          />
-        </v-list-item>
-      </v-list>
-    </v-menu>
+              :disabled="!size(selectedCuratedGroups) || isConfirming || isSaving"
+              height="32"
+              text="Add"
+              @click.stop="onSubmit"
+              @keydown.enter.stop="onSubmit"
+            />
+          </v-list-item>
+          <v-list-item class="border-t-sm mt-2 pt-2 px-1" density="compact">
+            <v-btn
+              :id="`create-${idFragment}`"
+              :aria-label="`Create a new ${domainLabel(false)}`"
+              color="primary"
+              :prepend-icon="mdiPlus"
+              :text="`Create New ${domainLabel(true)}`"
+              slim
+              variant="text"
+              @click.stop="showModal = true"
+              @keydown.enter.stop="showModal = true"
+            />
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </div>
     <CreateCuratedGroupModal
       :cancel="modalCancel"
       :create="modalCreateCuratedGroup"
@@ -148,6 +165,7 @@ const currentUser = reactive(contextStore.currentUser)
 const dropdownId = `${idFragment}-dropdown-select`
 const indeterminate = ref(false)
 const isConfirming = ref(false)
+const isMenuOpen = ref(false)
 const isSaving = ref(false)
 const isSelectAllChecked = ref(false)
 const selectedCuratedGroups = ref([])
@@ -181,14 +199,16 @@ const domainLabel = capitalize => {
 }
 
 const modalCancel = () => {
-  showModal.value = false
   alertScreenReader('Canceled')
+  showModal.value = false
+  putFocusNextTick(isMenuOpen.value ? `create-${idFragment}` : checkboxId)
 }
 
 const modalCreateCuratedGroup = name => {
   isSaving.value = true
+  showModal.value = false
+  alertScreenReader(`Adding ${pluralize('student', size(sids.value))} to new ${domainLabel(false)}.`)
   return createCuratedGroup(props.domain, name, sids.value).then(() => {
-    showModal.value = false
     isSaving.value = false
     isConfirming.value = true
     alertScreenReader(`${pluralize('student', size(sids.value))} added to ${domainLabel(false)} ${name}`)
@@ -214,15 +234,6 @@ const onCheckboxUnchecked = args => {
   if (props.domain === args.domain) {
     sids.value = remove(sids.value, s => s !== args.sid)
     refresh()
-  }
-}
-
-const onClickCuratedGroup = group => {
-  const selected = selectedCuratedGroups.value.findIndex(g => g.id === group.id)
-  if (selected >= 0) {
-    selectedCuratedGroups.value.splice(selected, 1)
-  } else {
-    selectedCuratedGroups.value.push(group)
   }
 }
 
@@ -264,11 +275,14 @@ const toggle = checked => {
       sids.value.push(student.sid || student.csEmplId)
     })
     contextStore.broadcast('curated-group-select-all', props.domain)
-    putFocusNextTick(dropdownId, {cssSelector: 'button'})
-    alertScreenReader('All students on this page selected.')
+    alertScreenReader(`Use the "Add selected students to ${domainLabel(true)}" button menu to choose ${domainLabel(true)}s`)
   } else {
     contextStore.broadcast('curated-group-deselect-all', props.domain)
-    alertScreenReader('All students on this page deselected.')
   }
 }
 </script>
+
+<style scoped>
+.button-container {
+  min-width: 15rem;
+}</style>
