@@ -2,19 +2,25 @@
   <div :class="{'opacity-zero': srOnly && !isAdding && !isRemoving && !showModal}">
     <v-menu
       :aria-label="`${domainLabel(true)}s for ${student.name}`"
+      :close-on-content-click="false"
       :disabled="isAdding || isRemoving"
+      @update:model-value="isOpen => isMenuOpen = isOpen"
     >
       <template #activator="{props: menuProps}">
-        <v-btn
+        <button
           :id="menuButtonId"
           v-bind="menuProps"
-          :append-icon="(buttonVariant && !groupsLoading && !isAdding && !isRemoving) ? mdiMenuDown : undefined"
-          :aria-label="`Add ${student.name} to a curated group`"
-          :color="isAdding ? 'success' : (isRemoving ? 'error' : 'primary')"
+          :aria-label="`Add ${student.name} to ${domainLabel(true)}s`"
+          class="button-menu bg-primary py-0 px-2 text-body-1 text-white"
+          :class="{
+            'bg-error': isRemoving,
+            'bg-success': isAdding,
+            'button-menu-active': isMenuOpen
+          }"
           :variant="buttonVariant"
           :width="buttonWidth"
         >
-          <div v-if="!isAdding && !isRemoving" :class="labelClass">
+          <div v-if="!isAdding && !isRemoving" class="d-flex" :class="labelClass">
             <v-progress-circular
               v-if="groupsLoading"
               indeterminate
@@ -24,6 +30,7 @@
             <div class="ml-1">
               {{ label }}
             </div>
+            <v-icon v-if="!isRemoving && !isAdding" :icon="mdiMenuDown" />
           </div>
           <div v-if="isRemoving && !isAdding" class="align-center d-flex" :class="labelClass">
             <v-icon class="mr-1" :icon="mdiCloseThick" />
@@ -43,62 +50,71 @@
               Updated
             </div>
           </div>
-        </v-btn>
+        </button>
       </template>
       <v-list
-        v-if="!groupsLoading"
+        v-model:selected="selectedGroupIds"
+        :aria-label="`${props.student.name}\'s ${domainLabel(true)} memberships`"
+        class="overflow-x-hidden"
         density="compact"
-        max-width="90%"
+        select-strategy="leaf"
         variant="flat"
       >
-        <v-list-item v-if="!_filter(currentUser.myCuratedGroups, ['domain', domain]).length" disabled>
+        <v-list-item v-if="!size(filteredCuratedGroups)" disabled>
           <span class="px-3 py-1 text-no-wrap">You have no {{ domainLabel(false) }}s.</span>
         </v-list-item>
         <v-list-item
-          v-for="group in _filter(currentUser.myCuratedGroups, ['domain', domain])"
+          v-for="group in filteredCuratedGroups"
           :key="group.id"
+          :aria-checked="!!includes(selectedGroupIds, group.id)"
           density="compact"
           class="v-list-item-override py-0"
-          @click.stop="onClickCuratedGroup(group)"
-          @keyup.enter="onClickCuratedGroup(group)"
+          role="checkbox"
+          :value="group.id"
         >
-          <v-checkbox
-            :id="`${idFragment}-${group.id}-checkbox`"
-            v-model="checkedGroups"
-            :aria-label="includes(checkedGroups, group.id) ? `Remove ${student.name} from '${group.name}' group` : `Add ${student.name} to '${group.name}' group`"
-            class="mr-7 w-100"
-            color="primary"
-            density="compact"
-            hide-details
-            :value="group.id"
-          >
-            <template #label>
-              <div class="truncate-with-ellipsis ml-2">
-                <span class="sr-only">{{ domainLabel(true) }} </span>
-                {{ group.name }}<span class="sr-only"> {{ checkedGroups.includes(group.id) ? 'is' : 'is not' }} selected</span>
-              </div>
-            </template>
-          </v-checkbox>
+          <template #prepend="{isSelected}">
+            <v-list-item-action start>
+              <v-checkbox-btn
+                :id="`${idFragment}-${group.id}-checkbox`"
+                :model-value="isSelected"
+                class="mr-7 w-100"
+                color="primary"
+                density="compact"
+                hide-details
+                role="presentation"
+                tabindex="-1"
+              >
+                <template #label>
+                  <span class="truncate-with-ellipsis ml-2">
+                    {{ group.name }}
+                  </span>
+                </template>
+              </v-checkbox-btn>
+            </v-list-item-action>
+          </template>
         </v-list-item>
         <v-list-item>
           <v-btn
             :id="`submit-${idFragment}`"
-            :aria-label="`Apply changes to ${student.name}'s ${domainLabel(true)} memberhips`"
+            :aria-label="`Apply changes to ${student.name}'s ${domainLabel(true)} memberships`"
             class="px-6"
             color="primary"
-            :disabled="!size(xor(existingGroupMemberships, checkedGroups)) || isAdding || isRemoving"
+            :disabled="!size(xor(existingGroupMemberships, selectedGroupIds)) || isAdding || isRemoving"
             height="32"
             text="Apply"
-            @click="onSubmit"
+            @click.stop="onSubmit"
+            @keydown.enter.stop="onSubmit"
           />
         </v-list-item>
-        <v-list-item class="align-center border-t-sm mt-2 pt-2" density="compact">
+        <v-list-item class="align-center border-t-sm mt-2 pt-2 px-1" density="compact">
           <v-btn
             :id="`create-${idFragment}`"
             color="primary"
             :prepend-icon="mdiPlus"
+            slim
             variant="text"
-            @click="showModal = true"
+            @click.stop="showModal = true"
+            @keydown.enter.stop="showModal = true"
           >
             Create New {{ domainLabel(true) }}
           </v-btn>
@@ -164,7 +180,7 @@ const props = defineProps({
   }
 })
 
-const checkedGroups = ref(undefined)
+const selectedGroupIds = ref(undefined)
 const confirmationTimeout = ref(1500)
 const contextStore = useContextStore()
 const currentUser = contextStore.currentUser
@@ -172,7 +188,9 @@ const eventName = 'my-curated-groups-updated'
 const groupsLoading = ref(true)
 const idFragment = describeCuratedGroupDomain(props.domain).replace(' ', '-')
 const isAdding = ref(false)
+const isMenuOpen = ref(false)
 const isRemoving = ref(false)
+const menuButtonId = `student-${props.student.sid}-add-to-${idFragment}`
 const showModal = ref(false)
 
 const existingGroupMemberships = computed(() => {
@@ -182,8 +200,8 @@ const existingGroupMemberships = computed(() => {
   return map(_filter(contextStore.currentUser.myCuratedGroups, containsSid), 'id')
 })
 
-const menuButtonId = computed(() => {
-  return `student-${props.student.sid}-${isAdding.value ? `added-to-${idFragment}` : (isRemoving.value ? `removed-from-${idFragment}` : `add-to-${idFragment}`)}`
+const filteredCuratedGroups = computed(() => {
+  return _filter(currentUser.myCuratedGroups, ['domain', props.domain])
 })
 
 onMounted(() => {
@@ -199,40 +217,34 @@ const domainLabel = capitalize => {
   return describeCuratedGroupDomain(props.domain, capitalize)
 }
 
-const onClickCuratedGroup = group => {
-  const selected = checkedGroups.value.findIndex(id => id === group.id)
-  if (selected >= 0) {
-    checkedGroups.value.splice(selected, 1)
-  } else {
-    checkedGroups.value.push(group.id)
-  }
-}
-
 const onCreateCuratedGroup = name => {
   isAdding.value = true
   showModal.value = false
+  putFocusNextTick(menuButtonId)
   const done = () => {
-    putFocusNextTick(menuButtonId.value)
     isAdding.value = false
   }
+  alertScreenReader(`Adding student to new ${domainLabel(false)}.`)
   return createCuratedGroup(props.domain, name, [props.student.sid]).then(group => {
-    checkedGroups.value.push(group.id)
+    selectedGroupIds.value.push(group.id)
     alertScreenReader(`${props.student.name} added to new ${domainLabel(false)}, "${name}".`)
     setTimeout(done, confirmationTimeout.value)
   })
 }
 
 const onModalCancel = () => {
-  showModal.value = false
   alertScreenReader('Canceled')
-  putFocusNextTick(menuButtonId.value)
+  showModal.value = false
+  putFocusNextTick(isMenuOpen.value ? `create-${idFragment}` : menuButtonId)
 }
 
 const onSubmit = () => {
-  const addToGroups = difference(checkedGroups.value, existingGroupMemberships.value)
-  const removeFromGroups = difference(existingGroupMemberships.value, checkedGroups.value)
+  const addToGroups = difference(selectedGroupIds.value, existingGroupMemberships.value)
+  const removeFromGroups = difference(existingGroupMemberships.value, selectedGroupIds.value)
   let actions = []
   let alert = `${props.student.name}`
+  alertScreenReader('Applying changes.')
+  putFocusNextTick(menuButtonId)
   if (size(addToGroups)) {
     const groupCount = size(addToGroups)
     const groupDescription = groupCount > 1 ? pluralize(domainLabel(false), groupCount) : domainLabel(false)
@@ -240,7 +252,7 @@ const onSubmit = () => {
       isAdding.value = true
       addStudentsToCuratedGroups(addToGroups, [props.student.sid]).then(resolve)
     }))
-    alert.concat(` added to ${groupDescription}`)
+    alert = alert.concat(` added to ${groupDescription}`)
   }
   if (size(removeFromGroups)) {
     const groupCount = size(removeFromGroups)
@@ -249,12 +261,13 @@ const onSubmit = () => {
       isRemoving.value = true
       removeFromCuratedGroups(removeFromGroups, props.student.sid).then(resolve)
     }))
-    alert.concat(`${size(addToGroups) ? ' and' : ''} removed from ${groupDescription}`)
+    alert = alert.concat(`${size(addToGroups) ? ' and' : ''} removed from ${groupDescription}`)
   }
   const done = () => {
+    if (isAdding.value || isRemoving.value) {
+      alertScreenReader(alert)
+    }
     isAdding.value = isRemoving.value = false
-    putFocusNextTick(menuButtonId.value)
-    alertScreenReader(alert)
   }
   Promise.all(actions).finally(() => setTimeout(done, confirmationTimeout.value))
 }
@@ -266,7 +279,7 @@ const onUpdateMyCuratedGroups = domain => {
 }
 
 const refresh = () => {
-  checkedGroups.value = clone(existingGroupMemberships.value)
+  selectedGroupIds.value = clone(existingGroupMemberships.value)
   groupsLoading.value = false
 }
 </script>

@@ -11,7 +11,7 @@ import {VBanner} from 'vuetify/components/VBanner'
 import {VBtn} from 'vuetify/components/VBtn'
 import {VBtnToggle} from 'vuetify/components/VBtnToggle'
 import {VCard, VCardActions, VCardSubtitle, VCardText, VCardTitle} from 'vuetify/components/VCard'
-import {VCheckbox} from 'vuetify/components/VCheckbox'
+import {VCheckbox, VCheckboxBtn} from 'vuetify/components/VCheckbox'
 import {VChip} from 'vuetify/components/VChip'
 import {VCol, VContainer, VSpacer, VRow} from 'vuetify/components/VGrid'
 import {VCombobox} from 'vuetify/components/VCombobox'
@@ -60,6 +60,7 @@ export default createVuetify({
     VCardText,
     VCardTitle,
     VCheckbox,
+    VCheckboxBtn,
     VChip,
     VCol,
     VCombobox,

@@ -12,7 +12,6 @@
 </template>
 
 <script setup>
-import {alertScreenReader} from '@/lib/utils'
 import {computed, onMounted, onUnmounted, ref} from 'vue'
 import {describeCuratedGroupDomain} from '@/berkeley'
 import {useContextStore} from '@/stores/context'
@@ -66,7 +65,6 @@ const onSelectAll = domain => {
 const toggle = checked => {
   const eventName = checked ? 'curated-group-checkbox-checked' : 'curated-group-checkbox-unchecked'
   contextStore.broadcast(eventName, {domain: props.domain, sid})
-  alertScreenReader(`${studentName} ${checked ? 'selected' : 'deselected'}`)
 }
 </script>
 
