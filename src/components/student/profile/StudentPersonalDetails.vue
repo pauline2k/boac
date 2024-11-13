@@ -226,7 +226,7 @@ const currentUser = contextStore.currentUser
 const isExpanded = ref(false)
 const mostRecent = find(props.student.enrollmentTerms, e => hasCompletedSection(e))
 // In the odd scheme of SIS termIds, a diff of 20 is equivalent to a diff of two years.
-const enrolledInPastTwoYears = mostRecent && (contextStore.currentEnrollmentTermId - toInt(mostRecent.termId) <= 20)
+const enrolledInPastTwoYears = mostRecent && (contextStore.config.currentEnrollmentTermId - toInt(mostRecent.termId) <= 20)
 const hasCalCentralProfile = enrolledInPastTwoYears || includes(props.student.sisProfile.calnetAffiliations, 'SIS-EXTENDED')
 let visaDescription
 
