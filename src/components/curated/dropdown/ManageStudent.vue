@@ -17,7 +17,6 @@
             'bg-success': isAdding,
             'button-menu-active': isMenuOpen
           }"
-          :variant="buttonVariant"
           :width="buttonWidth"
         >
           <div v-if="!isAdding && !isRemoving" class="d-flex" :class="labelClass">
@@ -146,11 +145,6 @@ import {computed, onMounted, onUnmounted, ref} from 'vue'
 import {useContextStore} from '@/stores/context'
 
 const props = defineProps({
-  buttonVariant: {
-    default: 'text',
-    required: false,
-    type: String
-  },
   buttonWidth: {
     default: undefined,
     required: false,

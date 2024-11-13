@@ -3,28 +3,31 @@
     :id="`assign-course-${course.id}-dropdown`"
     :disabled="degreeStore.disableButtons || isSaving"
     transition="slide-y-transition"
+    @update:model-value="isOpen => isMenuOpen = isOpen"
   >
     <template #activator="{props: menuProps}">
-      <v-btn
+      <button
         :id="`assign-course-${course.id}-btn`"
-        :aria-label="`Assign ${course.name} to a Category`"
+        :aria-label="`Assign ${course.name} to a Category or Course Requirement`"
+        class="button-menu bg-transparent px-0 text-body-1"
         :class="{
           'accent-blue': course.accentColor === 'Blue',
           'accent-green': course.accentColor === 'Green',
           'accent-orange': course.accentColor === 'Orange',
           'accent-purple': course.accentColor === 'Purple',
           'accent-red': course.accentColor === 'Red',
-          'bg-transparent text-primary': !degreeStore.disableButtons,
+          'text-primary': !degreeStore.disableButtons,
+          'button-menu-active': isMenuOpen,
           'text-surface-variant': !course.accentColor,
           'text-white': degreeStore.draggingCourseId === course.id
         }"
-        density="compact"
-        flat
-        :icon="mdiDrag"
+        :disabled="degreeStore.disableButtons"
         v-bind="menuProps"
-      />
+      >
+        <v-icon :icon="mdiDrag" />
+      </button>
     </template>
-    <v-list class="overflow-x-hidden py-4" variant="flat">
+    <v-list :aria-label="`Choose a new location for ${course.name}`" class="overflow-x-hidden py-4" variant="flat">
       <v-list-item-action v-if="course.categoryId || course.ignore">
         <v-btn
           id="assign-course-to-option-null"
@@ -48,7 +51,6 @@
           width="100%"
           @click="onSelect(null, true)"
         >
-          <span class="sr-only">Move to </span>
           <span aria-hidden="true">-- </span>{{ junkDrawerName }}<span aria-hidden="true"> --</span>
         </v-btn>
       </v-list-item-action>
@@ -56,22 +58,21 @@
       <v-list-item-action v-for="option in options" :key="option.id">
         <v-btn
           :id="`assign-course-to-option-${option.id}`"
+          block
           class="d-flex justify-start v-btn-content-override"
           :class="{
-            'font-size-16 mr-4': option.categoryType === 'Category',
-            'font-size-15 ml-2 mr-4': option.categoryType === 'Subcategory',
-            'font-size-12 mx-4': isCourseRequirement(option) || isCampusRequirement(option)
+            'font-size-16': option.categoryType === 'Category',
+            'font-size-15 pl-4': option.categoryType === 'Subcategory',
+            'font-size-13 pl-6': isCourseRequirement(option) || isCampusRequirement(option)
           }"
           color="primary"
           :disabled="option.disabled"
           variant="text"
-          width="100%"
           @click="onSelect(option, false)"
         >
-          <span v-if="!option.disabled" class="sr-only">Move to </span>
-          <span class="sr-only">{{ option.lineage }}</span>
+          <span class="sr-only">{{ option.categoryType }}</span>
           <span class="truncate-with-ellipsis">{{ option.name }}</span>
-          <span v-if="option.disabled" class="sr-only"> (disabled)</span>
+          <span v-if="option.parent" class="sr-only">of {{ option.parent }}</span>
         </v-btn>
       </v-list-item-action>
     </v-list>
@@ -102,15 +103,16 @@ const props = defineProps({
   }
 })
 
+const isMenuOpen = ref(false)
 const isSaving = ref(false)
 const junkDrawerName = 'Other Coursework'
 
 const options = computed(() => {
-  const put = (option, parent, grandparent) => {
+  const put = (option, parent) => {
     option.disabled = (isCourseRequirement(option) && !!option.courses.length)
       || (option.categoryType === 'Category' && !!option.subcategories.length)
       || categoryHasCourse(option, props.course)
-    option.lineage = grandparent ? `${grandparent.name} ${parent.name}` : (parent ? parent.name : '')
+    option.parent = parent ? `${parent.categoryType} ${parent.name}` : ''
     if ((!option.disabled || !isCourseRequirement(option)) && !isCampusRequirements(option)) {
       options.push(option)
     }
@@ -121,7 +123,7 @@ const options = computed(() => {
     each(category.courseRequirements, courseRequirement => put(courseRequirement, category))
     each(category.subcategories, subcategory => {
       put(subcategory, category)
-      each(subcategory.courseRequirements, course => put(course, subcategory, category))
+      each(subcategory.courseRequirements, course => put(course, subcategory))
     })
   })
   return options
@@ -143,7 +145,7 @@ const onSelect = (category, ignore) => {
     refreshDegreeTemplate(degreeStore.templateId).then(courseAssigned => {
       degreeStore.setDisableButtons(false)
       if (category) {
-        alertScreenReader(`${category.name} selected for ${props.course.name}`)
+        alertScreenReader(`${category.name} assigned to ${props.course.name}`)
       } else {
         alertScreenReader(`Moved to ${ignore ? props.junkDrawerName : 'Unassigned'}`)
       }
@@ -156,5 +158,14 @@ const onSelect = (category, ignore) => {
 <style>
 .v-btn-content-override .v-btn__content {
   width: 100%;
+}
+</style>
+
+<style scoped>
+.button-menu {
+  --v-btn-height: 28px;
+  border-radius: 100%;
+  min-width: calc(var(--v-btn-height)) !important;
+  width: calc(var(--v-btn-height)) !important;
 }
 </style>

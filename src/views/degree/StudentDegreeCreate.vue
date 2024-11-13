@@ -73,8 +73,8 @@
 <script setup>
 import ProgressButton from '@/components/util/ProgressButton.vue'
 import StudentProfileHeader from '@/components/student/profile/StudentProfileHeader'
-import {alertScreenReader, putFocusNextTick, setPageTitle, studentRoutePath} from '@/lib/utils'
-import {computed, onMounted, ref, watch} from 'vue'
+import {alertScreenReader, setPageTitle, studentRoutePath} from '@/lib/utils'
+import {computed, onMounted, ref} from 'vue'
 import {createDegreeCheck, getDegreeTemplates} from '@/api/degree'
 import {getStudentByUid} from '@/api/student'
 import {useContextStore} from '@/stores/context'
@@ -88,13 +88,6 @@ const router = useRouter()
 const selectedOption = ref(null)
 const student = ref(undefined)
 const templates = ref(undefined)
-
-watch(selectedOption, () => {
-  if (selectedOption.value) {
-    alertScreenReader(`${selectedOption.value.name} selected`)
-    putFocusNextTick('save-degree-check-btn')
-  }
-})
 
 contextStore.loadingStart()
 
