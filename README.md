@@ -6,7 +6,7 @@ Berkeley Online Advising
 
 ## Installation
 
-* Install Python 3.8
+* Install Python 3.11
 * Create your virtual environment (venv)
 * Install dependencies
 
