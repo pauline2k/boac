@@ -8,7 +8,7 @@
     "serve-vue": "vue-cli-service serve --open --host localhost"
   },
   "dependencies": {
-    "@ckeditor/ckeditor5-build-classic": "41.0.0",
+    "@ckeditor/ckeditor5-build-classic": "43.3.1",
     "@ckeditor/ckeditor5-vue2": "3.0.1",
     "@fortawesome/fontawesome-svg-core": "6.5.1",
     "@fortawesome/free-regular-svg-icons": "6.5.1",
@@ -64,7 +64,9 @@
     "@vue/compiler-sfc": { ".": "npm:@neverendingsupport/vue2@2.7.17-compiler-sfc" },
     "vue-router": { ".": "npm:@neverendingsupport/vue-router@3.6.6" },
     "vue-server-renderer": { ".": "npm:@neverendingsupport/vue2@2.7.17-server-renderer" },
-    "vue-template-compiler": { ".": "npm:@neverendingsupport/vue2@2.7.17-template-compiler" }
+    "vue-template-compiler": { ".": "npm:@neverendingsupport/vue2@2.7.17-template-compiler" },
+    "@vue/cli-shared-utils": { "@achrinza/node-ipc": "^9.2.9" },
+    "@vue/cli-ui": { "@achrinza/node-ipc": "^9.2.9" }
   },
   "repository": {
     "type": "git",
