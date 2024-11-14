@@ -32,10 +32,10 @@
       <div role="table">
         <div role="rowgroup">
           <div role="row" class="align-center border-b-sm d-flex font-size-12 font-weight-bold mx-1 text-medium-emphasis text-nowrap text-uppercase">
-            <div role="columnheader" class="student-course-column-name">Course</div>
-            <div role="columnheader" class="student-course-column-grade">Mid</div>
-            <div role="columnheader" class="student-course-column-grade">Final</div>
-            <div role="columnheader" class="student-course-column-units">Units</div>
+            <div role="columnheader" class="student-course-column-name mr-2">Course</div>
+            <div role="columnheader" class="student-course-column-grade mr-2">Mid</div>
+            <div role="columnheader" class="student-course-column-grade mr-1">Final</div>
+            <div role="columnheader" class="student-course-column-units ml-1">Units</div>
           </div>
         </div>
         <div role="rowgroup" class="pt-2">
@@ -81,11 +81,11 @@
       <v-card-subtitle class="border-t-sm pt-2 student-term-footer text-uppercase">
         <div class="d-flex justify-space-between">
           <div class="pr-1">
-            <span class="font-weight-500 pr-1">Term GPA:</span>
+            <span class="font-weight-500 pr-1 mr-2">Term GPA:</span>
             <span :id="`term-${term.termId}-gpa`">{{ termGpa ? round(termGpa || 0, 3) : '&mdash;' }}</span>
           </div>
           <div>
-            <span class="font-weight-500 pr-1">Total Units:</span>
+            <span class="font-weight-500 pr-1 ml-2">Total Units:</span>
             <span :id="`term-${term.termId}-units`">{{ numeral(enrolledUnits).format('0.0') || '&mdash;' }}</span>
           </div>
         </div>
