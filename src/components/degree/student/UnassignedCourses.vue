@@ -13,10 +13,10 @@
             <th v-if="currentUser.canEditDegreeProgress" class="th-assign">
               <span class="sr-only">Options to assign course</span>
             </th>
-            <th class="th-course">
+            <th class="th-course mr-1">
               Course
             </th>
-            <th class="th-grade">
+            <th class="th-grade ml-1">
               Grade
             </th>
             <th class="pr-2 text-right th-units">
