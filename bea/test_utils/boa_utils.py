@@ -541,6 +541,14 @@ def get_notes_from_pg_db_result(results, student=None):
     return notes
 
 
+def is_note_private(note):
+    sql = f"SELECT is_private FROM notes WHERE id = '{note.record_id}'"
+    app.logger.info(sql)
+    result = db.session.execute(text(sql)).first
+    std_commit(allow_test_environment=True)
+    return result['is_private']
+
+
 def get_attachment_id_by_file_name(note, attachment):
     sql = f"""SELECT id
                 FROM note_attachments
