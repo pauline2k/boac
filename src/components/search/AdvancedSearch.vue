@@ -21,6 +21,7 @@
         list-label="Previous Search List"
         :menu-props="{'location': 'bottom'}"
         :on-submit="search"
+        :on-update-focused="isFocused => searchStore.setIsFocusOnSearch(isFocused)"
         open-on-focus
         placeholder="/ to search"
         :when-item-selected="search"
@@ -30,7 +31,7 @@
     <v-btn
       id="go-search"
       class="btn-search"
-      :disabled="searchStore.isSearching"
+      :disabled="searchStore.isSearching || !trim(queryTextModel)"
       text="Search"
       variant="outlined"
       @keydown.enter="search"

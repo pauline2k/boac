@@ -188,6 +188,11 @@ const props = defineProps({
     required: false,
     type: Function
   },
+  onUpdateFocused: {
+    default: () => {},
+    required: false,
+    type: Function
+  },
   openOnFocus: {
     required: false,
     type: Boolean
@@ -302,6 +307,7 @@ const onFocusInput = isFocused => {
   if (props.openOnFocus && isFocused && !container.value.menu) {
     container.value.menu = true
   }
+  props.onUpdateFocused(isFocused)
 }
 
 const onSelectItem = item => {
