@@ -318,6 +318,8 @@ class Note(Base):
             datetime_from,
             datetime_to,
             include_private_notes=False,
+            offset=0,
+            limit=40,
     ):
         if search_phrase:
             fts_selector = """SELECT id, ts_rank(fts_index, plainto_tsquery('english', :search_phrase)) AS rank
@@ -372,8 +374,9 @@ class Note(Base):
         where_clause += '' if include_private_notes else ' AND notes.is_private IS FALSE'
 
         query = text(f"""
-            SELECT notes.* FROM ({fts_selector}) AS fts
-            JOIN notes
+            WITH fts AS ({fts_selector})
+            SELECT notes.*
+            FROM fts JOIN notes
                 ON fts.id = notes.id
                 {author_filter}
                 {student_filter}
@@ -382,6 +385,8 @@ class Note(Base):
             {topic_join}
             {where_clause}
             ORDER BY fts.rank DESC, notes.id
+            OFFSET {offset}
+            LIMIT {limit}
         """).bindparams(**params)
         result = db.session.execute(query)
         keys = result.keys()
