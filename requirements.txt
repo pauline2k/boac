@@ -33,4 +33,7 @@ responses==0.25.3
 tox==4.23.2
 
 # For BEA
+greenlet==3.1.1
+locust==2.32.2
+pyquery==2.0.1
 selenium==4.16.0
