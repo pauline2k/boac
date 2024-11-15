@@ -82,27 +82,29 @@
         CoE INACTIVE
       </div>
     </div>
-    <div id="student-bio-level" :class="{'mt-2': !compact}">
-      <h3 class="sr-only">Level</h3>
-      <div class="font-weight-medium">{{ get(student, 'sisProfile.level.description') }}</div>
-    </div>
-    <div class="text-medium-emphasis">
-      <div v-if="student.sisProfile.termsInAttendance" id="student-bio-terms-in-attendance">
-        {{ pluralize('Term', student.sisProfile.termsInAttendance) }} in Attendance
+    <template v-if="!(suppressGradPrograms && 'GRAD' === get(student, 'sisProfile.academicCareer'))">
+      <div id="student-bio-level" :class="{'mt-2': !compact}">
+        <h3 class="sr-only">Level</h3>
+        <div class="font-weight-medium">{{ get(student, 'sisProfile.level.description') }}</div>
       </div>
-      <div
-        v-if="student.sisProfile.expectedGraduationTerm && !['5', '6', '7', '8', 'GR'].includes(get(student.sisProfile, 'level.code'))"
-        id="student-bio-expected-graduation"
-      >
-        Expected graduation {{ student.sisProfile.expectedGraduationTerm.name }}
-      </div>
-      <div v-if="student.athleticsProfile" id="student-bio-athletics">
-        <div v-for="membership in student.athleticsProfile.athletics" :key="membership.groupName">
-          {{ membership.groupName }}
-          <span v-if="student.athleticsProfile.isActiveAsc === false"> (Inactive)</span>
+      <div class="text-medium-emphasis">
+        <div v-if="student.sisProfile.termsInAttendance" id="student-bio-terms-in-attendance">
+          {{ pluralize('Term', student.sisProfile.termsInAttendance) }} in Attendance
+        </div>
+        <div
+          v-if="student.sisProfile.expectedGraduationTerm && !['5', '6', '7', '8', 'GR'].includes(get(student.sisProfile, 'level.code'))"
+          id="student-bio-expected-graduation"
+        >
+          Expected graduation {{ student.sisProfile.expectedGraduationTerm.name }}
+        </div>
+        <div v-if="student.athleticsProfile" id="student-bio-athletics">
+          <div v-for="membership in student.athleticsProfile.athletics" :key="membership.groupName">
+            {{ membership.groupName }}
+            <span v-if="student.athleticsProfile.isActiveAsc === false"> (Inactive)</span>
+          </div>
         </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -126,6 +128,10 @@ const props = defineProps({
   student: {
     required: true,
     type: Object
+  },
+  suppressGradPrograms: {
+    required: false,
+    type: Boolean
   }
 })
 
