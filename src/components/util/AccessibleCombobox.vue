@@ -1,80 +1,82 @@
 <template>
-  <component
-    :is="isAutocomplete ? 'v-autocomplete' : 'v-combobox'"
-    :id="`${idPrefix}-input`"
-    ref="container"
-    v-model="model"
-    :aria-required="required"
-    autocomplete="list"
-    :base-color="color"
-    bg-color="surface"
-    :class="clazz"
-    :clearable="clearable"
-    :color="color"
-    :density="density"
-    :disabled="disabled"
-    hide-details
-    hide-no-data
-    :items="items"
-    :list-props="{ariaLive: 'off'}"
-    :loading="isBusy"
-    :maxlength="maxlength"
-    :menu-icon="null"
-    :menu-props="mergedMenuProps"
-    :min-width="minWidth"
-    persistent-clear
-    :placeholder="placeholder || label"
-    return-object
-    :type="inputType"
-    variant="outlined"
-    @blur="isEmpty(query) ? onClear() : noop()"
-    @keydown.enter.stop.prevent="onSubmit"
-    @update:focused="onFocusInput"
-    @update:menu="onToggleMenu"
-    @update:search="onUpdateSearch"
-  >
-    <template #loader="{isActive}">
-      <v-progress-circular
-        v-if="isActive"
-        class="mr-5"
-        color="primary"
-        indeterminate
-        size="x-small"
-        width="2"
-      />
-    </template>
-    <template #clear>
-      <v-btn
-        v-if="!isBusy"
-        :id="`${idPrefix}-clear-btn`"
-        :aria-label="`Clear ${label} input`"
-        class="d-flex align-self-center v-icon"
-        :class="{'disabled-opacity': !model}"
-        density="compact"
-        :disabled="!model"
-        exact
-        :icon="mdiCloseCircle"
-        :ripple="false"
-        variant="text"
-        @keydown.enter.stop.prevent="onClearInput"
-        @click.stop.prevent="onClearInput"
-      />
-    </template>
-    <template #item="{index, item}">
-      <v-list-item
-        :id="`${idPrefix}-option-${index}`"
-        :aria-selected="index === focusedListItemIndex"
-        class="font-size-18"
-        @click="() => onSelectItem(item)"
-        @focus="e => onFocusListItem(e, index)"
-      >
+  <div :id="`${idPrefix}-container`">
+    <component
+      :is="isAutocomplete ? 'v-autocomplete' : 'v-combobox'"
+      :id="`${idPrefix}-input`"
+      ref="container"
+      v-model="model"
+      :aria-required="required"
+      :autocomplete="autocomplete"
+      :base-color="color"
+      bg-color="surface"
+      :class="clazz"
+      :clearable="clearable"
+      :color="color"
+      :density="density"
+      :disabled="disabled"
+      hide-details
+      hide-no-data
+      :items="items"
+      :list-props="{ariaLive: 'off'}"
+      :loading="isBusy"
+      :maxlength="maxlength"
+      :menu-icon="null"
+      :menu-props="mergedMenuProps"
+      :min-width="minWidth"
+      persistent-clear
+      :placeholder="placeholder || label"
+      return-object
+      :type="inputType"
+      variant="outlined"
+      @blur="() => isEmpty(query) ? onClear() : noop()"
+      @keydown.enter.stop.prevent="onSubmit"
+      @update:focused="onFocusInput"
+      @update:menu="onToggleMenu"
+      @update:search="onUpdateSearch"
+    >
+      <template #loader="{isActive}">
+        <v-progress-circular
+          v-if="isActive"
+          class="mr-5"
+          color="primary"
+          indeterminate
+          size="x-small"
+          width="2"
+        />
+      </template>
+      <template #clear>
+        <v-btn
+          v-if="!isBusy"
+          :id="`${idPrefix}-clear-btn`"
+          :aria-label="`Clear ${label} input`"
+          class="d-flex align-self-center v-icon"
+          :class="{'disabled-opacity': !model}"
+          density="compact"
+          :disabled="!model"
+          exact
+          :icon="mdiCloseCircle"
+          :ripple="false"
+          variant="text"
+          @keydown.enter.stop.prevent="onClearInput"
+          @click.stop.prevent="onClearInput"
+        />
+      </template>
+      <template #item="{index, item}">
+        <v-list-item
+          :id="`${idPrefix}-option-${index}`"
+          :aria-selected="index === focusedListItemIndex"
+          class="font-size-18"
+          @click="() => onSelectItem(item)"
+          @focus="e => onFocusListItem(e, index)"
+        >
+          {{ item.props.title }}
+        </v-list-item>
+      </template>
+      <template v-if="isAutocomplete" #selection="{item}">
         {{ item.props.title }}
-      </v-list-item>
-    </template>
-    <template v-if="isAutocomplete" #selection="{item}">
-      {{ item.props.title }}
-    </template>
-  </component>
+      </template>
+    </component>
+  </div>
   <span aria-live="polite" class="sr-only">{{ resultsSummary }}</span>
 </template>
 
@@ -87,6 +89,11 @@ import {alertScreenReader, pluralize, putFocusNextTick} from '@/lib/utils'
 const props = defineProps({
   ariaDescription: {
     default: 'Expect auto-suggest.',
+    required: false,
+    type: String
+  },
+  autocomplete: {
+    default: 'list',
     required: false,
     type: String
   },
@@ -205,10 +212,8 @@ const props = defineProps({
   }
 })
 
-const comboboxWrapper = ref(undefined)
 const container = ref()
 const focusedListItemIndex = ref(undefined)
-const input = ref(undefined)
 const mergedMenuProps = ref({
   id: `${props.idPrefix}-menu`,
   closeOnContentClick: true,
@@ -228,20 +233,29 @@ const resultsSummary = ref(undefined)
 const resultsSummaryInterval = ref(undefined)
 
 onMounted(() => {
-  comboboxWrapper.value = container.value.$el.querySelector('div[role="combobox"]')
-  input.value = container.value.$el.querySelector('input')
-  if (comboboxWrapper.value) {
-    comboboxWrapper.value.removeAttribute('role')
-    comboboxWrapper.value.removeAttribute('aria-expanded')
+  const combobox = getComboboxElement()
+  if (combobox) {
+    combobox.removeAttribute('role')
+    combobox.removeAttribute('aria-expanded')
   }
-  if (input.value) {
-    input.value.setAttribute('role', 'combobox')
-    input.value.setAttribute('aria-autocomplete', 'list')
-    input.value.setAttribute('aria-controls', `${props.idPrefix}-menu`)
-    input.value.setAttribute('aria-expanded', false)
-    input.value.setAttribute('aria-label', props.label)
+  const input = getInputElement()
+  if (input) {
+    input.setAttribute('role', 'combobox')
+    input.setAttribute('aria-autocomplete', 'list')
+    input.setAttribute('aria-controls', `${props.idPrefix}-menu`)
+    input.setAttribute('aria-expanded', false)
+    input.setAttribute('aria-label', props.label)
   }
 })
+
+const getComboboxElement = () => {
+  const container = document.getElementById(`${props.idPrefix}-container`)
+  return container ? container.querySelector('[role=\'combobox\']') : null
+}
+
+const getInputElement = () => {
+  return document.getElementById(`${props.idPrefix}-input`)
+}
 
 const onClearInput = () => {
   model.value = null
@@ -258,24 +272,25 @@ const onUpdateSearch = q => {
 }
 
 const onFocusListItem = (event, index) => {
-  input.value.setAttribute('aria-activedescendant', event.target.id)
+  const input = getInputElement()
+  input.setAttribute('aria-activedescendant', event.target.id)
   focusedListItemIndex.value = index
 }
 
 const onToggleMenu = isOpen => {
   props.onToggleMenu(isOpen)
   nextTick(() => {
+    const input = getInputElement()
     if (isOpen) {
       const menu = document.getElementById(`${props.idPrefix}-menu`)
       const listbox = menu && menu.querySelector('[role="listbox"]')
       if (listbox) {
         listbox.setAttribute('aria-label', props.listLabel)
       }
-      input.value.setAttribute('aria-expanded', true)
-    }
-    else {
-      input.value.setAttribute('aria-expanded', false)
-      input.value.removeAttribute('aria-activedescendant')
+      input.setAttribute('aria-expanded', true)
+    } else {
+      input.setAttribute('aria-expanded', false)
+      input.removeAttribute('aria-activedescendant')
       clearInterval(resultsSummaryInterval.value)
     }
   })

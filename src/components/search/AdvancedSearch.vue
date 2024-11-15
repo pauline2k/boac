@@ -5,6 +5,7 @@
       <AccessibleCombobox
         :key="searchStore.autocompleteInputResetKey"
         :aria-description="`${labelForSearchInput()} (Type / to put focus in the search input field.)`"
+        autocomplete="off"
         :clazz="{
           'search-focus-in': searchStore.isFocusOnSearch || searchStore.queryText,
           'search-focus-out': !searchStore.isFocusOnSearch && !searchStore.queryText
@@ -27,7 +28,6 @@
       />
     </div>
     <v-btn
-      v-if="currentUser.canAccessAdvisingData || currentUser.canAccessCanvasData"
       id="go-search"
       class="btn-search"
       :disabled="searchStore.isSearching"
