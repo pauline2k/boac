@@ -14,6 +14,7 @@
         :compact="compact"
         :link-to-student-profile="linkToStudentProfile"
         :student="student"
+        :suppress-grad-programs="suppressGradPrograms"
       />
     </div>
     <div class="ml-3 mr-12" :class="{'pl-6 pt-3': $vuetify.display.mdAndDown}">
@@ -57,6 +58,10 @@ const props = defineProps({
   student: {
     required: true,
     type: Object
+  },
+  suppressGradPrograms: {
+    required: false,
+    type: Boolean
   }
 })
 
@@ -65,9 +70,12 @@ const plansPartitionedByStatus = ref([])
 const discontinuedSubplans = ref([])
 
 onMounted(() => {
-  plansMinorPartitionedByStatus.value = partition(props.student.sisProfile.plansMinor, (p) => p.status === 'Active')
-  plansPartitionedByStatus.value = partition(props.student.sisProfile.plans, (p) => p.status === 'Active')
-  discontinuedSubplans.value = _compact(map(plansPartitionedByStatus.value[1], 'subplan'))
+  if (!(props.suppressGradPrograms && props.student.sisProfile.academicCareer === 'GRAD')) {
+    const planFilter = p => p.status === 'Active'
+    plansMinorPartitionedByStatus.value = partition(props.student.sisProfile.plansMinor, planFilter)
+    plansPartitionedByStatus.value = partition(props.student.sisProfile.plans, planFilter)
+    discontinuedSubplans.value = _compact(map(plansPartitionedByStatus.value[1], 'subplan'))
+  }
 })
 </script>
 
