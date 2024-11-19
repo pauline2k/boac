@@ -256,6 +256,10 @@ class Page(object):
         string = string or ''
         self.element(locator).send_keys(string)
 
+    def selected_option_text(self, select_el_loc):
+        sel = Select(self.element(select_el_loc))
+        return sel.first_selected_option.text
+
     def wait_for_select_and_click_option(self, select_el_loc, option_str):
         self.wait_for_page_and_click_js(select_el_loc)
         if self.driver.name == 'firefox':

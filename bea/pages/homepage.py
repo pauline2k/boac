@@ -44,6 +44,7 @@ class Homepage(UserListPages):
     COPYRIGHT = (By.CLASS_NAME, 'copyright')
     NOT_AUTH_MSG = (By.XPATH, '//div[contains(., "Sorry, you are not registered to use BOA.")]')
     DELETED_MSG = (By.XPATH, '//div[contains(., "Sorry, user is not authorized to use BOA.")]')
+    AXIOS_ERROR_MSG = (By.XPATH, '//div[text()="AxiosError: Request failed with status code 403"]')
 
     def load_page(self):
         self.driver.get(boa_utils.get_boa_base_url())
@@ -73,6 +74,11 @@ class Homepage(UserListPages):
     def dev_auth(self, user=None):
         self.enter_dev_auth_creds(user)
         self.wait_for_boa_title('Home')
+
+    def switch_user(self, new_user):
+        self.load_page()
+        self.log_out()
+        self.dev_auth(new_user)
 
     # FILTERED COHORTS AND CURATED GROUPS
 

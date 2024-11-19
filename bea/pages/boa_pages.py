@@ -96,6 +96,11 @@ class BoaPages(CreateNoteModal, SearchForm):
         self.open_menu()
         self.wait_for_page_and_click(self.FLIGHT_DECK_LINK)
 
+    def click_pax_manifest_link(self):
+        app.logger.info('Clicking the pax manifest link in the header')
+        self.open_menu()
+        self.wait_for_page_and_click(self.PAX_MANIFEST_LINK)
+
     def click_profile_link(self):
         app.logger.info('Clicking profile link in the header')
         self.open_menu()
