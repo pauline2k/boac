@@ -34,8 +34,7 @@ from bea.test_utils import utils
 from flask import current_app as app
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as ec
-from selenium.webdriver.support.wait import WebDriverWait as Wait
+from selenium.webdriver.support.select import Select
 
 
 class PassengerManifestPage(Pagination):
@@ -47,6 +46,11 @@ class PassengerManifestPage(Pagination):
         self.hit_page_url()
         self.when_present(self.USER_SEARCH_INPUT, utils.get_medium_timeout())
         self.hide_boa_footer()
+
+    def load_page_and_find_user(self, user):
+        self.load_page()
+        self.search_for_advisor(user)
+        self.wait_for_advisor_list()
 
     # User export
 
@@ -78,13 +82,17 @@ class PassengerManifestPage(Pagination):
     def select_filter_mode(self):
         self.wait_for_select_and_click_option(self.FILTER_MODE_SELECT, 'Filter')
 
+    def dept_filter_options(self):
+        select = Select(self.element(self.DEPT_SELECT))
+        return [op.text for op in select.options]
+
     def select_all_depts(self):
         app.logger.info('Selecting All Departments')
         self.wait_for_select_and_click_option(self.DEPT_SELECT, 'All')
 
     def select_dept(self, dept):
-        app.logger.info(f'Selecting department {dept.name}')
-        self.wait_for_select_and_click_option(self.DEPT_SELECT, dept.name)
+        app.logger.info(f"Selecting department {dept.value['name']}")
+        self.wait_for_select_and_click_option(self.DEPT_SELECT, dept.value['name'])
 
     def select_admin_mode(self):
         self.wait_for_select_and_click_option(self.FILTER_MODE_SELECT, 'BOA Admins')
@@ -93,14 +101,14 @@ class PassengerManifestPage(Pagination):
 
     ADVISOR_ROW = By.XPATH, '//tr[contains(@id, "tr-user-")]'
     ADVISOR_UID = By.XPATH, '//td[contains(@id, "-column-uid")]'
-    ADVISOR_NAME = By.XPATH, '//td[contains(@id, "-column-lastname")]/div/*'
+    ADVISOR_NAME = By.XPATH, '//td[contains(@id, "-column-lastname")]/div/div[@class="name"]'
     ADVISOR_DEPT = By.XPATH, '//td[contains(@id, "-column-departments")]'
-    ADVISOR_EMAIL = By.XPATH, '//td[contains(@id, "-column-campusemail")]'
+    ADVISOR_EMAIL = By.XPATH, '//td[contains(@id, "-column-campusemail")]//a'
 
     def wait_for_advisor_list(self):
         try:
             time.sleep(1)
-            Wait(self.driver, utils.get_medium_timeout()).until(ec.presence_of_all_elements_located(self.ADVISOR_ROW))
+            self.when_present(self.ADVISOR_ROW, utils.get_medium_timeout())
         except TimeoutException:
             app.logger.info('There are no advisors listed')
 
@@ -120,10 +128,10 @@ class PassengerManifestPage(Pagination):
         if self.is_present(loc) and self.element(loc).text:
             return json.loads(self.element(loc).text)
         else:
-            return ''
+            return {}
 
-    def visible_dept_role(self, user, dept):
-        loc = By.XPATH, f'//td[id="td-user-{user.uid}-column-departments"]//span[contains(text(), "{dept.name}")]'
+    def visible_dept_roles(self, user, dept):
+        loc = By.XPATH, f"//td[@id='td-user-{user.uid}-column-departments']//span[contains(., '{dept.value['name']}')]"
         if self.is_present(loc):
             return self.element(loc).text.split(' - ')[-1]
         else:
@@ -150,11 +158,11 @@ class PassengerManifestPage(Pagination):
     REMOVE_DEPT_BUTTON = By.XPATH, '//button[contains(@id, "remove-department-")]'
     AUTOMATE_DEG_PROG_CBX = By.ID, 'automate-degree-progress-permission'
     SAVE_USER_BUTTON = By.ID, 'save-changes-to-user-profile'
-    CANCEL_USER_BUTTON = By.ID, 'delete-cancel'
+    CANCEL_USER_BUTTON = By.ID, 'cancel-changes-to-user-profile'
 
     @staticmethod
     def dupe_user_loc(user):
-        return By.XPATH, f'//div[contains(text(), "User with UID {user.uid} is already in the BOA database.")]'
+        return By.XPATH, f'//div[contains(., "User with UID {user.uid} is already in the BOA database.")]'
 
     @staticmethod
     def remove_dept_role_button_loc(dept):
@@ -186,23 +194,25 @@ class PassengerManifestPage(Pagination):
 
     def set_user_level_flags(self, user):
         app.logger.info(f'UID {user.uid} is-admin is {user.is_admin}')
-        if user.is_admin and not self.element(self.ADMIN_CBX).is_selected():
+        if (user.is_admin and not self.element(self.ADMIN_CBX).is_selected()) or (
+                self.element(self.ADMIN_CBX).is_selected() and not user.is_admin):
             app.logger.info('Clicking is-admin checkbox')
-            self.click_element_js(self.ADMIN_CBX)
+            self.click_element(self.ADMIN_CBX)
             time.sleep(utils.get_click_sleep())
-        if user.is_blocked and not self.element(self.BLOCKED_CBX).is_selected():
+        if (user.is_blocked and not self.element(self.BLOCKED_CBX).is_selected()) or (
+                self.element(self.BLOCKED_CBX).is_selected() and not user.is_blocked):
             app.logger.info('Clicking is-blocked checkbox')
-            self.click_element_js(self.BLOCKED_CBX)
+            self.click_element(self.BLOCKED_CBX)
             time.sleep(utils.get_click_sleep())
         if (user.can_access_canvas_data and not self.element(self.CANVAS_DATA_CBX).is_selected()) or (
                 self.element(self.CANVAS_DATA_CBX).is_selected() and not user.can_access_canvas_data):
             app.logger.info('Clicking can-access-canvas-data checkbox')
-            self.click_element_js(self.CANVAS_DATA_CBX)
+            self.click_element(self.CANVAS_DATA_CBX)
             time.sleep(utils.get_click_sleep())
         if (user.can_access_advising_data and not self.element(self.NOTES_APPTS_CBX).is_selected()) or (
                 self.element(self.NOTES_APPTS_CBX).is_selected() and not user.can_access_advising_data):
             app.logger.info('Clicking can-access-advising-data checkbox')
-            self.click_element_js(self.NOTES_APPTS_CBX)
+            self.click_element(self.NOTES_APPTS_CBX)
             time.sleep(utils.get_click_sleep())
         if user.depts and Department.COE in user.depts:
             self.select_deg_prog_option(user)
@@ -223,8 +233,10 @@ class PassengerManifestPage(Pagination):
                 self.wait_for_select_and_click_option(self.dept_role_select_loc(membership.dept), 'Advisor')
             elif membership.advisor_role == AdvisorRole.DIRECTOR:
                 self.wait_for_select_and_click_option(self.dept_role_select_loc(membership.dept), 'Director')
-            if (membership.is_automated and not self.element(self.is_automated_dept_cbx_loc(membership.dept)).is_selected()) or (
-                    self.element(self.is_automated_dept_cbx_loc(membership.dept)).is_selected() and not membership.is_automated):
+            if (membership.is_automated and not self.element(
+                    self.is_automated_dept_cbx_loc(membership.dept)).is_selected()) or (
+                    self.element(
+                        self.is_automated_dept_cbx_loc(membership.dept)).is_selected() and not membership.is_automated):
                 self.click_element_js(self.is_automated_dept_cbx_loc(membership.dept))
                 time.sleep(utils.get_click_sleep())
 
@@ -270,6 +282,7 @@ class PassengerManifestPage(Pagination):
     def set_deg_prog_perm(self, user, dept, perm):
         if not user.degree_progress_perm == perm:
             self.search_for_advisor(user)
-            user.dept_memberships = [DepartmentMembership(advisor_role=AdvisorRole.ADVISOR, dept=dept, is_automated=True)]
+            user.dept_memberships = [
+                DepartmentMembership(advisor_role=AdvisorRole.ADVISOR, dept=dept, is_automated=True)]
             user.degree_progress_perm = perm
             self.edit_user(user)

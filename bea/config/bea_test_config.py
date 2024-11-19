@@ -304,6 +304,9 @@ class BEATestConfig(BEATestBaseConfigs):
                                                        term_sis_id=term_sis_id,
                                                        test_case_id=course_test_case_id))
 
+    def user_mgmt(self):
+        self.set_base_configs(dept=Department.ADMIN)
+
     def user_role_admin(self):
         self.set_base_configs(dept=Department.ADMIN)
         self.set_search_cohorts(opts={'students': True})
