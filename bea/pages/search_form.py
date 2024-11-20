@@ -172,8 +172,9 @@ class SearchForm(Page):
 
     # Author / Student
 
-    NOTE_AUTHOR = (By.ID, 'search-options-note-author')
-    NOTE_STUDENT = (By.ID, 'search-options-note-student')
+    AUTHOR_AUTO_SUGGEST_OPTION = (By.XPATH, '//div[contains(@id, "search-options-")]/div')
+    NOTE_AUTHOR = (By.ID, 'search-options-note-author-input')
+    NOTE_STUDENT = (By.ID, 'search-options-note-student-input')
 
     def set_notes_author(self, name, alt_names=None):
         app.logger.info(f'Setting note search author name {name}')
@@ -182,8 +183,8 @@ class SearchForm(Page):
             alt_names_lower = list(map(lambda n: n.lower(), alt_names))
             names.extend(alt_names_lower)
         self.wait_for_textbox_and_type(self.NOTE_AUTHOR, name)
-        self.when_present(self.AUTO_SUGGEST_OPTION, utils.get_short_timeout())
-        for el in self.elements(self.AUTO_SUGGEST_OPTION):
+        self.when_present(self.AUTHOR_AUTO_SUGGEST_OPTION, utils.get_short_timeout())
+        for el in self.elements(self.AUTHOR_AUTO_SUGGEST_OPTION):
             text = el.get_attribute('innerText')
             if text.lower() in names:
                 el.click()
@@ -194,13 +195,8 @@ class SearchForm(Page):
         sid = f'{student.sid}'
         app.logger.info(f'Setting note search student {sid}')
         self.wait_for_textbox_and_type(self.NOTE_STUDENT, sid)
-        self.when_present(self.AUTO_SUGGEST_OPTION, utils.get_short_timeout())
-        for el in self.elements(self.AUTO_SUGGEST_OPTION):
-            text = el.get_attribute('innerText')
-            if sid in text:
-                el.click()
-            else:
-                raise RuntimeError(f'No match found for {sid}')
+        loc = By.XPATH, f'//div[contains(@id, "search-options-")]/div[contains(., "{sid}")]'
+        self.wait_for_element_and_click(loc)
 
     # Dates
 
