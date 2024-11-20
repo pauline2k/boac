@@ -24,6 +24,7 @@ ENHANCEMENTS, OR MODIFICATIONS.
 """
 from datetime import datetime
 import random
+import time
 
 from bea.config.bea_test_config import BEATestConfig
 from bea.models.advisor_role import AdvisorRole
@@ -55,7 +56,7 @@ test_ce3 = BEATestConfig()
 test_ce3.user_role_ce3(test)
 
 student = test.students[-1]
-topics = [Topic(Topics.COURSE_ADD), Topic(Topics.COURSE_DROP)]
+topics = [Topic(Topics.COURSE_ADD.value), Topic(Topics.COURSE_DROP.value)]
 attachments = test.attachments[0:2]
 
 note_1 = Note({
@@ -127,7 +128,7 @@ class TestNoteImportedFromEOP:
     def test_blocks_note_attachment_download_via_api_for_non_ce3_advisor(self):
         utils.prepare_download_dir()
         self.api_notes_page.load_attachment_page(eop_note.attachments[0].file_name)
-        self.api_notes_page.when_present(self.api_notes_page.NOT_FOUND_MSG, utils.get_short_timeout())
+        self.api_notes_page.when_present(self.api_notes_page.ATTACH_NOT_FOUND_MSG, utils.get_short_timeout())
         assert utils.is_download_dir_empty()
 
     def test_blocks_search_by_body_for_all(self):
@@ -137,7 +138,7 @@ class TestNoteImportedFromEOP:
         self.homepage.reopen_and_reset_adv_search()
         self.homepage.set_notes_student(eop_student)
         self.homepage.enter_adv_search_and_hit_enter(eop_note.body)
-        assert self.search_results_page.note_results_count() == '0'
+        self.search_results_page.assert_note_result_not_present(eop_note)
 
 
 @pytest.mark.usefixtures('page_objects')
@@ -183,21 +184,25 @@ class TestNoteCreatedByCE3Advisor:
         self.student_page.create_template(ce3_template, note)
 
     def test_note_from_private_template_can_be_private(self):
-        note = Note({'subject': ce3_template.subject})
+        note = Note({})
         self.student_page.load_page(test.students[0])
         self.student_page.click_create_new_note()
         self.student_page.select_and_apply_template(ce3_template, note)
+        note.subject = f'{note.subject} {int(time.time())}'
+        self.student_page.enter_new_note_subject(note)
         self.student_page.click_save_new_note()
         self.student_page.set_new_note_id(note, test.students[0])
         assert boa_utils.is_note_private(note)
 
     def test_note_from_private_template_can_be_non_private(self):
-        note = Note({'subject': ce3_template.subject})
+        note = Note({})
         self.student_page.load_page(test.students[0])
         self.student_page.click_create_new_note()
         self.student_page.select_and_apply_template(ce3_template, note)
+        note.subject = f'{note.subject} {int(time.time())}'
         note.is_private = False
-        self.student_page.set_note_privacy()
+        self.student_page.enter_new_note_subject(note)
+        self.student_page.set_note_privacy(note)
         self.student_page.click_save_new_note()
         self.student_page.set_new_note_id(note, test.students[0])
         assert not boa_utils.is_note_private(note)
@@ -211,22 +216,26 @@ class TestNoteCreatedByCE3Advisor:
         self.student_page.click_update_template()
 
     def test_note_from_non_private_template_can_be_private(self):
-        note = Note({'subject': ce3_template.subject})
+        note = Note({})
         self.student_page.click_create_new_note()
         self.student_page.select_and_apply_template(ce3_template, note)
+        note.subject = f'{note.subject} {int(time.time())}'
         note.is_private = True
+        self.student_page.enter_new_note_subject(note)
         self.student_page.set_note_privacy(note)
         self.student_page.click_save_new_note()
         self.student_page.set_new_note_id(note, test.students[2])
         assert boa_utils.is_note_private(note)
 
     def test_note_from_non_private_template_can_be_non_private(self):
-        note = Note({'subject': ce3_template.subject})
+        note = Note({})
         self.student_page.load_page(test.students[3])
         self.student_page.click_create_new_note()
         self.student_page.select_and_apply_template(ce3_template, note)
+        note.subject = f'{note.subject} {int(time.time())}'
+        self.student_page.enter_new_note_subject(note)
         self.student_page.click_save_new_note()
-        self.student_page.set_new_note_id(note, test.students[2])
+        self.student_page.set_new_note_id(note, test.students[3])
         assert not boa_utils.is_note_private(note)
 
 
@@ -280,14 +289,14 @@ class TestPrivateBoaNote:
 
     def test_blocks_body_and_attachments_access_via_api_for_non_ce3_advisor(self):
         notes = self.api_student_page.student_notes(student)
-        note = next(filter(lambda n: n['id'] == note_1.record_id, notes))
+        note = next(filter(lambda n: str(n['id']) == str(note_1.record_id), notes))
         assert not note['body']
         assert not note['attachments']
 
     def test_blocks_note_attachment_download_via_api_for_non_ce3_advisor(self):
         utils.prepare_download_dir()
         self.api_notes_page.load_attachment_page(note_1.attachments[0].file_name)
-        self.api_notes_page.when_present(self.api_notes_page.NOT_FOUND_MSG, utils.get_short_timeout())
+        self.api_notes_page.when_present(self.api_notes_page.ATTACH_NOT_FOUND_MSG, utils.get_short_timeout())
         assert utils.is_download_dir_empty()
 
     def test_cannot_be_searched_by_subject(self):
@@ -299,17 +308,17 @@ class TestPrivateBoaNote:
         self.homepage.log_out()
         self.homepage.dev_auth(test_ce3.advisor)
         self.homepage.enter_simple_search_and_hit_enter(note_1.subject)
-        assert self.search_results_page.note_results_count() == '0'
+        self.search_results_page.assert_note_result_not_present(note_1)
 
     def test_cannot_be_searched_by_body(self):
         self.homepage.enter_simple_search_and_hit_enter(note_1.body)
-        assert self.search_results_page.note_results_count() == '0'
+        self.search_results_page.assert_note_result_not_present(note_1)
 
     def test_cannot_be_searched_by_date(self):
         self.homepage.open_adv_search()
         self.homepage.set_notes_student(student)
         self.homepage.set_notes_date_from(datetime.today())
-        self.hompepage.click_adv_search_button()
+        self.homepage.click_adv_search_button()
         self.search_results_page.assert_note_result_not_present(note_1)
 
     def test_excludes_note_body_from_note_exports(self):

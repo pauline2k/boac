@@ -104,7 +104,8 @@ class Page(object):
 
     def is_present(self, locator):
         try:
-            app.logger.info(f'Checking existence of element at {locator}')
+            if locator != ('id', 'fixed-warning-on-all-pages'):
+                app.logger.info(f'Checking existence of element at {locator}')
             self.element(locator).size
             return True
         except (AttributeError, exceptions.NoSuchElementException, exceptions.StaleElementReferenceException):
@@ -138,7 +139,8 @@ class Page(object):
         Wait(self.driver, timeout).until(ec.invisibility_of_element_located(locator))
 
     def wait_for_element(self, locator, timeout):
-        app.logger.info(f'Waiting for element at {locator}')
+        if locator != ('id', 'fixed-warning-on-all-pages'):
+            app.logger.info(f'Waiting for element at {locator}')
         if self.driver.name == 'chrome':
             for entry in self.driver.get_log('browser'):
                 if app.config['BASE_URL'] in entry:
@@ -276,8 +278,6 @@ class Page(object):
                 return o
             elif f'-{option_str.lower()}' in o.get_attribute('id'):
                 return o
-
-    AUTO_SUGGEST_OPTION = (By.XPATH, '//div[@role="option"]')
 
     # PAGE TITLE AND HEADING
 

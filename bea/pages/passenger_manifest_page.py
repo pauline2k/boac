@@ -73,11 +73,8 @@ class PassengerManifestPage(Pagination):
     def search_for_advisor(self, advisor):
         app.logger.info(f'Searching for advisor UID {advisor.uid}')
         self.wait_for_textbox_and_type(self.USER_SEARCH_INPUT, advisor.uid)
-        self.when_present(self.AUTO_SUGGEST_OPTION, utils.get_medium_timeout())
-        for el in self.elements(self.AUTO_SUGGEST_OPTION):
-            text = el.get_attribute('innerText')
-            if advisor.uid in text:
-                el.click()
+        loc = By.XPATH, f'//div[@role="option"]//div[contains(., "{advisor.uid}")]'
+        self.wait_for_element_and_click(loc)
 
     def select_filter_mode(self):
         self.wait_for_select_and_click_option(self.FILTER_MODE_SELECT, 'Filter')

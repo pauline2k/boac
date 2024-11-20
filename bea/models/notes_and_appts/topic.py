@@ -25,8 +25,6 @@ ENHANCEMENTS, OR MODIFICATIONS.
 
 from enum import Enum
 
-from bea.test_utils import utils
-
 
 class Topic(object):
 
@@ -35,7 +33,7 @@ class Topic(object):
 
     @property
     def topic_id(self):
-        return utils.safe_key(self.data, 'topic_id')
+        return self.data.get('topic_id')
 
     @topic_id.setter
     def topic_id(self, value):
@@ -43,7 +41,7 @@ class Topic(object):
 
     @property
     def name(self):
-        return utils.safe_key(self.data, 'name')
+        return self.data.get('name')
 
     @name.setter
     def name(self, value):
