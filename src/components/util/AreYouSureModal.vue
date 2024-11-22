@@ -4,6 +4,7 @@
     aria-describedby="are-you-sure-text"
     aria-labelledby="are-you-sure-header"
     persistent
+    role="alertdialog"
   >
     <v-card class="modal-content">
       <FocusLock :disabled="!focusLocked" @keydown.esc="functionCancel || noop">

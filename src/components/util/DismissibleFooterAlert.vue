@@ -9,7 +9,7 @@
           {{ get(contextStore.screenReaderAlert, 'message') }}
         </div>
         <div v-if="!config.isVueAppDebugMode" class="mr-4">
-          <span aria-live="polite" role="alert">{{ config.fixedWarningOnAllPages }}</span>
+          <span aria-live="polite">{{ config.fixedWarningOnAllPages }}</span>
         </div>
         <div>
           <v-btn

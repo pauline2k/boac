@@ -291,7 +291,6 @@
                 :id="bundle.course ? `course-${bundle.course.id}-note` : `category-${bundle.category.id}-note`"
                 aria-live="polite"
                 class="font-size-14"
-                role="alert"
               >
                 <span class="sr-only">Note: </span>
                 {{ getNote(bundle) }}

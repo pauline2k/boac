@@ -3,7 +3,6 @@
     <div
       v-if="totalRecipientCount || recipients.cohorts.length || recipients.curatedGroups.length"
       aria-live="polite"
-      role="alert"
     >
       <transition
         id="target-student-count-alert"

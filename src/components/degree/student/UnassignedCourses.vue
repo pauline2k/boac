@@ -178,7 +178,6 @@
                   :id="`${course.id}-note`"
                   aria-live="polite"
                   class="font-size-14"
-                  role="alert"
                 >
                   <span class="sr-only">Note: </span>
                   {{ course.note }}

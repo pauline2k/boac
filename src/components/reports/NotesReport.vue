@@ -27,7 +27,7 @@
     <div
       v-if="isLoading"
       aria-live="polite"
-      role="alert"
+      role="status"
     >
       <span class="sr-only">Notes report is loading.</span>
     </div>

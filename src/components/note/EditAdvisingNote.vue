@@ -13,7 +13,6 @@
       <transition
         aria-live="polite"
         name="bounce"
-        role="alert"
       >
         <span
           v-if="noteStore.isAutoSavingDraftNote && !suppressAutoSaveDraftNoteAlert"
