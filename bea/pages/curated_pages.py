@@ -63,13 +63,11 @@ class CuratedPages(CohortPages, CuratedModal):
     # DELETE
 
     DELETE_GROUP_BUTTON = By.ID, 'delete-curated-group-button'
-    CONFIRM_DELETE_GROUP_BUTTON = By.ID, 'are-you-sure-confirm'
-    CANCEL_DELETE_GROUP_BUTTON = By.ID, 'are-you-sure-cancel'
 
     def delete_group(self, group):
         app.logger.info(f'Deleting a group named {group.name}')
         self.wait_for_page_and_click(self.DELETE_GROUP_BUTTON)
-        self.wait_for_element_and_click(self.CONFIRM_DELETE_GROUP_BUTTON)
+        self.wait_for_element_and_click(self.ARE_YOU_SURE_CONFIRM_BUTTON)
         Wait(self.driver, utils.get_short_timeout()).until(ec.url_contains(f'{boa_utils.get_boa_base_url()}/home'))
         time.sleep(utils.get_click_sleep())
 
@@ -80,8 +78,8 @@ class CuratedPages(CohortPages, CuratedModal):
     def cancel_group_deletion(self, group):
         app.logger.info(f'Canceling the deletion of cohort {group.name}')
         self.wait_for_page_and_click(self.DELETE_GROUP_BUTTON)
-        self.wait_for_element_and_click(self.CANCEL_DELETE_GROUP_BUTTON)
-        self.when_not_present(self.CONFIRM_DELETE_GROUP_BUTTON, utils.get_short_timeout())
+        self.wait_for_element_and_click(self.ARE_YOU_SURE_CANCEL_BUTTON)
+        self.when_not_present(self.ARE_YOU_SURE_CONFIRM_BUTTON, utils.get_short_timeout())
         Wait(self.driver, 1).until(ec.url_contains(f'{group.cohort_id}'))
 
     # ADD STUDENTS / ADMITS

@@ -120,21 +120,19 @@ class CohortPages(BoaPages):
     # DELETE
 
     DELETE_COHORT_BUTTON = By.ID, 'delete-cohort-button'
-    CONFIRM_DELETE_BUTTON = By.ID, 'are-you-sure-confirm'
-    CANCEL_DELETE_BUTTON = By.ID, 'are-you-sure-cancel'
 
     def delete_cohort(self, cohort):
         app.logger.info(f'Deleting a cohort named {cohort.name}')
         self.wait_for_page_and_click(self.DELETE_COHORT_BUTTON)
-        self.wait_for_element_and_click(self.CONFIRM_DELETE_BUTTON)
+        self.wait_for_element_and_click(self.ARE_YOU_SURE_CONFIRM_BUTTON)
         Wait(self.driver, utils.get_short_timeout()).until(ec.url_contains(f'{boa_utils.get_boa_base_url()}/home'))
         time.sleep(utils.get_click_sleep())
 
     def cancel_cohort_deletion(self, cohort):
         app.logger.info(f'Canceling the deletion of cohort {cohort.name}')
         self.wait_for_page_and_click(self.DELETE_COHORT_BUTTON)
-        self.wait_for_element_and_click(self.CANCEL_DELETE_BUTTON)
-        self.when_not_present(self.CONFIRM_DELETE_BUTTON, utils.get_short_timeout())
+        self.wait_for_element_and_click(self.ARE_YOU_SURE_CONFIRM_BUTTON)
+        self.when_not_present(self.ARE_YOU_SURE_CONFIRM_BUTTON, utils.get_short_timeout())
         Wait(self.driver, 1).until(ec.url_contains(f'{cohort.cohort_id}'))
 
     # SORTING

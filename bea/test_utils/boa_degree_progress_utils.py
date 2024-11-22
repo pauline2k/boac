@@ -169,6 +169,7 @@ def set_category_id(degree, category):
 
 
 def set_degree_manual_course_id(degree, course):
+    course.degree_check = degree
     sql = f"""SELECT max(id) AS id
                 FROM degree_progress_courses
                WHERE degree_check_id = '{degree.check_id}'

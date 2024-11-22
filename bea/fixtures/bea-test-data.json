@@ -500,7 +500,7 @@
                                 },
                                 {
                                     "name": "TRANSFER COURSE",
-                                    "transfer_course": true,
+                                    "is_transfer_course": true,
                                     "units": "4",
                                     "unit_reqts": [
                                         {

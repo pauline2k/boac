@@ -25,7 +25,6 @@ ENHANCEMENTS, OR MODIFICATIONS.
 import copy
 
 from bea.models.degree_progress.degree_check_template import DegreeCheckTemplate
-from bea.models.degree_progress.degree_completed_course import DegreeCompletedCourse
 
 
 class DegreeCheck(DegreeCheckTemplate):
@@ -34,23 +33,13 @@ class DegreeCheck(DegreeCheckTemplate):
         super().__init__(data)
         self.template = template
         self.categories = copy.deepcopy(self.template.categories)
+        self.completed_courses = []
         self.name = copy.deepcopy(self.template.name)
         self.student = student
         self.unit_reqts = copy.deepcopy(self.template.unit_reqts)
 
         for req in self.unit_reqts:
             req.units_completed = 0
-
-        for cat in self.categories:
-            for course in cat.course_reqts:
-                if course.is_transfer_course:
-                    cat_transfer = self.generate_transfer_course(course)
-                    self.completed_courses.append(cat_transfer)
-            for sub_cat in cat.sub_categories:
-                for sub_course in sub_cat.course_reqts:
-                    if sub_course.is_transfer_course:
-                        sub_cat_transfer = self.generate_transfer_course(sub_course)
-                        self.completed_courses.append(sub_cat_transfer)
 
     @property
     def check_id(self):
@@ -59,14 +48,6 @@ class DegreeCheck(DegreeCheckTemplate):
     @check_id.setter
     def check_id(self, value):
         self.data['check_id'] = value
-
-    @property
-    def completed_courses(self):
-        return self.data.get('completed_courses') or []
-
-    @completed_courses.setter
-    def completed_courses(self, value):
-        self.data['completed_courses'] = value
 
     @property
     def note(self):
@@ -84,16 +65,14 @@ class DegreeCheck(DegreeCheckTemplate):
     def student(self, value):
         self.data['student'] = value
 
-    @staticmethod
-    def generate_transfer_course(course_reqt):
-        course = DegreeCompletedCourse({
-            'grade': 'T',
-            'manual': True,
-            'name': course_reqt.name,
-            'transfer_course': True,
-            'units': course_reqt.units,
-            'unit_reqts': course_reqt.unit_reqts,
-        })
-        course_reqt.completed_course = course
-        course.course_reqt = course_reqt
-        return course
+    def get_transfer_courses(self):
+        transfers = []
+        for cat in self.categories:
+            for course in cat.course_reqts:
+                if course.is_transfer_course:
+                    transfers.append(course)
+            for sub_cat in cat.sub_categories:
+                for sub_course in sub_cat.course_reqts:
+                    if sub_course.is_transfer_course:
+                        transfers.append(sub_course)
+        return transfers

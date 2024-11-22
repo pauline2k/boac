@@ -250,6 +250,8 @@ class DegreeTemplatePage(BoaPages):
                 self.wait_for_element_and_click(self.COL_REQT_UNIT_RANGE_TOGGLE)
             self.wait_for_textbox_and_type(self.COL_REQT_UNIT_NUM_INPUT_0, unit_range[0])
             self.wait_for_textbox_and_type(self.COL_REQT_UNIT_NUM_INPUT_1, unit_range[1])
+        elif units == '0':
+            app.logger.info('Skipping empty units entry')
         else:
             if 'hide' in self.element(self.COL_REQT_UNIT_RANGE_TOGGLE).text:
                 self.wait_for_element_and_click(self.COL_REQT_UNIT_RANGE_TOGGLE)

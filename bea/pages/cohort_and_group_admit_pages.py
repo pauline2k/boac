@@ -31,14 +31,13 @@ from selenium.webdriver.common.by import By
 
 class CohortAndGroupAdmitPages(CohortPages):
 
-    EXPORT_FERPA_CONFIRM_BUTTON = By.ID, 'are-you-sure-confirm'
     EXPORT_FERPA_CANCEL_BUTTON = By.ID, 'ferpa-reminder-cancel'
 
     def sort_by_cs_id(self):
         self.sort_by('cs_empl_id')
 
     def click_export_ferpa_confirm(self):
-        self.wait_for_element_and_click(self.EXPORT_FERPA_CONFIRM_BUTTON)
+        self.wait_for_element_and_click(self.ARE_YOU_SURE_CONFIRM_BUTTON)
 
     def click_export_ferpa_cancel(self):
         self.wait_for_element_and_click(self.EXPORT_FERPA_CANCEL_BUTTON)
