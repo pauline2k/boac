@@ -500,7 +500,7 @@ class BEATestBaseConfigs(object):
                 cat_course_reqts.append(DegreeReqtCourse({
                     'name': f"{cat_course_reqt_data['name']} {self.test_id}",
                     'column_num': cat_course_reqt_data.get('column_num'),
-                    'is_transfer_course': cat_course_reqt_data.get('transfer_course'),
+                    'is_transfer_course': cat_course_reqt_data.get('is_transfer_course'),
                     'units': cat_course_reqt_data.get('units'),
                     'unit_reqts': cat_course_unit_reqts,
                 }))

@@ -135,3 +135,17 @@ class DegreeCompletedCourse(DegreeCourse):
             'term_id': self.term_id,
             'units': self.units,
         })
+
+    @staticmethod
+    def generate_transfer_course(degree_check, course_reqt):
+        course = DegreeCompletedCourse({
+            'course_reqt': course_reqt,
+            'grade': 'T',
+            'is_manual': True,
+            'name': course_reqt.name,
+            'units': course_reqt.units,
+            'unit_reqts': course_reqt.unit_reqts,
+        })
+        course_reqt.completed_course = course
+        degree_check.completed_courses.append(course)
+        return course

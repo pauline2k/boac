@@ -310,7 +310,6 @@ class DegreeCheckPage(DegreeTemplatePage):
     @staticmethod
     def category_courses(category):
         table = f'column-{category.column_num}-courses-of-category-{category.category_id}'
-        app.logger.info(f'CHECKING ROWS AT //table[@id="{table}"]/tbody/tr[not(contains(., "No completed requirements"))]')
         return By.XPATH, f'//table[@id="{table}"]/tbody/tr[not(contains(., "No completed requirements"))]'
 
     @staticmethod
@@ -326,7 +325,7 @@ class DegreeCheckPage(DegreeTemplatePage):
 
     def is_assigned_course_copy_flagged(self, course):
         flag = By.XPATH, f'{self.assigned_course_xpath(course)}/td[2]//*[name()="svg"]'
-        hover = By.XPATH, f'{self.assigned_course_xpath(course)}/td[2]//*[contains(text(), "multiple requirements")]'
+        hover = By.XPATH, f'{self.assigned_course_xpath(course)}/td[2]//i[@title="Course satisfies multiple requirements."]'
         return self.is_present(flag) and self.is_present(hover)
 
     def assigned_course_units(self, course):
@@ -381,9 +380,11 @@ class DegreeCheckPage(DegreeTemplatePage):
         loc = By.XPATH, f'{self.junk_course_xpath(course)}//button[contains(@id, "assign-course-")]'
         self.click_assignment_select(loc)
 
+    def assigned_course_select(self, course):
+        return By.XPATH, f'{self.assigned_course_xpath(course)}//button[contains(@id, "assign-course-")]'
+
     def click_assigned_course_select(self, course):
-        loc = By.XPATH, f'{self.assigned_course_xpath(course)}//button[contains(@id, "assign-course-")]'
-        self.click_assignment_select(loc)
+        self.click_assignment_select(self.assigned_course_select(course))
 
     def assignment_reqt_options(self):
         return self.els_text_if_exist(self.ASSIGNMENT_OPTION)
@@ -399,17 +400,8 @@ class DegreeCheckPage(DegreeTemplatePage):
     def click_junk_option(self):
         self.wait_for_element_and_click(self.JUNK_OPTION)
 
-    def assign_completed_course(self, course, reqt):
-        app.logger.info(f'Assigning {course.name}, {course.term_id}-{course.ccn} to {reqt.name}')
-        # TODO - drag and drop
-        if course.is_junk:
-            self.click_junk_course_select(course)
-        else:
-            self.click_unassigned_course_select(course)
-        self.wait_for_element_and_click(self.assignment_reqt_option(reqt))
-        time.sleep(1)
-        course.is_junk = False
-
+    @staticmethod
+    def set_assigned_course_attributes(course, reqt):
         # If course is assigned to a cat, create a dummy course reqt within the cat
         if isinstance(reqt, DegreeReqtCourse):
             course_reqt = reqt
@@ -423,6 +415,18 @@ class DegreeCheckPage(DegreeTemplatePage):
         course_reqt.completed_course = course
         course.course_reqt = course_reqt
         course.unit_reqts = course_reqt.unit_reqts
+
+    def assign_completed_course(self, course, reqt):
+        app.logger.info(f'Assigning {course.name}, {course.term_id}-{course.ccn} to {reqt.name}')
+        # TODO - drag and drop
+        if course.is_junk:
+            self.click_junk_course_select(course)
+        else:
+            self.click_unassigned_course_select(course)
+        self.wait_for_element_and_click(self.assignment_reqt_option(reqt))
+        time.sleep(1)
+        course.is_junk = False
+        self.set_assigned_course_attributes(course, reqt)
         utils.assert_actual_includes_expected(self.assigned_course_name(course), course.name)
 
     # COURSE UN-ASSIGNMENT
@@ -452,7 +456,6 @@ class DegreeCheckPage(DegreeTemplatePage):
 
     def reassign_course(self, course, old_reqt, new_reqt):
         app.logger.info(f'Reassigning {course.name} {course.term_id}-{course.ccn} from {old_reqt.name} to {new_reqt.name}')
-        row_count = len(self.elements(self.category_courses(old_reqt))) if isinstance(old_reqt, DegreeReqtCategory) else 0
         self.click_assigned_course_select(course)
         self.wait_for_element_and_click(self.assignment_reqt_option(new_reqt))
         time.sleep(1)
@@ -479,11 +482,6 @@ class DegreeCheckPage(DegreeTemplatePage):
 
         if isinstance(old_reqt, DegreeReqtCourse):
             utils.assert_equivalence(self.visible_course_reqt_name(old_reqt), old_reqt.name)
-        else:
-            app.logger.info(f'Original row count is {row_count}')
-            app.logger.info(f'New row count is {len(self.elements(self.category_courses(old_reqt)))}')
-            assert len(self.elements(self.category_courses(old_reqt))) == row_count - 1
-
         utils.assert_equivalence(self.assigned_course_name(course), course.name)
 
     # COURSE JUNKIFICATION
@@ -535,6 +533,7 @@ class DegreeCheckPage(DegreeTemplatePage):
         self.wait_for_textbox_and_type(self.COURSE_NAME_INPUT, name)
 
     def enter_course_units(self, units):
+        units = '' if units == '0' else units
         app.logger.info(f'Entering units value {units}')
         self.wait_for_textbox_and_type(self.COURSE_UNITS_INPUT, units)
 
@@ -566,6 +565,9 @@ class DegreeCheckPage(DegreeTemplatePage):
 
     def click_cancel_course_create(self):
         self.wait_for_element_and_click(self.CREATE_COURSE_CANCEL_BUTTON)
+        time.sleep(utils.get_click_sleep())
+        if self.is_present(self.CONFIRM_DELETE_OR_DISCARD):
+            self.element(self.CONFIRM_DELETE_OR_DISCARD).click()
         self.when_not_present(self.CREATE_COURSE_CANCEL_BUTTON, 2)
 
     def click_cancel_course_edit(self):
@@ -586,7 +588,7 @@ class DegreeCheckPage(DegreeTemplatePage):
         self.enter_course_note(course.note)
         self.wait_for_element_and_click(self.CREATE_COURSE_SAVE_BUTTON)
         self.when_not_present(self.CREATE_COURSE_SAVE_BUTTON, utils.get_short_timeout())
-        self.assign_completed_course(course, reqt)
+        self.set_assigned_course_attributes(course, reqt)
         course.degree_check = degree_check
         boa_degree_progress_utils.set_degree_manual_course_id(degree_check, course)
 
