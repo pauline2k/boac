@@ -28,6 +28,7 @@
           v-model="unitsLowerModel"
           :aria-invalid="!isValidUnits(unitsLower, max)"
           :aria-label="`Course Units${showUnitsUpperInput ? ', Start of Range' : ''}`"
+          density="compact"
           :disabled="disable"
           hide-details
           maxlength="4"
@@ -46,6 +47,7 @@
           v-model="unitsUpperModel"
           :aria-invalid="!isValidUnits(unitsUpper, MAX_UNITS_ALLOWED)"
           aria-label="Course Units, End of Range"
+          density="compact"
           :disabled="disable"
           hide-details
           maxlength="4"

@@ -43,7 +43,7 @@
             </option>
           </select>
         </div>
-        <div class="align-center d-flex justify-end mt-6 w-75">
+        <div class="align-center d-flex mt-4 w-75">
           <div class="mr-1">
             <ProgressButton
               id="save-degree-check-btn"

@@ -12,16 +12,24 @@
           </th>
           <th v-if="!isCampusRequirements" class="th-course">Course</th>
           <th v-if="isCampusRequirements" class="w-40">Requirement</th>
-          <th v-if="degreeStore.sid && !isCampusRequirements" class="th-grade">Grade</th>
-          <th v-if="!isCampusRequirements && items.length" class="pr-2 text-right th-units">Units</th>
+          <th v-if="degreeStore.sid && !isCampusRequirements" class="th-grade">
+            <span class="th-grade-inner-text">Grade</span>
+          </th>
+          <th v-if="!isCampusRequirements && items.length" class="pr-2 text-right th-units">
+            <span class="th-units-inner-text">Units</span>
+          </th>
           <th v-if="degreeStore.sid && isCampusRequirements" class="pl-0 pr-2 text-center th-satisfied">Satisfied</th>
           <th
             v-if="degreeStore.sid"
-            class="th-note pl-0"
+            class="pl-0"
+            :class="{
+              'th-note': hasNotes,
+              'th-note-when-all-notes-empty': !hasNotes
+            }"
           >
             Note
           </th>
-          <th v-if="!degreeStore.sid && !isCampusRequirements && items.length" class="th-fullfilment px-0">Fulfillment</th>
+          <th v-if="!degreeStore.sid && !isCampusRequirements && items.length" class="th-fulfillment px-0">Fulfillment</th>
           <th v-if="canEdit && (degreeStore.sid || !isCampusRequirements)" class="th-actions px-0"><span class="sr-only">Actions</span></th>
         </tr>
       </thead>
@@ -71,7 +79,8 @@
                 'pl-2': isCampusRequirements && isNoteVisible(bundle),
                 'td-name-printable': printable,
                 'td-name': !printable,
-                'text-no-wrap': isCampusRequirements
+                'text-no-wrap': isCampusRequirements,
+                'vertical-top': !isCampusRequirements
               }"
             >
               <span v-if="!bundle.course && bundle.category.isRecommended">
@@ -163,7 +172,9 @@
               :class="{
                 'font-italic text-surface-variant': !isSatisfied(bundle) && !getAccentColor(bundle),
                 'td-note-printable': printable,
-                'td-note': !printable
+                'td-note': !printable && hasNotes,
+                'td-note-when-all-notes-empty': !printable && !hasNotes,
+                'vertical-top': !isCampusRequirements
               }"
             >
               <div v-if="getNote(bundle)">
@@ -197,7 +208,7 @@
             </td>
             <td
               v-if="!degreeStore.sid && !isCampusRequirements"
-              class="align-middle td-max-width-0"
+              class="vertical-top td-max-width-0"
               :class="{
                 'font-italic text-surface-variant': !bundle.course && !getAccentColor(bundle),
                 'font-size-12': printable,
@@ -217,7 +228,10 @@
             <td
               v-if="canEdit && (degreeStore.sid || !isCampusRequirements)"
               class="td-actions"
-              :class="{'vertical-middle pb-1': degreeStore.sid}"
+              :class="{
+                'vertical-middle pb-1': degreeStore.sid,
+                'vertical-top': !isCampusRequirements
+              }"
             >
               <div class="d-flex justify-end text-no-wrap">
                 <div class="btn-container">
@@ -255,29 +269,31 @@
           <tr v-if="isEditing(bundle)" :key="`tr-${index}-edit`">
             <td
               :class="{'pb-3 pl-4 pt-1': bundle.course || !degreeStore.sid}"
-              colspan="6"
+              :colspan="degreeStore.sid ? 6 : 4"
             >
-              <EditCourse
-                v-if="bundle.course"
-                :after-cancel="afterCancel"
-                :after-save="afterSave"
-                :course="bundle.course"
-                :position="position"
-              />
-              <EditCategory
-                v-if="!bundle.course && !degreeStore.sid"
-                :after-cancel="afterCancel"
-                :after-save="afterSave"
-                :existing-category="bundle.category"
-                :position="position"
-              />
-              <EditCourseRequirement
-                v-if="!bundle.course && degreeStore.sid"
-                :after-cancel="afterCancel"
-                :after-save="afterSave"
-                :category="bundle.category"
-                :position="position"
-              />
+              <div class="border-md ma-2 px-4 py-2">
+                <EditCourse
+                  v-if="bundle.course"
+                  :after-cancel="afterCancel"
+                  :after-save="afterSave"
+                  :course="bundle.course"
+                  :position="position"
+                />
+                <EditCategory
+                  v-if="!bundle.course && !degreeStore.sid"
+                  :after-cancel="afterCancel"
+                  :after-save="afterSave"
+                  :existing-category="bundle.category"
+                  :position="position"
+                />
+                <EditCourseRequirement
+                  v-if="!bundle.course && degreeStore.sid"
+                  :after-cancel="afterCancel"
+                  :after-save="afterSave"
+                  :category="bundle.category"
+                  :position="position"
+                />
+              </div>
             </td>
           </tr>
           <tr
@@ -434,6 +450,10 @@ const categoryCourseBundles = computed(() => {
 
 const hasAssignedCourses = computed(() => {
   return !!find(categoryCourseBundles.value, bundle => bundle.course)
+})
+
+const hasNotes = computed(() => {
+  return !!find(categoryCourseBundles.value, bundle => getNote(bundle))
 })
 
 const isCampusRequirements = computed(() => {
@@ -678,6 +698,7 @@ table {
 .td-grade {
   padding: 1px 0 0 0;
   text-transform: capitalize;
+  vertical-align: top;
 }
 .td-max-width-0 {
   max-width: 0;
@@ -693,7 +714,10 @@ table {
   width: 180px !important;
 }
 .td-note {
-  padding: 1px 4px 0 0;
+  padding: 1px 4px 0 4px;
+}
+.td-note-when-all-notes-empty {
+  max-width: 20px;
 }
 .td-note-printable {
   padding: 0 0.5em 0 0;
@@ -705,7 +729,8 @@ table {
   width: 50px;
 }
 .td-units {
-  padding: 1px 8px 0 0;
+  padding: 0 8px 0 0;
+  vertical-align: top;
   white-space: nowrap;
 }
 .th-actions {
@@ -719,24 +744,36 @@ table {
   max-width: 50% !important;
   width: 50% !important;
 }
-.th-fullfilment {
-  max-width: 83px !important;
-  width: 83px !important;
+.th-fulfillment {
+  max-width: 72px !important;
+  width: 72px !important;
 }
 .th-grade {
   max-width: 46px !important;
   width: 46px !important;
 }
+.th-grade-inner-text {
+  margin-left: -32px;
+}
 .th-note {
   max-width: 25% !important;
+  padding-left: 4px !important;
   width: 25% !important;
+}
+.th-note-when-all-notes-empty {
+  max-width: 15% !important;
+  padding-left: 4px !important;
+  width: 15% !important;
 }
 .th-satisfied {
   width: 100px;
 }
 .th-units {
-  max-width: 3rem !important;
-  width: 3rem !important;
+  max-width: 10px !important;
+  width: 10px !important;
+}
+.th-units-inner-text {
+  margin-left: -32px;
 }
 .tr-while-dragging td {
   background-color: rgb(var(--v-theme-tertiary));
