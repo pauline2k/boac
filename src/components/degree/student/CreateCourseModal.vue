@@ -70,6 +70,7 @@
               :aria-autocomplete="false"
               aria-labelledby="units-grade-label"
               class="grade-input mt-1"
+              density="compact"
               :disabled="isSaving"
               hide-details
               maxlength="3"
@@ -259,6 +260,6 @@ const setUnits = value => {
 
 <style scoped>
 .grade-input {
-  width: 3rem;
+  width: 4rem;
 }
 </style>

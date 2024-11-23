@@ -7,7 +7,7 @@
           id="recommended-course-checkbox"
           v-model="isRecommended"
           color="primary"
-          density="comfortable"
+          density="compact"
           :disabled="isSaving"
           hide-details
           label="Recommended course"
@@ -17,7 +17,7 @@
           id="ignored-course-checkbox"
           v-model="isIgnored"
           color="primary"
-          density="comfortable"
+          density="compact"
           :disabled="isSaving"
           hide-details
           label="Completed or ignored requirement"
@@ -33,6 +33,7 @@
         v-model="grade"
         aria-label="Course Grade"
         class="grade-input mt-1"
+        density="compact"
         :disabled="isSaving"
         hide-details
         maxlength="3"
@@ -184,6 +185,6 @@ const onSubmit = () => {
 
 <style scoped>
 .grade-input {
-  width: 3rem;
+  width: 4rem;
 }
 </style>

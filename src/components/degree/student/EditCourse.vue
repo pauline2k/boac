@@ -57,6 +57,7 @@
         v-model="grade"
         aria-label="Course Grade"
         class="grade-input"
+        density="compact"
         :disabled="isSaving"
         hide-details
         maxlength="3"
@@ -219,6 +220,6 @@ const update = () => {
 
 <style scoped>
 .grade-input {
-  width: 3rem;
+  width: 4rem;
 }
 </style>
