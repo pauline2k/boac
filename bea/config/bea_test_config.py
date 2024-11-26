@@ -90,8 +90,9 @@ class BEATestConfig(BEATestBaseConfigs):
             'units': [{'unit': '90 - 119'}],
         }
         cohort_filter = CohortFilter(dept=self.dept, data=data)
-        self.set_default_cohort(cohort_filter)
+        self.set_default_cohort(cohort_filter=cohort_filter, opts={'include_inactive': True})
         self.set_degree_templates()
+        self.set_test_students(count=50, opts={'enrollments': True, 'enrollment_term': utils.get_prev_term_sis_id()})
 
     def e_form_content(self):
         self.set_base_configs(opts={'include_inactive': True})

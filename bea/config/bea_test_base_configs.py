@@ -271,8 +271,9 @@ class BEATestBaseConfigs(object):
 
             # Use students with enrollments in the current term
             if opts.get('enrollments'):
+                term_sis_id = opts['enrollment_term'] if opts.get('enrollment_term') else self.term.sis_id
                 app.logger.info('Running tests using students with enrollments')
-                enrolled_sids = nessie_utils.get_sids_with_enrollments(self.term.sis_id)
+                enrolled_sids = nessie_utils.get_sids_with_enrollments(term_sis_id)
                 random.shuffle(enrolled_sids)
                 test_sids.extend(enrolled_sids[:count])
 

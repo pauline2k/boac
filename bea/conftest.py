@@ -36,7 +36,9 @@ from bea.pages.class_page import ClassPage
 from bea.pages.cohort_all_page import EveryoneCohortsPage
 from bea.pages.curated_all_page import EveryoneGroupsPage
 from bea.pages.curated_students_page import CuratedStudentsPage
+from bea.pages.degree_check_batch_page import DegreeCheckBatchPage
 from bea.pages.degree_check_create_page import DegreeCheckCreatePage
+from bea.pages.degree_check_history_page import DegreeCheckHistoryPage
 from bea.pages.degree_check_page import DegreeCheckPage
 from bea.pages.degree_template_mgmt_page import DegreeTemplateMgmtPage
 from bea.pages.degree_template_page import DegreeTemplatePage
@@ -87,7 +89,9 @@ def page_objects(request):
     cohorts_all_page = EveryoneCohortsPage(driver, headless)
     curated_all_page = EveryoneGroupsPage(driver, headless)
     curated_students_page = CuratedStudentsPage(driver, headless)
+    degree_check_batch_page = DegreeCheckBatchPage(driver, headless)
     degree_check_create_page = DegreeCheckCreatePage(driver, headless)
+    degree_check_history_page = DegreeCheckHistoryPage(driver, headless)
     degree_check_page = DegreeCheckPage(driver, headless)
     degree_template_mgmt_page = DegreeTemplateMgmtPage(driver, headless)
     degree_template_page = DegreeTemplatePage(driver, headless)
@@ -117,7 +121,9 @@ def page_objects(request):
             setattr(cls.obj, 'cohorts_all_page', cohorts_all_page)
             setattr(cls.obj, 'curated_all_page', curated_all_page)
             setattr(cls.obj, 'curated_students_page', curated_students_page)
+            setattr(cls.obj, 'degree_check_batch_page', degree_check_batch_page)
             setattr(cls.obj, 'degree_check_create_page', degree_check_create_page)
+            setattr(cls.obj, 'degree_check_history_page', degree_check_history_page)
             setattr(cls.obj, 'degree_check_page', degree_check_page)
             setattr(cls.obj, 'degree_template_mgmt_page', degree_template_mgmt_page)
             setattr(cls.obj, 'degree_template_page', degree_template_page)

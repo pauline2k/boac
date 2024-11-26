@@ -754,7 +754,7 @@ class TestNoteDraft:
         self.note_5.is_draft = False
 
     def test_converted_batch_draft_added_to_students(self):
-        batch_students = self.draft_notes_page.unique_students_in_batch([self.student], [self.cohort], [self.group])
+        batch_students = boa_utils.unique_students_in_batch([self.student], [self.cohort], [self.group])
         expected_sids = [stu.sid for stu in batch_students]
         expected_sids.sort()
         # Give BOA a moment to make lotsa notes
@@ -771,7 +771,7 @@ class TestNoteDraft:
         assert not self.draft_notes_page.is_present(self.draft_notes_page.draft_row_loc(self.note_5))
 
     def test_converted_batch_draft_added_with_right_content(self):
-        batch_students = self.draft_notes_page.unique_students_in_batch([self.student], [self.cohort], [self.group])
+        batch_students = boa_utils.unique_students_in_batch([self.student], [self.cohort], [self.group])
         for student in batch_students[0:2]:
             self.student_page.set_new_note_id(self.note_5, student)
             self.student_page.load_page(student)

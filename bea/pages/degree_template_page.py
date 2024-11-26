@@ -162,6 +162,8 @@ class DegreeTemplatePage(BoaPages):
     COL_REQT_PARENT_SELECT = By.XPATH, '//select[contains(@id, "parent-category-select")]'
     COL_REQT_TRANSFER_COURSE_CBX = By.ID, 'is-satisfied-by-transfer-course-checkbox'
     COL_REQT_COURSE_UNITS_INPUT = By.ID, 'units-input'
+    COL_REQT_COURSE_UNITS_SHOW_RANGE = By.XPATH, '//span[text()="show range"]'
+    COL_REQT_COURSE_UNITS_HIDE_RANGE = By.XPATH, '//span[text()="hide range"]'
     COL_REQT_UNIT_RANGE_TOGGLE = By.ID, 'show-upper-units-input'
     COL_REQT_UNIT_NUM_INPUT_0 = By.ID, 'units-input'
     COL_REQT_UNIT_NUM_INPUT_1 = By.ID, 'upper-units-input'
@@ -244,18 +246,21 @@ class DegreeTemplatePage(BoaPages):
 
     def enter_col_reqt_units(self, units):
         app.logger.info(f'Entering column requirement units {units}')
+        self.wait_for_element(self.COL_REQT_UNIT_RANGE_TOGGLE, utils.get_short_timeout())
         if '-' in units:
             unit_range = units.split('-')
-            if 'show' in self.element(self.COL_REQT_UNIT_RANGE_TOGGLE).text:
+            if self.is_present(self.COL_REQT_COURSE_UNITS_SHOW_RANGE):
+                self.scroll_to_top()
                 self.wait_for_element_and_click(self.COL_REQT_UNIT_RANGE_TOGGLE)
             self.wait_for_textbox_and_type(self.COL_REQT_UNIT_NUM_INPUT_0, unit_range[0])
             self.wait_for_textbox_and_type(self.COL_REQT_UNIT_NUM_INPUT_1, unit_range[1])
         elif units == '0':
             app.logger.info('Skipping empty units entry')
         else:
-            if 'hide' in self.element(self.COL_REQT_UNIT_RANGE_TOGGLE).text:
+            if self.is_present(self.COL_REQT_COURSE_UNITS_HIDE_RANGE):
+                self.scroll_to_top()
                 self.wait_for_element_and_click(self.COL_REQT_UNIT_RANGE_TOGGLE)
-                time.sleep(1)
+                time.sleep(utils.get_click_sleep())
             self.wait_for_textbox_and_type(self.COL_REQT_UNIT_NUM_INPUT_0, units)
 
     def col_reqt_unit_input_0_value(self):
