@@ -150,9 +150,8 @@
               <v-btn
                 v-if="currentUser.canEditDegreeProgress"
                 id="edit-degree-note-btn"
-                class="font-weight-bold my-2"
+                class="font-weight-medium pl-0 mb-1 mt-2"
                 color="primary"
-                density="comfortable"
                 :disabled="degreeStore.disableButtons"
                 text="Edit degree note"
                 variant="text"
@@ -164,14 +163,14 @@
                 id="degree-note-input"
                 v-model.trim="noteBody"
                 aria-labelledby="degree-notes-header"
+                auto-grow
                 density="compact"
                 :disabled="isSaving"
                 hide-details
-                maxlength="255"
                 rows="3"
                 variant="outlined"
               />
-              <div class="d-flex justify-end ml-2 my-2">
+              <div class="align-center d-flex my-2">
                 <ProgressButton
                   id="save-degree-note-btn"
                   :action="saveNote"
@@ -184,7 +183,7 @@
                 <v-btn
                   id="cancel-degree-note-btn"
                   aria-label="Cancel Save Degree Note"
-                  class="ml-2"
+                  class="ml-1"
                   :disabled="isSaving"
                   text="Cancel"
                   variant="text"

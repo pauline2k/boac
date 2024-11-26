@@ -121,7 +121,12 @@
       <v-row v-if="degreeStore.degreeNote && includeNote">
         <v-col class="pb-5 pt-3">
           <h3 id="degree-note" class="font-size-12 font-weight-bold">Degree Notes</h3>
-          <pre class="border-0 text-wrap" v-html="degreeStore.degreeNote.body" />
+          <pre class="mt-2 border-0" v-html="degreeStore.degreeNote.body" />
+        </v-col>
+      </v-row>
+      <v-row no-gutters>
+        <v-col class="pr-0">
+          <div class="pt-2 section-border-minor" />
         </v-col>
       </v-row>
     </v-container>
