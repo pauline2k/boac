@@ -162,7 +162,7 @@ class TestNoteBatch:
                                         attachments=attachments)
 
     def test_batch_has_right_students(self):
-        expected_students = self.homepage.unique_students_in_batch(self.students, self.cohorts, self.groups)
+        expected_students = boa_utils.unique_students_in_batch(self.students, self.cohorts, self.groups)
         expected_sids = list(map(lambda s: s.sid, expected_students))
         expected_sids.sort()
         actual_sids = boa_utils.get_note_sids_by_subject(self.batch_note_1)
@@ -173,7 +173,7 @@ class TestNoteBatch:
         assert not unexpected
 
     def test_batch_has_right_note_content(self):
-        studs = self.homepage.unique_students_in_batch(self.students, self.cohorts, self.groups)
+        studs = boa_utils.unique_students_in_batch(self.students, self.cohorts, self.groups)
         for student in studs[0:4]:
             self.student_page.set_new_note_id(self.batch_note_1, student)
             self.student_page.load_page(student)
@@ -200,7 +200,7 @@ class TestNoteBatch:
         self.homepage.dev_auth(self.test.advisor)
 
     def test_search_batch_note_by_student_and_subject(self):
-        student = self.homepage.unique_students_in_batch(self.students, self.cohorts, self.groups)[-1]
+        student = boa_utils.unique_students_in_batch(self.students, self.cohorts, self.groups)[-1]
         self.homepage.set_new_note_id(self.batch_note_1, student)
         self.homepage.reopen_and_reset_adv_search()
         self.homepage.set_notes_student(student)

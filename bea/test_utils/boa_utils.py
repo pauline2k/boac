@@ -49,6 +49,20 @@ def get_boa_base_url():
     return app.config['BASE_URL']
 
 
+def unique_students_in_batch(students, cohorts, groups):
+    uniques = []
+    uniques.extend(students)
+    for cohort in cohorts:
+        for c_member in cohort.members:
+            if c_member not in uniques:
+                uniques.append(c_member)
+    for group in groups:
+        for g_member in group.members:
+            if g_member not in uniques:
+                uniques.append(g_member)
+    return uniques
+
+
 # USERS
 
 def get_user_login_count(user):

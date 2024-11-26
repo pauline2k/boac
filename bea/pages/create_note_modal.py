@@ -442,7 +442,7 @@ class CreateNoteModal(Page):
     # Create
 
     def verify_batch_note_alert(self, students, cohorts, groups):
-        count = len(self.unique_students_in_batch(students, cohorts, groups))
+        count = len(boa_utils.unique_students_in_batch(students, cohorts, groups))
         visible_alert = self.el_text_if_exists(self.BATCH_STUDENT_COUNT)
         utils.assert_actual_includes_expected(visible_alert, f'{count} student record')
         if count >= 500:
@@ -468,21 +468,7 @@ class CreateNoteModal(Page):
         self.set_note_privacy(note_batch)
         self.click_save_new_note()
         time.sleep(utils.get_click_sleep())
-        return self.unique_students_in_batch(students, cohorts, groups)
-
-    @staticmethod
-    def unique_students_in_batch(students, cohorts, groups):
-        uniques = []
-        uniques.extend(students)
-        for cohort in cohorts:
-            for member in cohort.members:
-                if member not in uniques:
-                    uniques.append(member)
-        for group in groups:
-            for member in group.members:
-                if member not in uniques:
-                    uniques.append(member)
-        return uniques
+        return boa_utils.unique_students_in_batch(students, cohorts, groups)
 
     # TEMPLATES
 

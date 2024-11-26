@@ -57,7 +57,7 @@ class FilteredStudentsPage(CohortAndGroupStudentPages,
     def load_cohort(self, cohort):
         app.logger.info(f"Loading cohort id {cohort.cohort_id}, '{cohort.name}'")
         self.driver.get(self.filtered_cohort_base_url(cohort.cohort_id))
-        self.wait_for_boa_title(cohort.name)
+        self.wait_for_spinner()
 
     def load_and_delete_cohort(self, cohort):
         self.driver.get(self.filtered_cohort_base_url(cohort.cohort_id))

@@ -44,6 +44,7 @@ class DegreeCheckPage(DegreeTemplatePage):
     def load_page(self, degree):
         app.logger.info(f'Loading degree check {degree.check_id}')
         self.driver.get(f'{boa_utils.get_boa_base_url()}/student/degree/{degree.check_id}')
+        self.wait_for_spinner()
 
     TEMPLATE_UPDATED_MSG = By.XPATH, '//div[contains(., "Please update below if necessary")]'
     TEMPLATE_LINK = By.ID, 'original-degree-template'
@@ -58,6 +59,7 @@ class DegreeCheckPage(DegreeTemplatePage):
     def click_view_degree_history(self):
         app.logger.info('Clicking view-degree-history link')
         self.wait_for_element_and_click(self.VIEW_DEGREE_HISTORY_LINK)
+        self.wait_for_spinner()
 
     # NOTES
 
@@ -164,7 +166,7 @@ class DegreeCheckPage(DegreeTemplatePage):
 
     def course_reqt_name(self, course):
         node = '2' if self.is_course_row_assign_cell_present(self.course_reqt_xpath(course)) else '1'
-        return By.XPATH, f'{self.course_reqt_xpath(course)}/td[{node}]//span'
+        return By.XPATH, f'{self.course_reqt_xpath(course)}/td[{node}]/span[last()]/span'
 
     def visible_course_reqt_name(self, course):
         return self.el_text_if_exists(self.course_reqt_name(course))
@@ -364,6 +366,7 @@ class DegreeCheckPage(DegreeTemplatePage):
 
     # COURSE ASSIGNMENT
 
+    ASSIGN_COURSE_BUTTON = By.XPATH, '//button[contains(@id, "assign-course-")]'
     UNASSIGNED_OPTION = By.ID, 'assign-course-to-option-null'
     JUNK_OPTION = By.ID, 'course-to-option-ignore'
     ASSIGNMENT_OPTION = By.XPATH, '//button[contains(@id, "assign-course-to-option")]'
