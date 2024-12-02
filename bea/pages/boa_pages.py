@@ -58,7 +58,7 @@ class BoaPages(CreateNoteModal, SearchForm):
         self.wait_for_title(f'{string} | BOA')
 
     def wait_for_403(self):
-        self.when_present(self.ERROR_403, utils.get_short_timeout())
+        self.when_present(self.ERROR_403, utils.get_medium_timeout())
 
     def wait_for_404(self):
         Wait(self.driver, utils.get_short_timeout()).until(ec.visibility_of_element_located(self.NOT_FOUND))
@@ -186,7 +186,8 @@ class BoaPages(CreateNoteModal, SearchForm):
     SIDEBAR_GROUP_NAME = By.XPATH, '//a[contains(@id, "sidebar-curated-group")]/div'
 
     CREATE_ADMIT_GROUP_LINK = By.ID, 'create-admissions-group-from-sidebar'
-    SIDEBAR_ADMIT_GROUP_LINK = By.XPATH, '//a[contains(@id, "sidebar-admissions-group")]'
+    SIDEBAR_ADMIT_GROUP_LINK = By.XPATH, '//a[contains(@id, "sidebar-admitted-students-curated")]'
+    SIDEBAR_ADMIT_GROUP_NAME = By.XPATH, '//a[contains(@id, "sidebar-admitted-students-curated")]/div'
 
     def click_sidebar_create_student_group(self):
         app.logger.info('Clicking sidebar button to create a curated group')
@@ -204,7 +205,7 @@ class BoaPages(CreateNoteModal, SearchForm):
 
     def sidebar_admit_groups(self):
         time.sleep(utils.get_click_sleep())
-        return list(map(lambda a: a.text, self.elements(self.SIDEBAR_ADMIT_GROUP_LINK)))
+        return list(map(lambda a: a.text, self.elements(self.SIDEBAR_ADMIT_GROUP_NAME)))
 
     def click_view_everyone_groups(self):
         time.sleep(1)

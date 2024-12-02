@@ -57,6 +57,9 @@ class SearchResultsPage(ListViewAdmitPages):
         self.wait_for_spinner()
         return self.is_present(self.ADMIT_RESULTS_BUTTON)
 
+    def click_admit_results_tab(self):
+        self.wait_for_page_and_click(self.ADMIT_RESULTS_BUTTON)
+
     def admit_search_results_count(self):
         self.wait_for_spinner()
         return self.element(self.ADMIT_RESULTS_COUNT).text

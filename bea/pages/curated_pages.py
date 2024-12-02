@@ -111,7 +111,6 @@ class CuratedPages(CohortPages, CuratedModal):
         self.wait_for_sidebar_group(group)
 
     def enter_text_in_sids_input(self, sids_string):
-        self.click_add_sids_button()
         self.enter_sid_list(self.CREATE_GROUP_TEXTAREA_SIDS, sids_string)
 
     def add_comma_sep_sids_to_existing_grp(self, group, members):

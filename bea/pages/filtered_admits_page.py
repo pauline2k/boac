@@ -28,7 +28,6 @@ from bea.pages.curated_add_selector import CuratedAddSelector
 from bea.pages.curated_modal import CuratedModal
 from bea.pages.filtered_students_page_filters import FilteredStudentsPageFilters
 from bea.pages.filtered_students_page_results import FilteredStudentsPageResults
-from bea.pages.list_view_admit_pages import ListViewAdmitPages
 from bea.test_utils import boa_utils
 from bea.test_utils import utils
 from flask import current_app as app
@@ -38,7 +37,6 @@ from selenium.webdriver.support.wait import WebDriverWait as Wait
 
 
 class FilteredAdmitsPage(CohortAndGroupAdmitPages,
-                         ListViewAdmitPages,
                          FilteredStudentsPageFilters,
                          FilteredStudentsPageResults,
                          CuratedAddSelector,
@@ -47,6 +45,11 @@ class FilteredAdmitsPage(CohortAndGroupAdmitPages,
     CREATE_COHORT_BUTTON = By.ID, 'admitted-students-cohort-create'
     DEPEND_CHAR_ERROR_MSG = By.XPATH, '//div[text()="Dependents must be an integer greater than or equal to 0."]'
     DEPEND_LOGIC_ERROR_MSG = By.XPATH, '//div[text()="Dependents inputs must be in ascending order."]'
+
+    def search_and_create_new_admit_cohort(self, cohort):
+        self.click_create_cohort()
+        self.perform_admit_search(cohort)
+        self.create_new_cohort(cohort)
 
     def hit_non_auth_cohort(self, cohort):
         self.driver.get(f'{boa_utils.get_boa_base_url()}/cohort/{cohort.cohort_id}')

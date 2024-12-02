@@ -23,31 +23,18 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 ENHANCEMENTS, OR MODIFICATIONS.
 """
 
-from bea.pages.page import Page
-from flask import current_app as app
+from bea.pages.cohort_and_group_admit_pages import CohortAndGroupAdmitPages
+from bea.pages.curated_pages import CuratedPages
 from selenium.webdriver.common.by import By
 
 
-class CuratedModal(Page):
+class CuratedAdmitsPage(CohortAndGroupAdmitPages, CuratedPages):
 
-    GROUP_NAME_INPUT = By.ID, 'create-curated-group-input'
-    GROUP_SAVE_BUTTON = By.ID, 'create-curated-group-confirm'
-    GROUP_CANCEL_BUTTON = By.ID, 'create-curated-group-cancel'
-    DUPE_GROUP_NAME_MSG = By.XPATH, '//div[contains(text(), "You have an existing")]'
-    NO_CHARS_LEFT_MSG = By.XPATH, '//span[text()="(0 left)"]'
+    def remove_admit_button_loc(self, admit):
+        return By.XPATH, f'{self.admit_row_xpath(admit)}//button[contains(@id, "remove-student-from-curated-group")]'
 
-    def enter_group_name(self, group):
-        app.logger.info(f'Entering group name {group.name}')
-        self.wait_for_textbox_and_type(self.GROUP_NAME_INPUT, group.name)
-
-    def name_and_save_group(self, group):
-        self.enter_group_name(group)
-        self.wait_for_element_and_click(self.GROUP_SAVE_BUTTON)
-
-    def cancel_group(self):
-        self.wait_for_element_and_click(self.GROUP_CANCEL_BUTTON)
-        self.when_not_present(self.GROUP_CANCEL_BUTTON, 3)
-
-    def cancel_group_if_modal(self):
-        if self.is_present(self.GROUP_CANCEL_BUTTON):
-            self.cancel_group()
+    def remove_admit_by_row_index(self, group, admit):
+        self.wait_for_admit_sids()
+        self.wait_for_element_and_click(self.remove_admit_button_loc(admit))
+        self.when_not_present(self.remove_admit_button_loc(admit), 2)
+        group.members.remove(admit)
