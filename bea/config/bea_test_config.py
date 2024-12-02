@@ -76,6 +76,13 @@ class BEATestConfig(BEATestBaseConfigs):
                         self.test_cases.append(BEATestCase(student=student,
                                                            section=section))
 
+    def curated_admits(self):
+        self.set_dept(Department.ZCEEE)
+        self.set_advisor()
+        self.set_admits()
+        nessie_utils.get_admits_data(self.admits)
+        self.set_search_cohorts(opts={'admits': True})
+
     def curated_groups(self):
         self.set_base_configs(opts={'include_inactive': True})
         self.set_default_cohort(opts={'include_inactive': True})

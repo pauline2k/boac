@@ -24,15 +24,23 @@ ENHANCEMENTS, OR MODIFICATIONS.
 """
 
 from bea.pages.admit_pages import AdmitPages
+from bea.pages.curated_add_selector import CuratedAddSelector
 from bea.test_utils import boa_utils
 from bea.test_utils import utils
 from flask import current_app as app
 from selenium.webdriver.common.by import By
 
 
-class AdmitPage(AdmitPages):
+class AdmitPage(AdmitPages, CuratedAddSelector):
 
     NAME = By.ID, 'admit-name-header'
+
+    @staticmethod
+    def add_to_admissions_grp_button(admit):
+        return By.ID, f'student-{admit.sid}-add-to-admissions-group'
+
+    def click_add_to_admissions_grp(self, admit):
+        self.wait_for_element_and_click(self.add_to_admissions_grp_button(admit))
 
     def name(self):
         return self.el_text_if_exists(self.NAME)

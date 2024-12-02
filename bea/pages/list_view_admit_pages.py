@@ -127,6 +127,13 @@ class ListViewAdmitPages(Pagination, AdmitPages):
                     visible_sids.extend(self.admit_cohort_row_sids())
             return visible_sids
 
+    def verify_visible_admits_match_group_members(self, group):
+        visible = self.list_view_admit_sids(group)
+        visible.sort()
+        expected = [m.sid for m in group.members]
+        expected.sort()
+        utils.assert_equivalence(visible, expected)
+
     # ADMIT ADD-TO-GRP
 
     ADMIT_ROW_CBX = By.XPATH, '//input[contains(@id, "-admissions-group-checkbox")]'

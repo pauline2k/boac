@@ -43,11 +43,13 @@ class CuratedAddSelector(BoaPages, CuratedModal):
     ADD_ALL_TO_GROUP_CBX = By.XPATH, '//input[@id="add-all-to-curated-group"]/..'
     ADD_TO_GROUP_BUTTON = By.ID, 'add-to-curated-group'
     ADD_INDIVIDUAL_TO_GROUP_CBX = By.XPATH, '//input[contains(@id, "curated-group-checkbox")]'
+    SUBMIT_CURATED_GROUP_BUTTON = By.ID, 'submit-curated-group'
 
     SELECTOR_CREATE_CE3_GROUP_BUTTON = By.ID, 'create-admissions-group'
     ADD_ALL_TO_CE3_GROUP_CBX = By.XPATH, '//input[@id="add-all-to-admissions-group"]/..'
     ADD_TO_CE3_GROUP_BUTTON = By.ID, 'add-to-admissions-group'
-    ADD_INDIVIDUAL_TO_CE3_GROUP_CBX = By.XPATH, '//input[contains(@id, "admissions-group-checkbox")]/..'
+    ADD_INDIVIDUAL_TO_CE3_GROUP_CBX = By.XPATH, '//input[contains(@id, "admissions-group-checkbox")]'
+    SUBMIT_ADMISSIONS_GROUP_BUTTON = By.ID, 'submit-admissions-group'
 
     @staticmethod
     def student_button_loc(student):
@@ -81,10 +83,16 @@ class CuratedAddSelector(BoaPages, CuratedModal):
 
     def is_group_selected(self, group):
         self.when_present(self.group_checkbox_link_loc(group), utils.get_short_timeout())
-        return 'Remove' in self.element(self.group_checkbox_link_loc(group)).get_attribute('aria-label')
+        return self.element(self.group_checkbox_link_loc(group)).is_selected()
 
     def check_group(self, group):
         self.wait_for_page_and_click(self.group_checkbox_link_loc(group))
+
+    def submit_group_selection(self, group):
+        if group.is_ce3:
+            self.wait_for_element_and_click(self.SUBMIT_ADMISSIONS_GROUP_BUTTON)
+        else:
+            self.wait_for_element_and_click(self.SUBMIT_CURATED_GROUP_BUTTON)
 
     def click_create_new_grp(self, group):
         if group.is_ce3:
@@ -101,6 +109,7 @@ class CuratedAddSelector(BoaPages, CuratedModal):
         sids = list(map(lambda member: member.sid, members))
         app.logger.info(f'Selecting SIDs {sids}')
         for m in members:
+            self.scroll_to_top()
             if group.is_ce3:
                 self.wait_for_element_and_click(self.admit_checkbox_loc(m))
             else:
@@ -110,15 +119,16 @@ class CuratedAddSelector(BoaPages, CuratedModal):
         sids = list(map(lambda member: member.sid, members))
         app.logger.info(f'Adding SIDs {sids} to group {group.name} ID {group.cohort_id}')
         self.check_group(group)
+        self.submit_group_selection(group)
         boa_utils.append_new_members_to_group(group, members)
         self.wait_for_sidebar_group(group)
 
     def remove_member_from_grp(self, member, group):
         app.logger.info(f'Removing SID {member.sid} from group {group.name} ID {group.cohort_id}')
-        self.click_add_to_group_from_list_view_header_button(group)
         self.check_group(group)
+        self.submit_group_selection(group)
         self.when_visible(self.REMOVED_FROM_GROUP_MSG, utils.get_short_timeout())
-        group.memmbers.remove(member)
+        group.members.remove(member)
         self.wait_for_sidebar_group(group)
 
     def add_members_to_new_grp(self, members, group):
