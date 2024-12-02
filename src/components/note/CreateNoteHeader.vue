@@ -15,15 +15,21 @@
           <span v-if="'createBatch' === noteStore.mode" class="sr-only">Create Notes</span>
         </ModalHeader>
         <div aria-live="polite" class="d-flex justify-center w-100">
-          <transition name="bounce">
+          <v-fade-transition>
             <div
-              v-show="noteStore.isAutoSavingDraftNote && !suppressAutoSaveDraftNoteAlert"
+              v-if="noteStore.isAutoSavingDraftNote && !suppressAutoSaveDraftNoteAlert"
               :aria-hidden="isAutoSaveAlertPaused"
-              class="text-success font-size-14 font-weight-bold ml-2"
+              class="d-flex align-center text-success font-size-14 font-weight-bold ml-2"
             >
+              <v-progress-circular
+                class="mr-2"
+                indeterminate
+                size="16"
+                width="2"
+              />
               SAVING DRAFT
             </div>
-          </transition>
+          </v-fade-transition>
           <v-btn
             class="sr-only"
             :text="isAutoSaveAlertPaused ? 'Resume Auto-Save Notifications' : 'Pause Auto-Save Notifications'"
