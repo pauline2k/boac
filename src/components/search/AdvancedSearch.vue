@@ -31,7 +31,6 @@
     <v-btn
       id="go-search"
       class="btn-search"
-      :disabled="searchStore.isSearching || !trim(queryTextModel)"
       text="Search"
       variant="outlined"
       @keydown.enter="search"
@@ -42,8 +41,8 @@
 </template>
 
 <script setup>
-import AdvancedSearchModal from '@/components/search/AdvancedSearchModal'
 import AccessibleCombobox from '@/components/util/AccessibleCombobox'
+import AdvancedSearchModal from '@/components/search/AdvancedSearchModal'
 import {addToSearchHistory, getMySearchHistory} from '@/api/search'
 import {computed, onMounted, onUnmounted} from 'vue'
 import {each, get, noop, trim} from 'lodash'
@@ -51,6 +50,7 @@ import {getAllTopics} from '@/api/topics'
 import {labelForSearchInput} from '@/lib/search'
 import {putFocusNextTick, scrollToTop} from '@/lib/utils'
 import {useContextStore} from '@/stores/context'
+import {useDegreeStore} from '@/stores/degree-edit-session/index'
 import {useRoute, useRouter} from 'vue-router'
 import {useSearchStore} from '@/stores/search'
 
@@ -89,7 +89,9 @@ onUnmounted(() => {
 })
 
 const onKeyUp = event => {
-  if (event.keyCode === 191) {
+  // Disable hot-key when, for example, user is editing a degree-progress note.
+  const disableHotKey = useDegreeStore().disableButtons
+  if (!disableHotKey && event.keyCode === 191) {
     // forward slash key
     const el = get(event, 'currentTarget.activeElement')
     const ignore = ['textbox'].includes(get(el, 'role')) || ['INPUT'].includes(get(el, 'tagName'))
@@ -100,28 +102,30 @@ const onKeyUp = event => {
 }
 
 const search = () => {
-  const q = trim(searchStore.queryText)
-  if (q) {
-    router.push(
-      {
-        path: '/search',
-        query: {
-          admits: currentUser.canAccessAdmittedStudents,
-          courses: currentUser.canAccessCanvasData,
-          notes: currentUser.canAccessAdvisingData,
-          students: true,
-          q
-        }
-      },
-      noop
-    )
-    addToSearchHistory(q).then(history => {
-      searchStore.setSearchHistory(history)
-    })
-  } else {
-    putFocusNextTick('basic-search-input')
+  if (!searchStore.isSearching && !trim(searchStore.queryText)) {
+    const q = trim(searchStore.queryText)
+    if (q) {
+      router.push(
+        {
+          path: '/search',
+          query: {
+            admits: currentUser.canAccessAdmittedStudents,
+            courses: currentUser.canAccessCanvasData,
+            notes: currentUser.canAccessAdvisingData,
+            students: true,
+            q
+          }
+        },
+        noop
+      )
+      addToSearchHistory(q).then(history => {
+        searchStore.setSearchHistory(history)
+      })
+    } else {
+      putFocusNextTick('basic-search-input')
+    }
+    scrollToTop()
   }
-  scrollToTop()
 }
 </script>
 
