@@ -178,7 +178,7 @@
               }"
             >
               <div v-if="getNote(bundle)">
-                <div
+                <pre
                   v-if="printable"
                   :id="`column-${position}-${bundle.key}-note`"
                   class="font-size-12"
@@ -303,14 +303,11 @@
             class="border-b-md border-e-md border-s-md"
           >
             <td colspan="5" class="pl-8 py-2">
-              <div
+              <pre
                 :id="bundle.course ? `course-${bundle.course.id}-note` : `category-${bundle.category.id}-note`"
                 aria-live="polite"
                 class="font-size-14"
-              >
-                <span class="sr-only">Note: </span>
-                {{ getNote(bundle) }}
-              </div>
+              ><span class="sr-only">Note: </span><span v-html="getNote(bundle)" /></pre>
               <div class="font-size-12 text-no-wrap">
                 [<v-btn
                   :id="`column-${position}-${bundle.key}-hide-note-btn`"
@@ -372,7 +369,7 @@ import EditCourseRequirement from '@/components/degree/student/EditCourseRequire
 import {alertScreenReader, oxfordJoin, pluralize, putFocusNextTick} from '@/lib/utils'
 import {computed, ref} from 'vue'
 import {deleteCategory, deleteCourse, onDrop} from '@/stores/degree-edit-session/utils'
-import {each, every, find, get, includes, isEmpty, isNil, map, remove, size, truncate, xorBy} from 'lodash'
+import {each, every, find, get, includes, isEmpty, isNil, map, remove, size, trim, truncate, xorBy} from 'lodash'
 import {
   findCategoryById,
   getAssignedCourses,
@@ -545,7 +542,7 @@ const getCourseFulfillments = bundle => {
 const getGrade = bundle => {
   return get(bundle.course || bundle.category, 'grade')
 }
-const getNote = bundle => bundle.course ? bundle.course.note : bundle.category.note
+const getNote = bundle => trim(bundle.course ? bundle.course.note : bundle.category.note)
 
 const hideNote = (bundle, position, manageFocus=true) => {
   notesVisible.value = remove(notesVisible.value, key => bundle.key !== key)
