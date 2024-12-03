@@ -102,7 +102,7 @@ const onKeyUp = event => {
 }
 
 const search = () => {
-  if (!searchStore.isSearching && !trim(searchStore.queryText)) {
+  if (!searchStore.isSearching && trim(searchStore.queryText)) {
     const q = trim(searchStore.queryText)
     if (q) {
       router.push(

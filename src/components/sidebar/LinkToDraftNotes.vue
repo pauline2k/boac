@@ -14,7 +14,7 @@
       class="text-quaternary sidebar-pill"
       color="secondary"
     >
-      {{ get(currentUser, 'myDraftNoteCount') }}
+      {{ toInt(get(currentUser, 'myDraftNoteCount'), 0).toLocaleString() }}
     </PillCount>
   </div>
 </template>
@@ -23,7 +23,7 @@
 import NavLink from '@/components/util/NavLink'
 import PillCount from '@/components/util/PillCount'
 import {get} from 'lodash'
-import {pluralize} from '@/lib/utils'
+import {pluralize, toInt} from '@/lib/utils'
 import {useContextStore} from '@/stores/context'
 
 const currentUser = useContextStore().currentUser

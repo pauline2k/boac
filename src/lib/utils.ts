@@ -99,7 +99,7 @@ export function oxfordJoin(arr, zeroString?) {
 }
 
 export function pluralize(noun: string, count: number, substitutions = {}, pluralSuffix = 's') {
-  return (`${substitutions[count] || substitutions['other'] || count} ` + (count !== 1 ? `${noun}${pluralSuffix}` : noun))
+  return (`${substitutions[count] || substitutions['other'] || toInt(count, 0).toLocaleString()} ` + (count !== 1 ? `${noun}${pluralSuffix}` : noun))
 }
 
 // eslint-disable-next-line no-undef
@@ -193,7 +193,7 @@ export function toBoolean(value: any) {
   return value && value !== 'false'
 }
 
-export function toInt(value, defaultValue = null) {
+export function toInt(value: any, defaultValue: number = NaN): number {
   const parsed = parseInt(value, 10)
   return Number.isInteger(parsed) ? parsed : defaultValue
 }

@@ -34,7 +34,7 @@
             <h3 class="page-section-header-sub pr-8 text-primary">
               <span class="sr-only">{{ `${isOpen ? 'Hide' : 'Show'} details for ${groupTypeName} ` }}</span>
               {{ group.name }}<span class="sr-only">: </span>
-              (<span :id="`sortable-${keyword}-${group.id}-total-student-count`">{{ group.totalStudentCount }}</span>
+              (<span :id="`sortable-${keyword}-${group.id}-total-student-count`">{{ toInt(group.totalStudentCount, 0).toLocaleString() }}</span>
               <span class="sr-only">&nbsp;students.</span>)
             </h3>
           </div>
@@ -57,7 +57,7 @@
               class="px-2"
               color="warning"
             >
-              {{ group.alertCount }}
+              {{ toInt(group.alertCount, 0).toLocaleString() }}
             </PillCount>
           </div>
         </div>
@@ -75,7 +75,7 @@
             :id="`sortable-${keyword}-${group.id}-alert-limited-view-all`"
             :to="getRoutePath(group)"
           >
-            View all {{ group.totalStudentCount }} students in {{ groupTypeName }} "{{ group.name }}"
+            View all {{ toInt(group.totalStudentCount, 0).toLocaleString() }} students in {{ groupTypeName }} "{{ group.name }}"
           </router-link>
         </div>
         <div class="ma-4">
@@ -113,12 +113,12 @@
 <script setup>
 import PillCount from '@/components/util/PillCount'
 import SortableStudents from '@/components/search/SortableStudents'
-import {alertScreenReader, pluralize} from '@/lib/utils'
+import {alertScreenReader, pluralize, toInt} from '@/lib/utils'
+import {capitalize, isNil, size} from 'lodash'
 import {computed, ref} from 'vue'
 import {getStudentsWithAlerts as getCohortStudentsWithAlerts} from '@/api/cohort'
 import {getStudentsWithAlerts as getCuratedStudentsWithAlerts} from '@/api/curated'
 import {mdiMenuDown, mdiMenuRight} from '@mdi/js'
-import {capitalize, isNil, size} from 'lodash'
 
 const props = defineProps({
   compact: {
