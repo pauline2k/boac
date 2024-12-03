@@ -102,9 +102,9 @@
 
 <script setup>
 import {computed} from 'vue'
+import {mdiChevronLeft, mdiChevronRight} from '@mdi/js'
 import {putFocusNextTick} from '@/lib/utils'
 import {toNumber} from 'lodash'
-import {mdiChevronLeft, mdiChevronRight} from '@mdi/js'
 
 const props = defineProps({
   clickHandler: {
@@ -148,6 +148,7 @@ const showFirstLastButtonsWhen = 3
 const totalPages = computed(() => Math.ceil(props.totalRows / props.perPage))
 
 const onClick = page => {
+  page = page.replace(/,/g, '')
   let nextPage
   let putFocusId
   switch(page) {
@@ -176,7 +177,6 @@ const onClick = page => {
       putFocusNextTick(putFocusId, {scroll: false})
     }
   })
-
 }
 </script>
 
