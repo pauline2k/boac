@@ -39,7 +39,7 @@
             class="text-quaternary sidebar-pill"
             color="secondary"
           >
-            {{ cohort.totalStudentCount }}
+            {{ toInt(cohort.totalStudentCount, 0).toLocaleString() }}
           </PillCount>
         </NavLink>
       </div>
@@ -81,7 +81,7 @@
             class="text-quaternary sidebar-pill"
             color="secondary"
           >
-            {{ group.totalStudentCount }}
+            {{ toInt(group.totalStudentCount, 0).toLocaleString() }}
           </PillCount>
         </NavLink>
       </div>
@@ -134,7 +134,7 @@
             class="text-quaternary sidebar-pill"
             color="secondary"
           >
-            {{ cohort.totalStudentCount }}
+            {{ toInt(cohort.totalStudentCount, 0).toLocaleString() }}
           </PillCount>
         </NavLink>
       </div>
@@ -183,7 +183,7 @@
             class="text-quaternary sidebar-pill"
             color="secondary"
           >
-            {{ group.totalStudentCount }}
+            {{ toInt(group.totalStudentCount, 0).toLocaleString() }}
           </PillCount>
         </NavLink>
       </div>
@@ -212,10 +212,10 @@ import NavLink from '@/components/util/NavLink.vue'
 import PillCount from '@/components/util/PillCount.vue'
 import SidebarFooter from '@/components/sidebar/SidebarFooter.vue'
 import {capitalize, filter as _filter} from 'lodash'
-import {reactive} from 'vue'
 import {describeCuratedGroupDomain} from '@/berkeley'
 import {mdiPlus} from '@mdi/js'
-import {pluralize} from '@/lib/utils'
+import {pluralize, toInt} from '@/lib/utils'
+import {reactive} from 'vue'
 import {useContextStore} from '@/stores/context'
 
 const currentUser = reactive(useContextStore().currentUser)

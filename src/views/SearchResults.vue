@@ -370,7 +370,7 @@ const getTabLabel = item => {
 }
 
 const describe = (noun, count) => {
-  return count > 0 ? `${count} ${capitalize(noun)}${count === 1 ? '' : 's'}, ` : ''
+  return count > 0 ? `${toInt(count, 0).toLocaleString()} ${capitalize(noun)}${count === 1 ? '' : 's'}, ` : ''
 }
 
 const fetchMoreAppointments = () => {
