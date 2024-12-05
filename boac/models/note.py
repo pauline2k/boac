@@ -373,24 +373,35 @@ class Note(Base):
         where_clause = 'WHERE notes.is_draft IS FALSE'
         where_clause += '' if include_private_notes else ' AND notes.is_private IS FALSE'
 
-        query = text(f"""
-            WITH fts AS ({fts_selector})
-            SELECT notes.*
-            FROM fts JOIN notes
-                ON fts.id = notes.id
-                {author_filter}
-                {student_filter}
-                {date_filter}
-                {department_filter}
-            {topic_join}
-            {where_clause}
-            ORDER BY fts.rank DESC, notes.id
-            OFFSET {offset}
-            LIMIT {limit}
-        """).bindparams(**params)
-        result = db.session.execute(query)
+        def _get_query(is_count_query=False):
+            query = f"""
+                WITH fts AS ({fts_selector})
+                SELECT {'count(notes.*)' if is_count_query else 'notes.*'}
+                FROM fts JOIN notes
+                    ON fts.id = notes.id
+                    {author_filter}
+                    {student_filter}
+                    {date_filter}
+                    {department_filter}
+                {topic_join}
+                {where_clause}
+            """
+            if not is_count_query:
+                query += f"""
+                    ORDER BY fts.rank DESC, notes.id
+                    OFFSET {offset} LIMIT {limit}
+                """
+            return text(query).bindparams(**params)
+
+        total_count_result = db.session.execute(_get_query(True))
+        total_matching_count = total_count_result.fetchall()[0]['count']
+
+        result = db.session.execute(_get_query())
         keys = result.keys()
-        return [dict(zip(keys, row)) for row in result.fetchall()]
+        return {
+            'results': [dict(zip(keys, row)) for row in result.fetchall()],
+            'total_matching_count': total_matching_count,
+        }
 
     @classmethod
     def refresh_search_index(cls):
