@@ -33,8 +33,8 @@
         Search results include {{ describe('Admits', results.totalAdmitCount) }}
         {{ describe('student', results.totalStudentCount) }}
         {{ describe('course', results.totalCourseCount) }}
-        {{ describe('note', size(results.notes)) }}{{ completeNoteResults ? '' : '+' }}
-        {{ describe('appointment', size(results.appointments)) }}{{ completeAppointmentResults ? '' : '+' }}
+        {{ describe('note', size(results.notes)) }}{{ hasMoreNotesToShow ? '+' : '' }}
+        {{ describe('appointment', size(results.appointments)) }}{{ hasMoreAppointmentsToShow ? '+' : '' }}
       </div>
       <div v-if="!hasSearchResults" id="page-header-no-results" class="my-4 px-5">
         <h3>Suggestions</h3>
@@ -168,7 +168,7 @@
                 />
                 <div class="text-center">
                   <v-btn
-                    v-if="!completeNoteResults"
+                    v-if="hasMoreNotesToShow"
                     id="fetch-more-notes"
                     text="Show additional advising notes"
                     variant="text"
@@ -192,7 +192,7 @@
                 />
                 <div class="text-center">
                   <v-btn
-                    v-if="!completeAppointmentResults"
+                    v-if="hasMoreAppointmentsToShow"
                     id="fetch-more-appointments"
                     text="Show additional advising appointments"
                     variant="text"
@@ -233,11 +233,11 @@ const router = useRouter()
 const searchStore = useSearchStore()
 
 const appointmentsQuery = {limit: 20, offset: 0}
-const completeAppointmentResults = computed(() => {
-  return size(results.appointments) < appointmentsQuery.limit + appointmentsQuery.offset
+const hasMoreAppointmentsToShow = computed(() => {
+  return size(results.appointments) >= appointmentsQuery.limit + appointmentsQuery.offset
 })
-const completeNoteResults = computed(() => {
-  return size(results.notes) < notesQuery.limit + notesQuery.offset
+const hasMoreNotesToShow = computed(() => {
+  return size(results.notes) >= notesQuery.limit + notesQuery.offset
 })
 const hasSearchResults = computed(() => {
   return !!(results.totalStudentCount || results.totalCourseCount || results.totalAdmitCount || size(results.notes) || size(results.appointments))
@@ -354,13 +354,13 @@ const getTabLabel = item => {
     label = `${admitCount}${!admitCount || admitCount === results.totalAdmitCount ? '' : '+' }`
     break
   case 'appointment':
-    label = `${item.count}${completeAppointmentResults.value ? '' : '+'}`
+    label = `${item.count}${hasMoreAppointmentsToShow.value ? '+' : ''}`
     break
   case 'course':
     label = `${courseCount}${!courseCount || courseCount === results.totalCourseCount ? '' : '+' }`
     break
   case 'note':
-    label = `${item.count}${completeNoteResults.value ? '' : '+'}`
+    label = `${item.count}${hasMoreNotesToShow.value ? '+' : ''}`
     break
   case 'student':
     label = `${studentCount}${!studentCount || studentCount === results.totalStudentCount ? '' : '+' }`

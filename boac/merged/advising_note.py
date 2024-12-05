@@ -282,7 +282,7 @@ def search_advising_notes(
     while True:
         benchmark(f'begin local notes query (iteration {local_notes_query_iteration})')
 
-        batch_results = Note.search(
+        local_search_results = Note.search(
             search_phrase=search_phrase,
             author_uid=author_uid,
             student_csid=student_csid,
@@ -293,22 +293,22 @@ def search_advising_notes(
             offset=(local_notes_query_batch_size * local_notes_query_iteration),
             limit=local_notes_query_batch_size,
         )
+        local_batch_results = local_search_results['results']
+        local_total_matching_count = local_search_results['total_matching_count']
         benchmark(f'end local notes query (iteration {local_notes_query_iteration})')
 
         benchmark(f'begin local notes parsing (iteration {local_notes_query_iteration})')
-        batch_note_count = len(batch_results)
-        cutoff = min(batch_note_count, (offset + limit - len(notes_feed)))
-        notes_feed += _get_local_notes_search_results(batch_results, cutoff, search_terms)
+        cutoff = min(len(local_batch_results), (offset + limit - len(notes_feed)))
+        notes_feed += _get_local_notes_search_results(local_batch_results, cutoff, search_terms)
 
         benchmark(f'end local notes parsing (iteration {local_notes_query_iteration})')
 
         # Stop querying local notes if 1) we didn't return a full batch, 2) we have all the notes we need.
-        if batch_note_count < local_notes_query_batch_size or len(notes_feed) == offset + limit:
+        if local_total_matching_count < local_notes_query_batch_size or len(notes_feed) == offset + limit:
             break
         else:
             local_notes_query_iteration += 1
 
-    local_notes_count = len(notes_feed)
     notes_feed = notes_feed[offset:]
 
     def _search_advising_notes(offset, limit):
@@ -326,16 +326,16 @@ def search_advising_notes(
         )
 
     # If the chunk of local (BOA) notes equals the 'limit' then return; no loch results needed.
-    if local_notes_count == limit:
+    if len(notes_feed) == limit:
         # Here we query the data-loch for the sole purpose of extracting 'total_matching_count'.
         loch_results = _search_advising_notes(offset=0, limit=0)
         return {
             'notes': notes_feed,
-            'totalNoteCount': local_notes_count + loch_results['total_matching_count'],
+            'totalNoteCount': local_total_matching_count + loch_results['total_matching_count'],
         }
 
     benchmark('begin loch notes query')
-    loch_results = _search_advising_notes(offset=max(0, offset - local_notes_count), limit=(limit - len(notes_feed)))
+    loch_results = _search_advising_notes(offset=max(0, offset - local_total_matching_count), limit=(limit - len(notes_feed)))
     benchmark('end loch notes query')
 
     benchmark('begin loch notes parsing')
@@ -344,7 +344,7 @@ def search_advising_notes(
 
     return {
         'notes': notes_feed,
-        'totalNoteCount': local_notes_count + loch_results['total_matching_count'],
+        'totalNoteCount': local_total_matching_count + loch_results['total_matching_count'],
     }
 
 
