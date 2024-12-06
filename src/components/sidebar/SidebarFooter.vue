@@ -11,7 +11,7 @@
         color="primary"
         :disabled="!!noteStore.mode"
         variant="flat"
-        @click="noteStore.setIsCreateNoteModalOpen(true)"
+        @click="() => noteStore.setIsCreateNoteModalOpen(true)"
       >
         <v-icon class="mr-1" :icon="mdiFileDocument" />
         New Note
