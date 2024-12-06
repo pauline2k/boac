@@ -9,14 +9,14 @@
     :step="1"
     @did-move="makeCalendarAccessible"
     @dayclick="() => putFocusNextTick(`${idPrefix}-clear-btn`)"
-    @daykeydown="(day, e) => onDaykeydown(e)"
+    @daykeydown="(day, e) => onKeyDownDay(e)"
     @popover-did-hide="() => isPopoverVisible = false"
     @popover-did-show="onPopoverShown"
     @transition-start="() => onTransitionStart"
   >
     <template #default="{ inputValue, inputEvents }">
       <div
-        class="custom-text-field"
+        class="align-start custom-text-field d-flex"
         :class="{ 'error--text': !isValid(inputValue), disabled: disabled }"
         :aria-invalid="!isValid(inputValue)"
       >
@@ -29,10 +29,11 @@
           aria-haspopup="dialog"
           :aria-required="required"
           autocomplete="off"
-          class="date-input"
+          class="accessible-date-input"
           :disabled="disabled"
-          :value="inputValue"
+          maxlength="10"
           placeholder="MM/DD/YYYY"
+          :value="inputValue"
           @input="onInput($event, inputEvents)"
           @keyup="onInputKeyup($event, inputEvents)"
           @mouseleave="inputEvents.mouseleave"
@@ -46,27 +47,28 @@
           @focusin="inputEvents.focusin"
           @focusout="inputEvents.focusout"
         />
-        <button
-          v-if="inputValue && !disabled"
-          :id="`${idPrefix}-clear-btn`"
-          :aria-label="`Clear ${ariaLabel}`"
-          class="clear-button clear-icon"
-          @click.stop.prevent="onClickClear($event, inputEvents)"
-        >
-          <v-icon :icon="mdiCloseCircleOutline"></v-icon>
-        </button>
+        <div class="pr-1 pt-1">
+          <button
+            v-if="inputValue && !disabled"
+            :id="`${idPrefix}-clear-btn`"
+            :aria-label="`Clear ${ariaLabel}`"
+            class="clear-button clear-icon"
+            @click.stop.prevent="onClickClear($event, inputEvents)"
+          >
+            <v-icon :icon="mdiCloseCircle" />
+          </button>
+        </div>
       </div>
     </template>
   </date-picker>
 </template>
 
-
 <script setup>
 import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
-import {computed, nextTick, onBeforeUnmount, onMounted, ref} from 'vue'
 import {DateTime} from 'luxon'
 import {each} from 'lodash'
-import {mdiCloseCircleOutline} from '@mdi/js'
+import {mdiCloseCircle} from '@mdi/js'
+import {nextTick, onBeforeUnmount, onMounted, ref} from 'vue'
 
 const props = defineProps({
   ariaLabel: {
@@ -124,33 +126,28 @@ const model = defineModel({
   },
   type: Date
 })
-const inputId = computed(() => `${props.idPrefix}-input`)
+const inputId = `${props.idPrefix}-input`
 const isPopoverVisible = ref(false)
 const popover = ref()
 
 onBeforeUnmount(() => {
   const container = document.getElementById(props.containerId)
   if (container) {
-    container.removeEventListener('keydown', onKeydownPreventClick)
+    container.removeEventListener('keydown', onKeyDownPreventClick)
   }
 })
 
 onMounted(() => {
   // Setting this as a prop on the VTextField component breaks the "clear" button.
-  document.getElementById(inputId.value).setAttribute('role', 'combobox')
+  document.getElementById(inputId).setAttribute('role', 'combobox')
   // Workaround for https://github.com/nathanreyes/v-calendar/issues/1459
-  document.getElementById(props.containerId).addEventListener('keydown', onKeydownPreventClick)
+  document.getElementById(props.containerId).addEventListener('keydown', onKeyDownPreventClick)
 })
 
 const isMonthNavBtn = el => el.id === `${props.idPrefix}-popover-next-month-btn` || el.id === `${props.idPrefix}-popover-prev-month-btn`
 
 const isSpaceOrEnter = key => {
   return key === ' ' || key === 'Spacebar' || key === 'Enter'
-}
-const onKeydownPreventClick = e => {
-  if (e && isMonthNavBtn(e.target) && isSpaceOrEnter(e.key)) {
-    e.preventDefault()
-  }
 }
 
 const isValid = dateString => {
@@ -162,40 +159,40 @@ const isValid = dateString => {
 }
 
 const makeCalendarAccessible = () => {
-  if (!popover.value) return
+  if (popover.value) {
+    const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    const nextMonthBtn = popover.value.querySelector('.vc-next')
+    const prevMonthBtn = popover.value.querySelector('.vc-prev')
+    const srAlert = document.getElementById(`${props.idPrefix}-popover-sr-alert`)
+    const title = popover.value.querySelector('.vc-title')
+    const weeks = popover.value.querySelector('.vc-weeks')
+    const weekdayLabels = popover.value.querySelectorAll('.vc-weekday')
 
-  const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-  const nextMonthBtn = popover.value.querySelector('.vc-next')
-  const prevMonthBtn = popover.value.querySelector('.vc-prev')
-  const srAlert = document.getElementById(`${props.idPrefix}-popover-sr-alert`)
-  const title = popover.value.querySelector('.vc-title')
-  const weeks = popover.value.querySelector('.vc-weeks')
-  const weekdayLabels = popover.value.querySelectorAll('.vc-weekday')
-
-  if (nextMonthBtn) {
-    nextMonthBtn.ariaLabel = 'next month'
-    nextMonthBtn.id = `${props.idPrefix}-popover-next-month-btn`
+    if (nextMonthBtn) {
+      nextMonthBtn.ariaLabel = 'next month'
+      nextMonthBtn.id = `${props.idPrefix}-popover-next-month-btn`
+    }
+    if (prevMonthBtn) {
+      prevMonthBtn.ariaLabel = 'previous month'
+      prevMonthBtn.id = `${props.idPrefix}-popover-prev-month-btn`
+    }
+    if (title) {
+      title.id = `${props.idPrefix}-popover-title`
+      title.classList.add('vc-focus')
+      title.addEventListener('click', () => nextTick(makeNavAccessible))
+      srAlert.innerText = title.innerText
+    }
+    if (weeks) {
+      weeks.setAttribute('aria-labelledby', `${props.idPrefix}-popover-title`)
+      weeks.role = 'grid'
+    }
+    each(weekdayLabels, (label, index) => {
+      const abbr = document.createElement('abbr')
+      abbr.innerText = label.innerText
+      abbr.title = weekdays[index]
+      label.innerHTML = abbr.outerHTML
+    })
   }
-  if (prevMonthBtn) {
-    prevMonthBtn.ariaLabel = 'previous month'
-    prevMonthBtn.id = `${props.idPrefix}-popover-prev-month-btn`
-  }
-  if (title) {
-    title.id = `${props.idPrefix}-popover-title`
-    title.classList.add('vc-focus')
-    title.addEventListener('click', () => nextTick(makeNavAccessible))
-    srAlert.innerText = title.innerText
-  }
-  if (weeks) {
-    weeks.setAttribute('aria-labelledby', `${props.idPrefix}-popover-title`)
-    weeks.role = 'grid'
-  }
-  each(weekdayLabels, (label, index) => {
-    const abbr = document.createElement('abbr')
-    abbr.innerText = label.innerText
-    abbr.title = weekdays[index]
-    label.innerHTML = abbr.outerHTML
-  })
 }
 
 const makeNavAccessible = () => {
@@ -215,21 +212,17 @@ const makeNavAccessible = () => {
 }
 
 const onClickClear = (e, inputEvents) => {
-  const inputElement = document.getElementById(inputId.value)
+  const inputElement = document.getElementById(inputId)
   if (inputElement) {
     inputElement.value = ''
     inputEvents.change(e)
     alertScreenReader('Cleared')
-    putFocusNextTick(inputId.value)
+    putFocusNextTick(inputId)
     model.value = null
   }
 }
 
-const onDaykeydown = e => {
-  if (e.code === 'Enter' || e.code === 'Space') {
-    putFocusNextTick(`${props.idPrefix}-clear-btn`)
-  }
-}
+const onInput = (event, inputEvents) => inputEvents.input(event)
 
 const onInputKeyup = (e, inputEvents) => {
   if (e.code === 'ArrowDown') {
@@ -243,6 +236,18 @@ const onInputKeyup = (e, inputEvents) => {
     putFocusNextTick(`${props.idPrefix}-popover`, {cssSelector: selector})
   } else {
     inputEvents.keyup(e)
+  }
+}
+
+const onKeyDownDay = e => {
+  if (e.code === 'Enter' || e.code === 'Space') {
+    putFocusNextTick(`${props.idPrefix}-clear-btn`)
+  }
+}
+
+const onKeyDownPreventClick = e => {
+  if (e && isMonthNavBtn(e.target) && isSpaceOrEnter(e.key)) {
+    e.preventDefault()
   }
 }
 
@@ -292,7 +297,7 @@ const onTransitionStart = () => {
 }
 
 const onUpdateFocus = (hasFocus, inputEvents) => {
-  const el = document.getElementById(inputId.value)
+  const el = document.getElementById(inputId)
   const event = {
     relatedTarget: hasFocus ? null : document.getElementById(props.containerId),
     srcElement: el,
@@ -301,25 +306,20 @@ const onUpdateFocus = (hasFocus, inputEvents) => {
   }
   hasFocus ? inputEvents.focusin(event) : inputEvents.focusout(event)
 }
-
-const onInput = (event, inputEvents) => {
-  inputEvents.input(event)
-}
 </script>
 
-
 <style scoped>
+.accessible-date-input {
+  width: 100px;
+}
 .custom-text-field {
   position: relative;
-  display: flex;
-  align-items: center;
   border: 1px solid #ccc; /* Border color similar to v-text-field */
   border-radius: 4px;
   padding: 0 12px;
   background-color: white;
   transition: border-color 0.3s;
 }
-
 .custom-text-field input {
   flex: 1;
   border: none;
@@ -338,35 +338,26 @@ const onInput = (event, inputEvents) => {
   border: none;
   cursor: pointer;
   padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
-
 .custom-text-field .clear-icon {
   width: 20px;
   height: 20px;
   color: #999; /* Icon color */
 }
-
 .custom-text-field.error--text {
   border-color: red;
 }
-
 .custom-text-field.disabled {
   background-color: #f5f5f5;
   cursor: not-allowed;
 }
-
 .custom-text-field.disabled input {
   background-color: #f5f5f5;
   cursor: not-allowed;
 }
-
 .custom-text-field:hover {
   border-color: #aaa;
 }
-
 .custom-text-field:focus-within {
   border-color: #1976d2; /* Primary color on focus */
 }
