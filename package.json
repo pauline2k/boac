@@ -31,7 +31,7 @@
     "vue-gtag": "2.0.1",
     "vue-highcharts": "0.2.0",
     "vue-router": "4.5.0",
-    "vuetify": "3.7.5",
+    "vuetify": "3.7.4",
     "webfontloader": "1.6.28"
   },
   "devDependencies": {
