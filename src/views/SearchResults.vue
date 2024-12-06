@@ -62,10 +62,10 @@
             <v-tab
               :id="`search-results-tab-${item.key}s`"
               :aria-controls="`search-results-tab-panel-${item.key}s`"
-              class="bg-white border-s-sm border-e-sm border-t-sm mx-1 rounded-t-lg"
+              class="border-s-sm border-e-sm border-t-sm mx-1 rounded-t-lg"
               :class="{
-                'border-b-0': item.key === tab,
-                'border-b-sm': item.key !== tab
+                'bg-white border-b-0': item.key === tab,
+                'bg-grey-lighten-4 border-b-md': item.key !== tab
               }"
               hide-slider
               min-width="120"
@@ -74,7 +74,7 @@
             >
               <template #default>
                 <div class="d-flex flex-row-reverse font-size-12 font-weight-bold">
-                  <div :id="`search-results-count-${item.key}s`">
+                  <div :id="`search-results-count-${item.key}s`" class="text-black">
                     {{ getTabLabel(item) }}
                   </div>
                   <div
@@ -111,6 +111,7 @@
                     :students="results.students"
                   />
                   <SortableStudents
+                    class="mt-4"
                     domain="default"
                     :include-curated-checkbox="true"
                     :students="results.students"
