@@ -424,6 +424,10 @@ class StudentPage(CuratedAddSelector, StudentPageAdvisingNote, StudentPageAppoin
 
     # COURSE SITES
 
+    SITE_HEADING = By.XPATH, '//h5[@class="bcourses-site-code"]'
+    SITE_ASSIGNMENTS_HEADER = By.XPATH, '//th[text()=" Assignments Submitted "]'
+    SITE_GRADES_HEADER = By.XPATH, '//th[text()=" Assignment Grades "]'
+
     @staticmethod
     def course_site_xpath(term_sis_id, ccn, idx):
         return f'//div[@id="term-{term_sis_id}-course-{ccn}"]/following-sibling::div//h5[@class="bcourses-site-code"][contains(@id, "site-{idx}")]'
