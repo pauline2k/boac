@@ -342,3 +342,10 @@ class BEATestConfig(BEATestBaseConfigs):
         self.set_dept(dept=Department.L_AND_S)
         self.set_advisor()
         self.set_students(students=test_config.students)
+
+    def user_role_notes_only(self):
+        self.set_dept(dept=Department.NOTES_ONLY)
+        self.set_students()
+        self.set_default_cohort()
+        self.set_test_students(count=1, opts={'notes': True})
+        nessie_utils.set_student_term_enrollments(self.test_students)

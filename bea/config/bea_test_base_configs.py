@@ -198,6 +198,20 @@ class BEATestBaseConfigs(object):
                     self.advisor_read_only.last_name = nessie_advisor.last_name
                 break
 
+    @staticmethod
+    def get_no_canvas_advisor():
+        users = boa_utils.get_authorized_users()
+        return next(filter(
+            lambda a: len(a.depts) == 1 and a.can_access_advising_data and not a.can_access_canvas_data and a.active,
+            users))
+
+    @staticmethod
+    def get_no_canvas_no_notes_advisor():
+        users = boa_utils.get_authorized_users()
+        return next(filter(
+            lambda a: len(a.depts) == 1 and not a.can_access_advising_data and not a.can_access_canvas_data and a.active,
+            users))
+
     def set_students(self, students=None, opts=None):
         self.students = students or nessie_utils.get_all_students(opts)
         if opts and opts.get('include_inactive'):

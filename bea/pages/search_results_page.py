@@ -88,6 +88,10 @@ class SearchResultsPage(ListViewAdmitPages):
     STUDENT_RESULTS_BUTTON = By.ID, 'search-results-tab-students'
     STUDENT_RESULTS_COUNT = By.ID, 'search-results-count-students'
 
+    def are_students_in_results(self):
+        self.wait_for_spinner()
+        return self.is_present(self.STUDENT_RESULTS_BUTTON)
+
     def student_search_results_count(self):
         self.wait_for_spinner()
         return self.element(self.STUDENT_RESULTS_COUNT).text
@@ -119,6 +123,10 @@ class SearchResultsPage(ListViewAdmitPages):
     CLASS_ROW = By.XPATH, '//*[contains(@id, "course-results-page-h")]/../following-sibling::table/tr'
     PARTIAL_RESULTS_MSG = By.XPATH, '//div[text()=" Showing the first 50 classes. "]'
 
+    def are_classes_in_results(self):
+        self.wait_for_spinner()
+        return self.is_present(self.CLASS_RESULTS_BUTTON)
+
     def class_search_results_count(self):
         self.wait_for_spinner()
         return self.element(self.CLASS_RESULTS_COUNT).text
@@ -147,6 +155,10 @@ class SearchResultsPage(ListViewAdmitPages):
     NOTE_RESULTS_BUTTON = By.ID, 'search-results-tab-notes'
     NOTE_RESULTS_COUNT = By.ID, 'search-results-count-notes'
     NOTE_SEARCH_RESULT = By.XPATH, '//div[@class="advising-note-search-result"]//a'
+
+    def are_notes_in_results(self):
+        self.wait_for_spinner()
+        return self.is_present(self.NOTE_RESULTS_BUTTON)
 
     def note_results_count(self):
         self.wait_for_spinner()
@@ -225,6 +237,10 @@ class SearchResultsPage(ListViewAdmitPages):
     APPT_RESULTS_BUTTON = By.ID, 'search-results-tab-appointments'
     APPT_RESULTS_COUNT = By.ID, 'search-results-count-appointments'
     APPT_SEARCH_RESULT = By.XPATH, '//div[contains(@id, "appointment-search-result-")]//a'
+
+    def are_appts_in_results(self):
+        self.wait_for_spinner()
+        return self.is_present(self.APPT_RESULTS_BUTTON)
 
     def appt_results_count(self):
         self.wait_for_spinner()

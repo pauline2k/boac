@@ -30,6 +30,7 @@ from bea.pages.admit_page import AdmitPage
 from bea.pages.api_admin_page import ApiAdminPage
 from bea.pages.api_admit_page import ApiAdmitPage
 from bea.pages.api_notes_page import ApiNotesPage
+from bea.pages.api_section_page import ApiSectionPage
 from bea.pages.api_student_page import ApiStudentPage
 from bea.pages.calnet_page import CalNetPage
 from bea.pages.class_page import ClassPage
@@ -46,6 +47,7 @@ from bea.pages.degree_template_page import DegreeTemplatePage
 from bea.pages.draft_notes_page import DraftNotesPage
 from bea.pages.filtered_admits_page import FilteredAdmitsPage
 from bea.pages.filtered_students_page import FilteredStudentsPage
+from bea.pages.flight_data_recorder_page import FlightDataRecorderPage
 from bea.pages.flight_deck_page import FlightDeckPage
 from bea.pages.homepage import Homepage
 from bea.pages.passenger_manifest_page import PassengerManifestPage
@@ -84,6 +86,7 @@ def page_objects(request):
     api_admin_page = ApiAdminPage(driver, headless)
     api_admit_page = ApiAdmitPage(driver, headless)
     api_notes_page = ApiNotesPage(driver, headless)
+    api_section_page = ApiSectionPage(driver, headless)
     api_student_page = ApiStudentPage(driver, headless)
     calnet_page = CalNetPage(driver, headless)
     class_page = ClassPage(driver, headless)
@@ -100,6 +103,7 @@ def page_objects(request):
     draft_notes_page = DraftNotesPage(driver, headless)
     filtered_admits_page = FilteredAdmitsPage(driver, headless)
     filtered_students_page = FilteredStudentsPage(driver, headless)
+    flight_data_recorder_page = FlightDataRecorderPage(driver, headless)
     flight_deck_page = FlightDeckPage(driver, headless)
     homepage = Homepage(driver, headless)
     pax_manifest_page = PassengerManifestPage(driver, headless)
@@ -117,6 +121,7 @@ def page_objects(request):
             setattr(cls.obj, 'api_admin_page', api_admin_page)
             setattr(cls.obj, 'api_admit_page', api_admit_page)
             setattr(cls.obj, 'api_notes_page', api_notes_page)
+            setattr(cls.obj, 'api_section_page', api_section_page)
             setattr(cls.obj, 'api_student_page', api_student_page)
             setattr(cls.obj, 'calnet_page', calnet_page)
             setattr(cls.obj, 'class_page', class_page)
@@ -133,6 +138,7 @@ def page_objects(request):
             setattr(cls.obj, 'draft_notes_page', draft_notes_page)
             setattr(cls.obj, 'filtered_admits_page', filtered_admits_page)
             setattr(cls.obj, 'filtered_students_page', filtered_students_page)
+            setattr(cls.obj, 'flight_data_recorder_page', flight_data_recorder_page)
             setattr(cls.obj, 'flight_deck_page', flight_deck_page)
             setattr(cls.obj, 'homepage', homepage)
             setattr(cls.obj, 'pax_manifest_page', pax_manifest_page)

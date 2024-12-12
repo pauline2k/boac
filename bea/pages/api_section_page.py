@@ -30,44 +30,14 @@ from bea.test_utils import utils
 from flask import current_app as app
 
 
-class ApiStudentPage(ApiPage):
+class ApiSectionPage(ApiPage):
 
-    def load_data(self, student):
-        app.logger.info(f'Hitting student API endpoint for UID {student.uid}')
-        self.driver.get(f'{boa_utils.get_boa_base_url()}/api/student/by_uid/{student.uid}')
+    def get_data(self, term_id, ccn):
+        app.logger.info(f'Getting data for section {ccn}')
+        self.driver.get(f'{boa_utils.get_boa_base_url()}/api/section/{term_id}/{ccn}')
         self.when_present(self.CONTENT, utils.get_short_timeout())
         return json.loads(self.element(self.CONTENT).text)
 
-    def asc_profile(self, student):
-        parsed = self.load_data(student)
-        return parsed and parsed.get('athleticsProfile')
-
-    def coe_profile(self, student):
-        parsed = self.load_data(student)
-        return parsed and parsed.get('coeProfile')
-
-    def student_appts(self, student):
-        parsed = self.load_data(student)
-        timeline_items = parsed and parsed.get('notifications')
-        return timeline_items and timeline_items.get('appointment') or []
-
-    def student_e_forms(self, student):
-        parsed = self.load_data(student)
-        timeline_items = parsed and parsed.get('notifications')
-        return timeline_items and timeline_items.get('eForm') or []
-
-    def student_notes(self, student):
-        parsed = self.load_data(student)
-        timeline_items = parsed and parsed.get('notifications')
-        return timeline_items and timeline_items.get('note') or []
-
-    def student_sites(self, student):
-        all_sites = []
-        parsed = self.load_data(student)
-        terms = (parsed and parsed.get('enrollmentTerms')) or []
-        for term in terms:
-            term_enrollments = term.get('enrollments') or []
-            for course in term_enrollments:
-                sites = course.get('canvasSites') or []
-                all_sites.extend(sites)
-        return all_sites
+    def is_unauthorized(self, term_id, ccn):
+        parsed = self.get_data(term_id, ccn)
+        return parsed and parsed.get('message') == 'Unauthorized to view course data'
