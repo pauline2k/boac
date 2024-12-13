@@ -16,7 +16,7 @@
       </div>
     </v-expand-transition>
     <div v-if="size(cohortStore.students) && cohortStore.editMode !== 'apply'">
-      <div class="align-center d-flex flex-column flex-column-reverse flex-sm-row justify-space-between w-100 pt-2">
+      <div class="align-end d-flex justify-space-between w-100" :class="{'pt-2': cohortStore.isCompactView}">
         <CuratedGroupSelector
           class="mr-auto"
           :context-description="cohortStore.domain === 'default' ? `Cohort ${cohortStore.cohortName || ''}` : `Admitted Students Cohort ${cohortStore.cohortName || ''}`"
@@ -24,18 +24,24 @@
           :on-create-curated-group="resetFiltersToLastApply"
           :students="cohortStore.students"
         />
-        <div class="d-flex flex-wrap justify-end pr-3">
-          <TermSelector v-if="cohortStore.domain === 'default'" class="mb-1" />
+        <div>
+          <TermSelector
+            v-if="cohortStore.domain === 'default'"
+            class="mb-1"
+            label-class="cohort-sort-by-label"
+            select-class="cohort-sort-by-select"
+          />
           <SortBy
             v-if="cohortStore.showSortBy"
-            class="ml-5 mb-1"
             :domain="cohortStore.domain"
+            label-class="cohort-sort-by-label"
+            select-class="cohort-sort-by-select"
           />
         </div>
       </div>
-      <div v-if="cohortStore.totalStudentCount > cohortStore.pagination.itemsPerPage" :class="{'mt-6': cohortStore.domain === 'default'}">
+      <div v-if="cohortStore.totalStudentCount > cohortStore.pagination.itemsPerPage" :class="{'mt-3': cohortStore.domain === 'default'}">
         <Pagination
-          class="my-3"
+          class="mt-2"
           :click-handler="goToPage"
           :init-page-number="cohortStore.pagination.currentPage"
           :limit="10"
@@ -43,7 +49,7 @@
           :total-rows="cohortStore.totalStudentCount"
         />
       </div>
-      <hr class="my-4" />
+      <hr />
       <v-container
         v-if="cohortStore.domain === 'default'"
         id="cohort-students"

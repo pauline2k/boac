@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="!cohortStore.cohortId && isUndefined(cohortStore.totalStudentCount)">
-      <h1 id="page-header">
+      <h1 id="page-header" class="mb-2">
         Create {{ cohortStore.domain === 'default' ? 'a Cohort' : 'an admissions cohort' }}
       </h1>
       <div v-if="cohortStore.domain === 'default'">
@@ -21,7 +21,7 @@
         <span
           v-if="cohortStore.editMode !== 'apply' && !isUndefined(cohortStore.totalStudentCount)"
           class="text-medium-emphasis ml-1"
-        ><span class="sr-only">, </span>{{ pluralize(cohortStore.domain === 'admitted_students' ? 'admit' : 'student', cohortStore.totalStudentCount) }}</span>
+        ><span class="sr-only">, </span>({{ pluralize(cohortStore.domain === 'admitted_students' ? 'admit' : 'student', cohortStore.totalStudentCount) }})</span>
       </h1>
       <h1
         v-if="!cohortStore.cohortName && !isUndefined(cohortStore.totalStudentCount)"
