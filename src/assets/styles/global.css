@@ -113,11 +113,19 @@
 .checked-checkbox-container {
   background-color: rgb(var(--v-theme-secondary)) !important;
 }
+.cohort-sort-by-label {
+  padding-right: 8px;
+  text-align: right;
+  width: 180px !important;
+}
+.cohort-sort-by-select {
+  width: 100% !important;
+}
 .date-input-opacity-override .v-field__input {
   opacity: 1 !important;
 }
 .default-margins {
-  margin: 24px;
+  margin: 18px 24px 24px 24px;
 }
 .demo-mode-blur,
 .demo-mode-blur.v-chip .v-chip__content,

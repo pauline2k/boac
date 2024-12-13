@@ -5,25 +5,39 @@
       <AdmitDataWarning :updated-at="get(students, '[0].updatedAt')" />
     </div>
     <div v-if="mode !== 'bulkAdd'">
-      <hr v-if="!error && totalStudentCount > itemsPerPage" class="filters-section-separator" />
       <div>
-        <div class="d-flex flex-wrap justify-end py-3">
-          <TermSelector v-if="totalStudentCount && domain === 'default'" class="mb-1" />
-          <SortBy v-if="totalStudentCount > 1" :domain="domain" class="ml-5 mb-1" />
+        <div class="align-end d-flex justify-space-between my-2">
+          <div>
+            <Pagination
+              v-if="totalStudentCount > itemsPerPage"
+              :click-handler="goToPage"
+              :init-page-number="pageNumber"
+              :limit="10"
+              :per-page="itemsPerPage"
+              :total-rows="totalStudentCount"
+            />
+          </div>
+          <div>
+            <TermSelector
+              v-if="totalStudentCount && domain === 'default'"
+              class="float-right mb-1"
+              label-class="cohort-sort-by-label"
+              select-class="cohort-sort-by-select"
+              style="width: 500px"
+            />
+            <SortBy
+              v-if="totalStudentCount > 1"
+              class="float-right mb-1"
+              :domain="domain"
+              label-class="cohort-sort-by-label"
+              select-class="cohort-sort-by-select"
+              style="width: 500px"
+            />
+          </div>
         </div>
-        <div v-if="totalStudentCount > itemsPerPage" class="pt-2">
-          <Pagination
-            class="my-3"
-            :click-handler="goToPage"
-            :init-page-number="pageNumber"
-            :limit="10"
-            :per-page="itemsPerPage"
-            :total-rows="totalStudentCount"
-          />
-        </div>
-        <div v-if="size(students)" class="pt-2">
+        <div v-if="size(students)">
           <div id="curated-cohort-students" class="scroll-margins">
-            <div v-if="domain === 'default'">
+            <v-container v-if="domain === 'default'" fluid>
               <StudentRow
                 v-for="(student, index) in students"
                 :id="`student-${student.uid}`"
@@ -37,7 +51,7 @@
                 :student="student"
                 :term-id="currentUser.preferences.termId"
               />
-            </div>
+            </v-container>
             <div v-if="domain === 'admitted_students'">
               <hr />
               <AdmitStudentsTable
@@ -110,7 +124,6 @@ const anchor = computed(() => location.hash)
 const contextStore = useContextStore()
 const curatedStore = useCuratedGroupStore()
 const currentUser = contextStore.currentUser
-const error = ref(undefined)
 const isAddingStudents = ref(false)
 const pageLoadAlert = computed(() => {
   const loadStatus = contextStore.loading ? 'has loaded' : 'is loading'
@@ -209,7 +222,7 @@ const onChangeTerm = () => {
 const removeStudent = sid => {
   curatedStore.removeStudent(sid)
   return removeFromCuratedGroups([curatedGroupId.value], sid).then(data => {
-    curatedStore.setTotalStudentCount(data.totalStudentCount)
+    curatedStore.setTotalStudentCount(data[0].totalStudentCount)
   })
 }
 </script>

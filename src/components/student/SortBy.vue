@@ -1,12 +1,17 @@
 <template>
   <div class="align-center d-flex">
-    <label id="sort-by" class="font-size-16 pr-2 text-no-wrap text-medium-emphasis" for="students-sort-by">
+    <label
+      id="sort-by"
+      :class="labelClass"
+      for="students-sort-by"
+    >
       Sort<span class="sr-only"> students</span> by
     </label>
     <select
       id="students-sort-by"
       v-model="selected"
-      class="select-menu students-sort-by"
+      class="select-menu"
+      :class="selectClass"
     >
       <optgroup
         v-for="(options, label) in optGroups"
@@ -37,6 +42,16 @@ import {useContextStore} from '@/stores/context'
 const props = defineProps({
   domain: {
     default: undefined,
+    required: false,
+    type: String
+  },
+  labelClass: {
+    default: 'font-size-16 pr-2 text-no-wrap text-medium-emphasis',
+    required: false,
+    type: String
+  },
+  selectClass: {
+    default: 'students-sort-by',
     required: false,
     type: String
   }
