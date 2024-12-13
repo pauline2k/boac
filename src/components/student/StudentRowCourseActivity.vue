@@ -1,18 +1,18 @@
 <template>
-  <table class="student-row-courses table-hover w-100">
+  <table v-if="termEnrollments.length" class="student-row-courses table-hover w-100">
     <thead class="text-none">
       <tr>
-        <th class="border-b-sm col-course">Class</th>
-        <th class="border-b-sm col-units">Units</th>
-        <th v-if="currentUser.canAccessCanvasData" class="border-b-sm col-bcourses">
+        <th class="border-b-sm col-course vertical-bottom">Class</th>
+        <th class="border-b-sm col-units vertical-bottom">Units</th>
+        <th v-if="currentUser.canAccessCanvasData" class="border-b-sm col-bcourses vertical-bottom">
           <span aria-hidden="true">bCourses Activity</span>
           <span class="sr-only">Most recent B Courses activity</span>
         </th>
-        <th class="border-b-sm col-midterm">
+        <th class="border-b-sm col-midterm vertical-bottom">
           <span aria-hidden="true">Mid</span>
           <span class="sr-only">Midpoint grade</span>
         </th>
-        <th class="border-b-sm col-final">
+        <th class="border-b-sm col-final vertical-bottom">
           <span>Final<span class="sr-only"> grade</span></span>
         </th>
       </tr>
@@ -55,7 +55,11 @@
         </td>
         <td class="col-midterm">
           <div class="d-flex align-center">
-            <span v-if="enrollment.midtermGrade" v-accessible-grade="enrollment.midtermGrade" class="font-weight-bold"></span>
+            <span
+              v-if="enrollment.midtermGrade"
+              v-accessible-grade="enrollment.midtermGrade"
+              class="font-weight-bold"
+            />
             <v-icon
               v-if="isAlertGrade(enrollment.midtermGrade)"
               color="warning"
@@ -89,25 +93,11 @@
           </div>
         </td>
       </tr>
-      <tr v-if="!termEnrollments.length">
-        <td class="col-course text-medium-emphasis">
-          No {{ termNameForSisId(termId) }} enrollments
-        </td>
-        <td class="col-units">
-          <span class="sr-only">No data</span>&mdash;
-        </td>
-        <td v-if="currentUser.canAccessCanvasData" class="col-bcourses">
-          <span class="sr-only">No data</span>&mdash;
-        </td>
-        <td class="col-midterm">
-          <span class="sr-only">No data</span>&mdash;
-        </td>
-        <td class="col-final">
-          <span class="sr-only">No data</span>&mdash;
-        </td>
-      </tr>
     </tbody>
   </table>
+  <div v-if="!termEnrollments.length" class="col-course font-size-13 pl-3 text-medium-emphasis">
+    No {{ termNameForSisId(termId) }} enrollments
+  </div>
 </template>
 
 <script setup>
