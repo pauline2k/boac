@@ -35,7 +35,6 @@ install:
   - pip3 install tox
 
 script:
-  - ${TRAVIS_BUILD_DIR}/scripts/verify-read-only-src-vue2.sh || travis_terminate 1
   - psql -c 'create database boac_test;' -U postgres
   - psql -c 'create database boac_loch_test;' -U postgres
   - psql boac_test -c 'create extension pg_trgm;' -U postgres
