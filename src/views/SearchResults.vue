@@ -3,7 +3,7 @@
     <div class="pa-4" :class="{'bg-sky-blue': !hasSearchResults}">
       <div class="align-center d-flex">
         <h1 id="page-header" class="mr-2">{{ searchStore.isSearching ? 'Searching...' : 'Search Results' }}</h1>
-        <div v-if="!loading" class="pb-1">
+        <div v-if="!loading && (currentUser.canAccessAdvisingData || currentUser.canAccessCanvasData)" class="pb-1">
           [<v-btn
             id="edit-search-btn"
             class="px-0"
@@ -234,6 +234,7 @@ const router = useRouter()
 const searchStore = useSearchStore()
 
 const appointmentsQuery = {limit: 20, offset: 0}
+const currentUser = contextStore.currentUser
 const hasMoreAppointmentsToShow = computed(() => {
   return size(results.appointments) >= appointmentsQuery.limit + appointmentsQuery.offset
 })
