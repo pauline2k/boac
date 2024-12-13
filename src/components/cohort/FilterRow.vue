@@ -2,7 +2,7 @@
   <div
     v-if="showRow"
     :id="`filter-row-${position}`"
-    class="align-center d-flex flex-wrap mt-2 w-100"
+    class="align-center d-flex filter-row-height flex-wrap mt-1 w-100"
     :class="{'filter-row': isExistingFilter}"
   >
     <div
@@ -140,7 +140,7 @@
         <v-btn
           id="unsaved-filter-reset"
           aria-label="Discard Cohort Filter"
-          class="text-uppercase ml-2"
+          class="text-uppercase"
           color="primary"
           text="Cancel"
           variant="text"
@@ -611,12 +611,14 @@ const updateRangeFilter = () => {
 <style scoped>
 .existing-filter-name {
   min-width: 210px;
-  width: 26%;
+  width: 30%;
 }
 .filter-row {
   align-items: center;
   background-color: rgb(var(--v-theme-surface-light));
   border-left: 6px solid rgb(var(--v-theme-primary)) !important;
-  min-height: 56px;
+}
+.filter-row-height {
+  min-height: 52px;
 }
 </style>

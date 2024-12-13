@@ -53,7 +53,7 @@
       <v-container
         v-if="cohortStore.domain === 'default'"
         id="cohort-students"
-        class="pl-3 scroll-margins"
+        class="pl-3 pt-0 scroll-margins"
         fluid
       >
         <StudentRow

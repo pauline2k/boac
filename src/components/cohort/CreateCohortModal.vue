@@ -45,8 +45,7 @@
               </template>
             </v-text-field>
           </v-card-text>
-          <hr />
-          <v-card-actions class="modal-footer">
+          <v-card-actions class="modal-footer py-0">
             <ProgressButton
               id="create-cohort-confirm-btn"
               :action="createCohort"
@@ -58,13 +57,11 @@
             <v-btn
               id="create-cohort-cancel-btn"
               aria-label="Cancel Save Cohort"
-              class="ml-2"
               :disabled="isSaving"
+              text="Cancel"
               variant="text"
               @click="cancelModal"
-            >
-              Cancel
-            </v-btn>
+            />
           </v-card-actions>
         </form>
       </FocusLock>
