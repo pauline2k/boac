@@ -1,6 +1,6 @@
 <template>
   <v-row
-    class="student-row pb-3 width-96"
+    class="student-row pb-3"
     @focusin="hover = true"
     @focusout="hover = false"
     @mouseover="hover = true"
@@ -63,7 +63,7 @@
       </div>
     </v-col>
     <v-col
-      class="font-size-13 student-gpa-col ml-10 ml-md-0 pb-2 pb-lg-0"
+      class="font-size-13 ml-10 ml-md-0 pb-2 pb-lg-0 pl-0 student-gpa-col"
       md="2"
       sm="4"
     >
@@ -89,7 +89,7 @@
       />
       <div
         v-if="size(student.termGpa)"
-        class="d-flex flex-wrap flex-lg-nowrap align-center text-uppercase text-medium-emphasis font-weight-light profile-last-term-gpa pl-0"
+        class="align-center d-flex flex-wrap font-weight-light pl-0 profile-last-term-gpa text-uppercase text-medium-emphasis"
       >
         <v-icon
           v-if="student.termGpa[0].gpa < 2"
@@ -107,7 +107,7 @@
       </div>
     </v-col>
     <v-col
-      class="font-size-13 ml-10 ml-sm-0 pb-2 pb-lg-0"
+      class="font-size-13 ml-10 ml-sm-0 pb-2 pb-lg-0 pl-0"
       lg="2"
       md="3"
       sm="4"
@@ -145,7 +145,7 @@
         <div class="text-no-wrap text-medium-emphasis">Units Completed</div>
       </div>
     </v-col>
-    <v-col class="ml-10 pl-2 ml-md-auto pl-md-4 pl-lg-0 ml-lg-0 pb-0" lg="4" md="10">
+    <v-col class="ml-10 ml-md-auto pl-2 pl-md-4 pl-lg-0 ml-lg-0 pb-0 pr-0" lg="4" md="10">
       <StudentRowCourseActivity
         :row-index="rowIndex"
         :student="student"
@@ -220,8 +220,5 @@ const onClickRemoveStudent = student => {
 }
 .student-row {
   border-bottom: 1px solid rgb(var(--v-theme-surface-light));
-}
-.width-96 {
-  width: 96%;
 }
 </style>

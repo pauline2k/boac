@@ -2,23 +2,23 @@
   <table class="student-row-courses table-hover w-100">
     <thead class="text-none">
       <tr>
-        <th class="col-course">Class</th>
-        <th class="col-units">Units</th>
-        <th v-if="currentUser.canAccessCanvasData" class="col-bcourses">
+        <th class="border-b-sm col-course">Class</th>
+        <th class="border-b-sm col-units">Units</th>
+        <th v-if="currentUser.canAccessCanvasData" class="border-b-sm col-bcourses">
           <span aria-hidden="true">bCourses Activity</span>
           <span class="sr-only">Most recent B Courses activity</span>
         </th>
-        <th class="col-midterm">
+        <th class="border-b-sm col-midterm">
           <span aria-hidden="true">Mid</span>
           <span class="sr-only">Midpoint grade</span>
         </th>
-        <th class="col-final">
+        <th class="border-b-sm col-final">
           <span>Final<span class="sr-only"> grade</span></span>
         </th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(enrollment, index) in termEnrollments" :key="index">
+      <tr v-for="(enrollment, index) in termEnrollments" :key="index" :class="{'bg-pale-blue': !(index % 2)}">
         <td class="col-course">
           <span :id="`row-${rowIndex}-student-enrollment-name-${index}`" :class="{'demo-mode-blur': currentUser.inDemoMode}">
             {{ enrollment.displayName }}
@@ -67,11 +67,7 @@
         </td>
         <td class="col-final">
           <div class="d-flex align-center">
-            <span
-              v-if="enrollment.grade"
-              v-accessible-grade="enrollment.grade"
-              class="font-weight-bold"
-            ></span>
+            <span v-if="enrollment.grade" v-accessible-grade="enrollment.grade" />
             <v-icon
               v-if="isAlertGrade(enrollment.grade)"
               class="grade-alert"
@@ -153,8 +149,10 @@ const termEnrollments = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+table {
+  border-collapse: separate;
+}
 .student-row-courses {
-  min-width: 380px;
   td {
     font-size: 13px;
     line-height: 1.1em;

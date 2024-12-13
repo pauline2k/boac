@@ -1,6 +1,10 @@
 <template>
   <div class="align-center d-flex">
-    <label id="term-select-label" class="font-size-16 pr-2 text-medium-emphasis" for="students-term-select">
+    <label
+      id="term-select-label"
+      :class="labelClass"
+      for="students-term-select"
+    >
       <span class="sr-only">Select </span>Term
     </label>
     <div aria-live="polite" class="sr-only">
@@ -9,7 +13,8 @@
     <select
       id="students-term-select"
       v-model="selected"
-      class="select-menu students-term-select"
+      class="select-menu"
+      :class="selectClass"
     >
       <option
         v-for="option in options"
@@ -31,6 +36,18 @@ import {nextTick, ref, watch} from 'vue'
 import {previousSisTermId, termNameForSisId} from '@/berkeley'
 import {useContextStore} from '@/stores/context'
 
+defineProps({
+  labelClass: {
+    default: 'font-size-16 pr-2 text-medium-emphasis',
+    required: false,
+    type: String
+  },
+  selectClass: {
+    default: 'students-term-select',
+    required: false,
+    type: String
+  }
+})
 const nextSisTermId = termId => {
   let nextTermId = ''
   let strTermId = termId.toString()
