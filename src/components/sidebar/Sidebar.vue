@@ -19,7 +19,7 @@
         </NavLink>
       </div>
       <div
-        v-for="cohort in _filter(currentUser.myCohorts, ['domain', 'default'])"
+        v-for="cohort in myCohorts"
         :key="cohort.id"
         class="pretty-hover"
       >
@@ -39,7 +39,7 @@
             class="text-quaternary sidebar-pill"
             color="secondary"
           >
-            {{ toInt(cohort.totalStudentCount, 0).toLocaleString() }}
+            <span class="font-size-14">{{ toInt(cohort.totalStudentCount, 0).toLocaleString() }}</span>
           </PillCount>
         </NavLink>
       </div>
@@ -61,7 +61,7 @@
         </NavLink>
       </div>
       <div
-        v-for="(group, index) in _filter(currentUser.myCuratedGroups, ['domain', 'default'])"
+        v-for="(group, index) in myCuratedGroups"
         :key="group.id"
         class="pretty-hover"
       >
@@ -81,14 +81,14 @@
             class="text-quaternary sidebar-pill"
             color="secondary"
           >
-            {{ toInt(group.totalStudentCount, 0).toLocaleString() }}
+            <span class="font-size-14">{{ toInt(group.totalStudentCount, 0).toLocaleString() }}</span>
           </PillCount>
         </NavLink>
       </div>
     </v-list-item>
-    <hr v-if="currentUser.canAccessAdmittedStudents" class="sidebar-section-divider" />
+    <hr v-if="contextStore.currentUser.canAccessAdmittedStudents" class="sidebar-section-divider" />
     <v-list-item
-      v-if="currentUser.canAccessAdmittedStudents"
+      v-if="contextStore.currentUser.canAccessAdmittedStudents"
       aria-labelledby="sidebar-admitted-students-header admitted-students-all"
       class="mt-2 pa-0"
       role="region"
@@ -114,7 +114,7 @@
         </NavLink>
       </div>
       <div
-        v-for="(cohort, index) in _filter(currentUser.myCohorts, ['domain', 'admitted_students'])"
+        v-for="(cohort, index) in myCohortsCE3"
         :key="cohort.id"
         class="pretty-hover"
       >
@@ -134,20 +134,20 @@
             class="text-quaternary sidebar-pill"
             color="secondary"
           >
-            {{ toInt(cohort.totalStudentCount, 0).toLocaleString() }}
+            <span class="font-size-14">{{ toInt(cohort.totalStudentCount, 0).toLocaleString() }}</span>
           </PillCount>
         </NavLink>
       </div>
     </v-list-item>
     <v-list-item
-      v-if="currentUser.canAccessAdmittedStudents"
+      v-if="contextStore.currentUser.canAccessAdmittedStudents"
       aria-labelledby="sidebar-admitted-students-header sidebar-admit-curated-groups-header"
       class="pa-0"
       role="region"
     >
       <div
         class="align-center d-flex font-weight-bold justify-space-between pretty-hover py-1"
-        :class="{'mt-2': _filter(currentUser.myCohorts, ['domain', 'admitted_students']).length}"
+        :class="{'mt-2': myCohortsCE3.length}"
       >
         <div id="sidebar-admit-curated-groups-header">
           CE3 Groups
@@ -163,7 +163,7 @@
         </NavLink>
       </div>
       <div
-        v-for="(group, index) in _filter(currentUser.myCuratedGroups, ['domain', 'admitted_students'])"
+        v-for="(group, index) in myCuratedGroupsCE3"
         :key="group.id"
         class="pretty-hover"
       >
@@ -183,7 +183,7 @@
             class="text-quaternary sidebar-pill"
             color="secondary"
           >
-            {{ toInt(group.totalStudentCount, 0).toLocaleString() }}
+            <span class="font-size-14">{{ toInt(group.totalStudentCount, 0).toLocaleString() }}</span>
           </PillCount>
         </NavLink>
       </div>
@@ -215,10 +215,14 @@ import {capitalize, filter as _filter} from 'lodash'
 import {describeCuratedGroupDomain} from '@/berkeley'
 import {mdiPlus} from '@mdi/js'
 import {pluralize, toInt} from '@/lib/utils'
-import {reactive} from 'vue'
 import {useContextStore} from '@/stores/context'
+import {computed} from 'vue'
 
-const currentUser = reactive(useContextStore().currentUser)
+const contextStore = useContextStore()
+const myCohorts = computed(() => _filter(contextStore.currentUser.myCohorts, ['domain', 'default']))
+const myCohortsCE3 = computed(() => _filter(contextStore.currentUser.myCohorts, ['domain', 'admitted_students']))
+const myCuratedGroups = computed(() => _filter(contextStore.currentUser.myCuratedGroups, ['domain', 'default']))
+const myCuratedGroupsCE3 = computed(() => _filter(contextStore.currentUser.myCuratedGroups, ['domain', 'admitted_students']))
 </script>
 
 <style>

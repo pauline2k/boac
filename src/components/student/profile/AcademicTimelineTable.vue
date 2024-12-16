@@ -940,7 +940,7 @@ table {
 }
 /* eslint-disable-next-line vue-scoped-css/no-unused-selector */
 .pill-note {
-  width: 100px;
+  width: 115px;
 }
 /* eslint-disable-next-line vue-scoped-css/no-unused-selector */
 .pill-requirement {
