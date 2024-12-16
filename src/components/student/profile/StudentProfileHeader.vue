@@ -1,6 +1,6 @@
 <template>
   <div aria-labelledby="student-name-header student-name-header-sr" class="d-flex flex-wrap mr-4 pb-2 pt-4" role="region">
-    <div class="d-flex ml-3 me-auto">
+    <div class="d-flex me-auto">
       <div class="text-center" :class="{'column-with-avatar-compact': compact, 'column-with-avatar': !compact}">
         <StudentAvatar :size="compact ? 'medium' : 'large'" :student="student" />
         <ManageStudent
@@ -81,7 +81,7 @@ onMounted(() => {
 
 <style>
 .column-with-avatar {
-  margin: 0 48px;
+  margin: 0 36px;
   vertical-align: center;
 }
 .column-with-avatar-compact {
