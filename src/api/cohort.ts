@@ -1,7 +1,6 @@
 import axios from 'axios'
 import ga from '@/lib/ga'
 import {get} from 'lodash'
-import {DateTime} from 'luxon'
 import fileDownload from 'js-file-download'
 import utils from '@/api/api-utils'
 import {useContextStore} from '@/stores/context'
@@ -43,26 +42,23 @@ export function deleteCohort(id: number) {
 }
 
 export function downloadCohortCsv(cohortId: number, cohortName: string, csvColumnsSelected: any[]) {
-  const now = DateTime.now().toFormat('yyyy-MM-dd_HH-mm-ss')
-  const filename = cohortName ? `${cohortName}-students-${now}` : `students-${now}`
-  const termId = useContextStore().currentUser.preferences.termId || get(useContextStore().config, 'currentEnrollmentTermId')
-
-  $_track('download', filename)
+  const contextStore = useContextStore()
+  const termId = contextStore.currentUser.preferences.termId || get(contextStore.config, 'currentEnrollmentTermId')
   const url: string = `${utils.apiBaseUrl()}/api/cohort/download_csv`
   return axios.post(url, {cohortId, csvColumnsSelected, termId}).then(response => {
-    return fileDownload(response.data, `${filename}.csv`)
+    const filename = utils.createDownloadFilename(cohortName ? `${cohortName}-students` : 'students', 'csv')
+    $_track('download', filename)
+    return fileDownload(response.data, filename)
   })
 }
 
 export function downloadCsv(domain: string, cohortName: string, filters: any[], csvColumnsSelected: any[]) {
-  const now = DateTime.now().toFormat('yyyy-MM-dd_HH-mm-ss')
-  const filename = cohortName ? `${cohortName}-students-${now}` : `students-${now}`
-  const termId = useContextStore().currentUser.preferences.termId || get(useContextStore().config, 'currentEnrollmentTermId')
-  $_track('download', filename)
-
+  const contextStore = useContextStore()
+  const termId = contextStore.currentUser.preferences.termId || get(contextStore.config, 'currentEnrollmentTermId')
   const url: string = `${utils.apiBaseUrl()}/api/cohort/download_csv_per_filters`
   return axios.post(url, {csvColumnsSelected, domain, filters, termId}).then(response => {
-    return fileDownload(response.data, `${filename}.csv`)
+    $_track('download', `Cohort: ${cohortName || '[Not yet named]'}`)
+    return fileDownload(response.data, utils.createDownloadFilename(cohortName || 'students', 'csv'))
   })
 }
 
