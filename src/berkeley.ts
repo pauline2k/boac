@@ -128,7 +128,8 @@ export function getDefaultCsvExportColumns() {
     {text: 'Program status', value: 'program_status'},
     {text: 'Transfer status', value: 'transfer'},
     {text: 'Intended Major', value: 'intended_major'},
-    {text: 'Units in progress', value: 'units_in_progress'}
+    {text: 'Units in progress', value: 'units_in_progress'},
+    {text: 'College Advisor', value: 'college_advisor'}
   ]
 }
 
