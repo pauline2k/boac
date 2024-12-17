@@ -1441,6 +1441,7 @@ class TestDownloadCsvPerFilters:
                 'term_gpa_2175',
                 'cumulative_gpa',
                 'program_status',
+                'college_advisor',
             ],
         }
         response = client.post(
@@ -1452,9 +1453,9 @@ class TestDownloadCsvPerFilters:
         assert 'csv' in response.content_type
         csv = str(response.data)
         for snippet in [
-            'first_name,last_name,sid,email,phone,majors,level_by_units,terms_in_attendance,expected_graduation_term,units_completed,term_gpa_2172,term_gpa_2175,cumulative_gpa,program_status',  # noqa: E501
-            'Deborah,Davies,11667051,barnburner@berkeley.edu,415/123-4567,English BA;Nuclear Engineering BS,Junior,,Fall 2019,101.3,2.700,,3.8,Active',  # noqa: E501
-            'Paul,Farestveit,7890123456,qadept@berkeley.edu,415/123-4567,Nuclear Engineering BS,Senior,2,Spring 2020,110,,,3.9,Active',
+            'first_name,last_name,sid,email,phone,majors,level_by_units,terms_in_attendance,expected_graduation_term,units_completed,term_gpa_2172,term_gpa_2175,cumulative_gpa,program_status,college_advisor',  # noqa: E501
+            'Deborah,Davies,11667051,barnburner@berkeley.edu,415/123-4567,English BA; Nuclear Engineering BS,Junior,,Fall 2019,101.3,2.700,,3.8,Active',  # noqa: E501
+            'Paul,Farestveit,7890123456,qadept@berkeley.edu,415/123-4567,Nuclear Engineering BS,Senior,2,Spring 2020,110,,,3.9,Active,Real Advisor',  # noqa: E501
         ]:
             assert str(snippet) in csv
 
@@ -1488,7 +1489,7 @@ class TestDownloadCsvPerFilters:
         for snippet in [
             'majors,level_by_units,terms_in_attendance,expected_graduation_term,units_completed,term_gpa_2172,cumulative_gpa,program_status,intended_majors,minors',  # noqa: E501
             'Chemistry BS,Junior,4,Fall 2019,34,3.500,3.495,Active,',
-            'English BA;Political Economy BA,Junior,5,Fall 2019,70,,3.005,Active,',
+            'English BA; Political Economy BA,Junior,5,Fall 2019,70,,3.005,Active,',
         ]:
             assert str(snippet) in csv
 

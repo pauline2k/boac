@@ -423,6 +423,8 @@ def validate_advising_note_set_date(params):
 
 
 def _response_with_students_csv_download(sids, fieldnames, benchmark, term_id):
+    def _get_advisor_name(a):
+        return f"{a['firstName']} {a['lastName']}" if a['lastName'] else f"UID:{a['uid']}"
     term_id_last = previous_term_id(current_term_id())
     term_id_previous = previous_term_id(term_id_last)
     rows = []
@@ -432,17 +434,17 @@ def _response_with_students_csv_download(sids, fieldnames, benchmark, term_id):
         'sid': lambda profile: profile.get('sid'),
         'email': lambda profile: profile.get('sisProfile', {}).get('emailAddress'),
         'phone': lambda profile: profile.get('sisProfile', {}).get('phoneNumber'),
-        'majors': lambda profile: ';'.join(
+        'majors': lambda profile: '; '.join(
             [plan.get('description') for plan in profile.get('sisProfile', {}).get('plans', []) if plan.get('status') == 'Active'],
         ),
-        'intended_majors': lambda profile: ';'.join(
+        'intended_majors': lambda profile: '; '.join(
             [major.get('description') for major in profile.get('sisProfile', {}).get('intendedMajors')],
         ),
         'level_by_units': lambda profile: profile.get('sisProfile', {}).get('level', {}).get('description'),
-        'minors': lambda profile: ';'.join(
+        'minors': lambda profile: '; '.join(
             [plan.get('description') for plan in profile.get('sisProfile', {}).get('plansMinor', []) if plan.get('status') == 'Active'],
         ),
-        'subplans': lambda profile: ';'.join(
+        'subplans': lambda profile: '; '.join(
             [plan['subplan'] for plan in profile.get('sisProfile', {}).get('plans', []) if plan.get('subplan') and plan.get('status') == 'Active'],
         ),
         'terms_in_attendance': lambda profile: profile.get('sisProfile', {}).get('termsInAttendance'),
@@ -451,20 +453,17 @@ def _response_with_students_csv_download(sids, fieldnames, benchmark, term_id):
         f'term_gpa_{term_id_previous}': lambda profile: profile.get('termGpa', {}).get(term_id_previous),
         f'term_gpa_{term_id_last}': lambda profile: profile.get('termGpa', {}).get(term_id_last),
         'cumulative_gpa': lambda profile: profile.get('sisProfile', {}).get('cumulativeGPA'),
-        'program_status': lambda profile: ';'.join(
-            list(
-                set(
-                    [
-                        plan.get('status') for plan in profile.get('sisProfile', {}).get('plans', [])
-                    ],
-                ),
-            ),
+        'program_status': lambda profile: '; '.join(
+            list(set([plan.get('status') for plan in profile.get('sisProfile', {}).get('plans', [])])),
         ),
         'transfer': lambda profile: 'Yes' if profile.get('sisProfile', {}).get('transfer') else '',
-        'intended_major': lambda profile: ', '.join([
-                                                    major.get('description') for major
-                                                    in (profile.get('sisProfile', {}).get('intendedMajors') or [])]),
+        'intended_major': lambda profile: '; '.join(
+            [major.get('description') for major in (profile.get('sisProfile', {}).get('intendedMajors') or [])],
+        ),
         'units_in_progress': lambda profile: profile.get('enrolledUnits', {}),
+        'college_advisor': lambda profile: '; '.join(
+            [_get_advisor_name(advisor) for advisor in profile.get('advisors', []) if advisor.get('role', '').lower() == 'college advisor'],
+        ),
     }
     term_gpas = get_term_gpas_by_sid(sids)
     term_units = get_term_units_by_sid(term_id, sids)
