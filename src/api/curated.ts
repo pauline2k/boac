@@ -1,7 +1,6 @@
 import axios from 'axios'
 import {each, get} from 'lodash'
 import ga from '@/lib/ga'
-import {DateTime} from 'luxon'
 import utils from '@/api/api-utils'
 import {useContextStore} from '@/stores/context'
 import fileDownload from 'js-file-download'
@@ -54,14 +53,12 @@ export function deleteCuratedGroup(domain: string, curatedGroupId: number) {
 }
 
 export function downloadCuratedGroupCsv(curatedGroupId: number, name: string, csvColumnsSelected: any[]) {
-  const now = DateTime.now().toFormat('yyyy-MM-dd_HH-mm-ss')
-  const filename = name ? `${name}-students-${now}` : `students-${now}`
-  const termId = useContextStore().currentUser.preferences.termId || get(useContextStore().config, 'currentEnrollmentTermId')
-
-  $_track('download', filename)
+  const contextStore = useContextStore()
+  const termId = contextStore.currentUser.preferences.termId || get(contextStore.config, 'currentEnrollmentTermId')
   const url: string = `${utils.apiBaseUrl()}/api/curated_group/${curatedGroupId}/download_csv`
   return axios.post(url, {curatedGroupId, csvColumnsSelected, termId}).then(response => {
-    return fileDownload(response.data, `${filename}.csv`)
+    $_track('download', `Curated group: ${name}`)
+    return fileDownload(response.data, utils.createDownloadFilename(name, 'csv'))
   })
 }
 

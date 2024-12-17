@@ -1,9 +1,16 @@
 import axios from 'axios'
-import {each, get, isNil} from 'lodash'
+import {DateTime} from 'luxon'
+import {each, get, isNil, trim, truncate} from 'lodash'
 import {useContextStore} from '@/stores/context'
 
 export default {
   apiBaseUrl: () => get(useContextStore().config, 'apiBaseUrl'),
+  createDownloadFilename: (prefix: string, extension: string): string => {
+    const normalized = trim(prefix.replace(/[^a-zA-Z0-9\s-]/g, '')).replace(/\s/g, '-')
+    const filename = truncate(normalized ? normalized.toLowerCase() : 'students', {length: 100, omission: ''})
+    const now = DateTime.now().toFormat('yyyy-MM-dd_HH-mm-ss')
+    return `${filename}_${now}.${extension}`
+  },
   postMultipartFormData: (path: string, data: object) => {
     const formData = new FormData()
     each(data, (value, key) => {
