@@ -36,7 +36,7 @@ from boac.merged import calnet
 from boac.merged.advising_appointment import get_advising_appointments
 from boac.merged.advising_note import get_advising_notes
 from boac.merged.sis_terms import current_term_id
-from boac.merged.student import get_term_gpas_by_sid, get_term_units_by_sid
+from boac.merged.student import get_term_gpas_by_sid, get_term_units_by_sid, merge_coe_student_profile_data
 from boac.models.alert import Alert
 from boac.models.cohort_filter import CohortFilter
 from boac.models.curated_group import CuratedGroup
@@ -423,11 +423,8 @@ def validate_advising_note_set_date(params):
 
 
 def _response_with_students_csv_download(sids, fieldnames, benchmark, term_id):
-    def _get_advisor_name(a):
-        return f"{a['firstName']} {a['lastName']}" if a['lastName'] else f"UID:{a['uid']}"
     term_id_last = previous_term_id(current_term_id())
     term_id_previous = previous_term_id(term_id_last)
-    rows = []
     getters = {
         'first_name': lambda profile: profile.get('firstName'),
         'last_name': lambda profile: profile.get('lastName'),
@@ -461,27 +458,28 @@ def _response_with_students_csv_download(sids, fieldnames, benchmark, term_id):
             [major.get('description') for major in (profile.get('sisProfile', {}).get('intendedMajors') or [])],
         ),
         'units_in_progress': lambda profile: profile.get('enrolledUnits', {}),
-        'college_advisor': lambda profile: '; '.join(
-            [_get_advisor_name(advisor) for advisor in profile.get('advisors', []) if advisor.get('role', '').lower() == 'college advisor'],
-        ),
+        'college_advisor': lambda profile: '; '.join(_get_college_advisors(profile)),
     }
+    if current_user.is_admin or 'COENG' in dept_codes_where_advising(current_user):
+        # Only admins and CoE advisors can access CoE-related data.
+        getters['coe_status'] = lambda profile: _get_coe_status(profile) or ''
     term_gpas = get_term_gpas_by_sid(sids)
     term_units = get_term_units_by_sid(term_id, sids)
 
-    def _add_row(student_profile):
-        student_profile['termGpa'] = term_gpas.get(student_profile['sid'], {})
-        student_profile['enrolledUnits'] = term_units.get(student_profile['sid'], '0')
-
-        row = {}
-        for fieldname in fieldnames:
-            row[fieldname] = getters[fieldname](student_profile)
-        rows.append(row)
-
-    students = get_student_profiles(sids=sids)
+    students = [{'sid': s['sid'], 'profile': json.loads(s['profile'])} for s in get_student_profiles(sids=sids)]
+    if 'coe_status' in fieldnames:
+        # We are going to need CoE-related data.
+        profiles_by_sid = dict((student['sid'], student.get('profile')) for student in students)
+        merge_coe_student_profile_data(profiles_by_sid)
+    rows = []
     for student in students:
         profile = student.get('profile')
-        if profile:
-            _add_row(json.loads(profile))
+        profile['termGpa'] = term_gpas.get(profile['sid'], {})
+        profile['enrolledUnits'] = term_units.get(profile['sid'], '0')
+        row = {}
+        for fieldname in fieldnames:
+            row[fieldname] = getters[fieldname](profile)
+        rows.append(row)
 
     benchmark('end')
 
@@ -513,6 +511,24 @@ def _response_with_admits_csv_download(sids, fieldnames, benchmark):
 def _norm(row, key):
     value = row.get(key)
     return value and value.upper()
+
+
+def _get_coe_status(profile):
+    status = None
+    if profile.get('coeProfile'):
+        status = 'active' if profile.get('coeProfile').get('isActiveCoe') else 'inactive'
+    return status
+
+
+def _get_college_advisors(profile):
+    values = []
+    for advisor in profile.get('advisors', []):
+        last_name = advisor['lastName']
+        uid = advisor['uid']
+        if advisor.get('role', '').lower() == 'college advisor' and (last_name or uid):
+            advisor_name = f"{advisor['firstName']} {last_name}" if last_name else f'UID:{uid}'
+            values.append(advisor_name)
+    return values
 
 
 def _has_role_in_any_department(user, role):
