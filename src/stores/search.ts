@@ -1,5 +1,5 @@
 import {defineStore, StoreDefinition} from 'pinia'
-import {useContextStore} from '@/stores/context'
+import {CurrentUser, useContextStore} from '@/stores/context'
 import {alertScreenReader} from '@/lib/utils'
 
 export const useSearchStore: StoreDefinition = defineStore('search', {
@@ -24,7 +24,7 @@ export const useSearchStore: StoreDefinition = defineStore('search', {
   }),
   getters: {
     isDirty: (state: any): boolean => {
-      const currentUser = useContextStore().currentUser
+      const currentUser: CurrentUser = useContextStore().currentUser
       return (currentUser.canAccessCanvasData && !state.includeCourses)
         || (currentUser.canAccessCanvasData && !state.includeNotes)
         || (currentUser.canAccessAdmittedStudents && !state.includeAdmits)
@@ -34,7 +34,7 @@ export const useSearchStore: StoreDefinition = defineStore('search', {
   },
   actions: {
     resetAdvancedSearch(queryText?: string) {
-      const currentUser = useContextStore().currentUser
+      const currentUser: CurrentUser = useContextStore().currentUser
       this.author = null
       this.fromDate = null
       this.postedBy = 'anyone'

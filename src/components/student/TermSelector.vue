@@ -31,7 +31,7 @@
 
 <script setup>
 import {alertScreenReader} from '@/lib/utils'
-import {get, map} from 'lodash'
+import {map} from 'lodash'
 import {nextTick, ref, watch} from 'vue'
 import {previousSisTermId, termNameForSisId} from '@/berkeley'
 import {useContextStore} from '@/stores/context'
@@ -85,10 +85,10 @@ const termIds = [
   previousSisTermId(previousSisTermId(currentTermId))
 ]
 const options = ref(map(termIds, termOptionForId))
-const selected = ref(termOptionForId(get(currentUser, 'preferences.termId')).value)
+const selected = ref(termOptionForId(currentUser.preferences.termId).value)
 
 watch(selected, () => {
-  if (selected.value !== get(currentUser, 'preferences.termId')) {
+  if (selected.value !== currentUser.preferences.termId) {
     contextStore.updateCurrentUserPreference('termId', selected.value)
     contextStore.broadcast('termId-user-preference-change', selected.value)
   }

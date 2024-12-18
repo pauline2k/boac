@@ -26,6 +26,6 @@ const props = defineProps({
   }
 })
 
-const standingStatus = get(useContextStore().config, `academicStandingDescriptions.${props.standing.status}`, props.standing.status)
+const standingStatus = get(useContextStore().config.academicStandingDescriptions, props.standing.status, props.standing.status)
 const termId = props.standing.termId || sisIdForTermName(props.standing.termName)
 </script>

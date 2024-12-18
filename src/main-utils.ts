@@ -1,13 +1,13 @@
 import router from '@/router'
 import {get, find, includes} from 'lodash'
-import {useContextStore} from '@/stores/context'
+import {CurrentUser, useContextStore} from '@/stores/context'
 
 const SKIP_REDIRECT_ON_ERROR = ['/api/user/create_or_update']
 
 const axiosErrorHandler = (error: any, axios: any): void => {
   const errorStatus = get(error, 'response.status')
   const contextStore = useContextStore()
-  const currentUser = contextStore.currentUser
+  const currentUser: CurrentUser = contextStore.currentUser
   if (!axios.isCancel(error)) {
     contextStore.loadingComplete()
   }

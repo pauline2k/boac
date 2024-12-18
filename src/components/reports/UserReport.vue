@@ -64,7 +64,7 @@
       <template #item.depts="{item}">
         <div v-for="dept in item.departments" :key="dept.code" class="pb-1">
           <span :id="`dept-${dept.code}-${item.uid}`">
-            <span class="dept-name text-success">{{ dept.name }}</span> ({{ oxfordJoin(getBoaUserRoles(item, dept)) }})
+            <span class="dept-name text-success">{{ dept.name }}</span> ({{ oxfordJoin(getBoaUserRoles(dept)) }})
           </span>
         </div>
         <div v-if="item.isAdmin" class="dept-name text-success">BOA Admin</div>

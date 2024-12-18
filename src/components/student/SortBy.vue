@@ -77,7 +77,7 @@ if (props.domain === 'admitted_students') {
   const previousPreviousTermId = previousSisTermId(previousTermId)
   optGroups.Profile.push({label: 'Level', value: 'level'})
   optGroups.Profile.push({label: 'Major', value: 'major'})
-  if (get(currentUser, 'isAdmin') || includes(myDeptCodes(['advisor', 'director']), 'UWASC')) {
+  if (currentUser.isAdmin || includes(myDeptCodes(['advisor', 'director']), 'UWASC')) {
     optGroups.Profile.push({label: 'Team', value: 'group_name'})
   }
   optGroups.Terms.push({label: 'Entering Term', value: 'entering_term'})

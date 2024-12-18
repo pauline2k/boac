@@ -45,7 +45,7 @@
           <router-link
             :id="`link-to-admit-${student.csEmplId}`"
             :aria-label="`Go to admitted student profile page of ${fullName(student)}`"
-            :class="{'demo-mode-blur': get(useContextStore().currentUser, 'inDemoMode')}"
+            :class="{'demo-mode-blur': currentUser.inDemoMode}"
             :to="admitRoutePath(student)"
           >
             <span v-html="fullName(student)" />
@@ -53,7 +53,7 @@
         </td>
         <td class="pr-3">
           <span class="sr-only">C S I D <span aria-hidden="true">&nbsp;</span></span>
-          <span :id="`row-${index}-cs-empl-id`" :class="{'demo-mode-blur': get(useContextStore().currentUser, 'inDemoMode')}">{{ getSid(student) }}</span>
+          <span :id="`row-${index}-cs-empl-id`" :class="{'demo-mode-blur': currentUser.inDemoMode}">{{ getSid(student) }}</span>
         </td>
         <td class="pr-2">
           <span class="sr-only">S I R</span>
@@ -102,12 +102,12 @@
 </template>
 
 <script setup>
-import {mdiCloseCircle} from '@mdi/js'
-import {get, isNil, join, remove} from 'lodash'
-import {isNilOrBlank} from '@/lib/utils'
-import {useContextStore} from '@/stores/context'
 import CuratedStudentCheckbox from '@/components/curated/dropdown/CuratedStudentCheckbox'
 import {alertScreenReader} from '@/lib/utils'
+import {isNil, join, remove} from 'lodash'
+import {isNilOrBlank} from '@/lib/utils'
+import {mdiCloseCircle} from '@mdi/js'
+import {useContextStore} from '@/stores/context'
 
 const props = defineProps({
   includeCuratedCheckbox: {
@@ -129,7 +129,7 @@ const currentUser = useContextStore().currentUser
 
 const admitRoutePath = student => {
   const sid = getSid(student)
-  return get(currentUser, 'inDemoMode') ? `/admit/student/${window.btoa(sid)}` : `/admit/student/${sid}`
+  return currentUser.inDemoMode ? `/admit/student/${window.btoa(sid)}` : `/admit/student/${sid}`
 }
 
 const curatedGroupRemoveStudent = student => {
@@ -142,7 +142,7 @@ const fullName = student => {
   const middleName = student.middleName
   const lastName = student.lastName
   let fullName
-  if (get(currentUser, 'preferences.admitSortBy') === 'first_name') {
+  if (currentUser.preferences.admitSortBy === 'first_name') {
     fullName = join(remove([firstName, middleName, lastName]), ' ')
   } else {
     fullName = join(remove([lastName ? `${lastName},` : null, firstName, middleName]), ' ')

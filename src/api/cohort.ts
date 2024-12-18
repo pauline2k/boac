@@ -1,6 +1,5 @@
 import axios from 'axios'
 import ga from '@/lib/ga'
-import {get} from 'lodash'
 import fileDownload from 'js-file-download'
 import utils from '@/api/api-utils'
 import {useContextStore} from '@/stores/context'
@@ -43,7 +42,7 @@ export function deleteCohort(id: number) {
 
 export function downloadCohortCsv(cohortId: number, cohortName: string, csvColumnsSelected: any[]) {
   const contextStore = useContextStore()
-  const termId = contextStore.currentUser.preferences.termId || get(contextStore.config, 'currentEnrollmentTermId')
+  const termId = contextStore.currentUser.preferences.termId || contextStore.config.currentEnrollmentTermId
   const url: string = `${utils.apiBaseUrl()}/api/cohort/download_csv`
   return axios.post(url, {cohortId, csvColumnsSelected, termId}).then(response => {
     const filename = utils.createDownloadFilename(cohortName ? `${cohortName}-students` : 'students', 'csv')
@@ -54,7 +53,7 @@ export function downloadCohortCsv(cohortId: number, cohortName: string, csvColum
 
 export function downloadCsv(domain: string, cohortName: string, filters: any[], csvColumnsSelected: any[]) {
   const contextStore = useContextStore()
-  const termId = contextStore.currentUser.preferences.termId || get(contextStore.config, 'currentEnrollmentTermId')
+  const termId = contextStore.currentUser.preferences.termId || contextStore.config.currentEnrollmentTermId
   const url: string = `${utils.apiBaseUrl()}/api/cohort/download_csv_per_filters`
   return axios.post(url, {csvColumnsSelected, domain, filters, termId}).then(response => {
     $_track('download', `Cohort: ${cohortName || '[Not yet named]'}`)

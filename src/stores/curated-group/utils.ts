@@ -1,22 +1,22 @@
 import {get, multiply} from 'lodash'
 import {getCuratedGroup} from '@/api/curated'
-import {useContextStore} from '@/stores/context'
+import {CurrentUser, useContextStore} from '@/stores/context'
 import {useCuratedGroupStore} from '@/stores/curated-group/index'
 
 export function goToCuratedGroup(curatedGroupId: number, pageNumber: number) {
   return new Promise(resolve => {
     const groupStore = useCuratedGroupStore()
-    const user = useContextStore().currentUser
+    const currentUser: CurrentUser = useContextStore().currentUser
     const domain = groupStore.domain
     const itemsPerPage = groupStore.itemsPerPage
     const offset: number = multiply(pageNumber - 1, itemsPerPage)
-    const orderBy: string = get(user.preferences, domain === 'admitted_students' ? 'admitSortBy' : 'sortBy', 'sortBy')
+    const orderBy: string = get(currentUser.preferences, domain === 'admitted_students' ? 'admitSortBy' : 'sortBy', 'sortBy')
     getCuratedGroup(
       curatedGroupId,
       itemsPerPage,
       offset,
       orderBy,
-      user.preferences.termId
+      currentUser.preferences.termId
     ).then(group => {
       if (group) {
         groupStore.setCuratedGroupName(group.name)

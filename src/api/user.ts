@@ -1,6 +1,6 @@
-import {get, isNil} from 'lodash'
 import axios from 'axios'
 import utils from '@/api/api-utils'
+import {get, isNil} from 'lodash'
 import {useContextStore} from '@/stores/context'
 
 export function getDepartments(excludeEmpty?: boolean) {
