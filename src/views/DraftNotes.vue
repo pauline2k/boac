@@ -52,6 +52,9 @@
                 class="font-size-16"
                 :class="{'demo-mode-blur': currentUser.inDemoMode}"
               >
+                <span :class="{'text-grey': !trim(item.subject)}">
+                  {{ trim(item.subject) || config.draftNoteSubjectPlaceholder }}
+                </span>
               </span>
               <v-btn
                 v-if="item.author.uid === currentUser.uid"
