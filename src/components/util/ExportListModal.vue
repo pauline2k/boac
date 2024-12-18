@@ -138,7 +138,7 @@ const onSubmit = () => {
 
 <style scoped>
 .csv-column-options {
-  height: 320px;
+  height: 360px;
 }
 .csv-column-option {
   height: 30px;

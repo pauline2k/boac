@@ -17,11 +17,8 @@ export function displayAsAscInactive(student) {
 }
 
 export function displayAsCoeInactive(student) {
-  return (
-    includes(myDeptCodes(['advisor', 'director']), 'COENG') &&
-    get(student, 'coeProfile') &&
-    !get(student, 'coeProfile.isActiveCoe')
-  )
+  const isAuthorized = useContextStore().currentUser.isAdmin || includes(myDeptCodes(['advisor', 'director']), 'COENG')
+  return isAuthorized && get(student, 'coeProfile') && !get(student, 'coeProfile.isActiveCoe')
 }
 
 export function getAdmitCsvExportColumns() {
@@ -107,9 +104,11 @@ export function getCsvExportColumnsSelected(domain) {
 }
 
 export function getDefaultCsvExportColumns() {
-  const lastTermId = previousSisTermId(get(useContextStore().config, 'currentEnrollmentTermId'))
+  const contextStore = useContextStore()
+  const currentUser = contextStore.currentUser
+  const lastTermId = previousSisTermId(get(contextStore.config, 'currentEnrollmentTermId'))
   const previousTermId = previousSisTermId(lastTermId)
-  return [
+  const columns = [
     {text: 'First name', value: 'first_name'},
     {text: 'Last name', value: 'last_name'},
     {text: 'SID', value: 'sid'},
@@ -131,6 +130,10 @@ export function getDefaultCsvExportColumns() {
     {text: 'Units in progress', value: 'units_in_progress'},
     {text: 'College Advisor', value: 'college_advisor'}
   ]
+  if (currentUser.isAdmin || isCoe(currentUser)) {
+    columns.push({text: 'CoE status', value: 'coe_status'})
+  }
+  return columns
 }
 
 export function getIncompleteGradeDescription(courseDisplayName, sections) {

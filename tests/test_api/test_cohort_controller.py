@@ -1442,6 +1442,7 @@ class TestDownloadCsvPerFilters:
                 'cumulative_gpa',
                 'program_status',
                 'college_advisor',
+                'coe_status',
             ],
         }
         response = client.post(
@@ -1455,7 +1456,7 @@ class TestDownloadCsvPerFilters:
         for snippet in [
             'first_name,last_name,sid,email,phone,majors,level_by_units,terms_in_attendance,expected_graduation_term,units_completed,term_gpa_2172,term_gpa_2175,cumulative_gpa,program_status,college_advisor',  # noqa: E501
             'Deborah,Davies,11667051,barnburner@berkeley.edu,415/123-4567,English BA; Nuclear Engineering BS,Junior,,Fall 2019,101.3,2.700,,3.8,Active',  # noqa: E501
-            'Paul,Farestveit,7890123456,qadept@berkeley.edu,415/123-4567,Nuclear Engineering BS,Senior,2,Spring 2020,110,,,3.9,Active,Real Advisor',  # noqa: E501
+            'Paul,Farestveit,7890123456,qadept@berkeley.edu,415/123-4567,Nuclear Engineering BS,Senior,2,Spring 2020,110,,,3.9,Active,Real Advisor,active',  # noqa: E501
         ]:
             assert str(snippet) in csv
 

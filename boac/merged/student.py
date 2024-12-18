@@ -102,7 +102,7 @@ def get_full_student_profiles(sids):
 
     if 'COENG' in scope or 'ADMIN' in scope:
         benchmark('begin COE profile merge')
-        _merge_coe_student_profile_data(profiles_by_sid)
+        merge_coe_student_profile_data(profiles_by_sid)
         benchmark('end COE profile merge')
     return profiles
 
@@ -241,7 +241,7 @@ def get_student_profile_summaries(sids, term_id=None):
 
     if 'COENG' in scope or 'ADMIN' in scope:
         benchmark('begin COE profile merge')
-        _merge_coe_student_profile_data(profiles_by_sid)
+        merge_coe_student_profile_data(profiles_by_sid)
         benchmark('end COE profile merge')
 
     # TODO Many views require no term enrollment information other than a units count. This datum too should be
@@ -548,6 +548,18 @@ def get_student_query_scope(user=None):
         return [m.university_dept.dept_code for m in user.department_memberships]
 
 
+def merge_coe_student_profile_data(profiles_by_sid):
+    coe_students = data_loch.get_coe_profiles(list(profiles_by_sid))
+    for coe_student in coe_students or []:
+        profile = profiles_by_sid.get(coe_student['sid'])
+        coe_profile = coe_student['profile']
+        profile['coeProfile'] = json.loads(coe_profile)
+        if 'minority' in profile['coeProfile']:
+            profile['coeProfile']['underrepresented'] = profile['coeProfile']['minority']
+        coe_profile_status = profile['coeProfile'].get('status')
+        profile['coeProfile']['isActiveCoe'] = coe_profile_status not in ['D', 'O', 'P', 'U', 'W', 'X', 'Z']
+
+
 def merge_enrollment_terms(enrollment_results, academic_standing=None):
     current_term_found = False
     filtered_enrollment_terms = []
@@ -711,19 +723,6 @@ def _merge_asc_student_profile_data(profiles_by_sid, scope):
             # Non-ASC advisors have access to team memberships for ASC-active students only, not including other ASC
             # data such as intensive status.
             profile['athleticsProfile'] = {'athletics': athletics_profile.get('athletics')}
-
-
-def _merge_coe_student_profile_data(profiles_by_sid):
-    coe_profiles = data_loch.get_coe_profiles(list(profiles_by_sid))
-    for coe_profile in coe_profiles or []:
-        profile = profiles_by_sid.get(coe_profile['sid'])
-        profile['coeProfile'] = json.loads(coe_profile['profile'])
-        if 'minority' in profile['coeProfile']:
-            profile['coeProfile']['underrepresented'] = profile['coeProfile']['minority']
-        if profile['coeProfile'].get('status') in ['D', 'P', 'U', 'W', 'X', 'Z']:
-            profile['coeProfile']['isActiveCoe'] = False
-        else:
-            profile['coeProfile']['isActiveCoe'] = True
 
 
 def _omit_zombie_waitlisted_enrollments(past_term):
