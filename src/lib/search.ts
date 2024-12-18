@@ -1,9 +1,9 @@
-import {useContextStore} from '@/stores/context'
+import {CurrentUser, useContextStore} from '@/stores/context'
 import {useSearchStore} from '@/stores/search'
 import {oxfordJoin} from '@/lib/utils'
 
 export function labelForSearchInput() {
-  const currentUser = useContextStore().currentUser
+  const currentUser: CurrentUser = useContextStore().currentUser
   const scopes = ['students']
   if (currentUser.canAccessCanvasData) {
     scopes.push('courses')

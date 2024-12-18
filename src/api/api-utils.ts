@@ -1,10 +1,10 @@
 import axios from 'axios'
 import {DateTime} from 'luxon'
-import {each, get, isNil, trim, truncate} from 'lodash'
+import {each, isNil, trim, truncate} from 'lodash'
 import {useContextStore} from '@/stores/context'
 
 export default {
-  apiBaseUrl: () => get(useContextStore().config, 'apiBaseUrl'),
+  apiBaseUrl: () => useContextStore().config.apiBaseUrl,
   createDownloadFilename: (prefix: string, extension: string): string => {
     const normalized = trim(prefix.replace(/[^a-zA-Z0-9\s-]/g, '')).replace(/\s/g, '-')
     const filename = truncate(normalized ? normalized.toLowerCase() : 'students', {length: 100, omission: ''})
@@ -18,7 +18,7 @@ export default {
         formData.append(key, value)
       }
     })
-    const apiBaseUrl = get(useContextStore().config, 'apiBaseUrl')
+    const apiBaseUrl = useContextStore().config.apiBaseUrl
     const config = {headers: {'Content-Type': 'multipart/form-data'}}
     return axios.post(`${apiBaseUrl}${path}`, formData, config)
       .then(response => response.data)

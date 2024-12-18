@@ -23,7 +23,7 @@ export function validateAttachment(attachments: any[], existingAttachments: any[
     return 'No attachment provided.'
   }
   const config: BoaConfig = useContextStore().config
-  if (size(attachments) + size(existingAttachments) > parseInt(config.maxAttachmentsPerNote)) {
+  if (size(attachments) + size(existingAttachments) > config.maxAttachmentsPerNote) {
     return `A note can have no more than ${config.maxAttachmentsPerNote} attachments.`
   }
   let error: string | null = null

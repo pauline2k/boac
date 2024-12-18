@@ -21,12 +21,13 @@ const $_allowCourseDrop = (category, course, context): boolean => {
 }
 
 const $_dropToAssign = (categoryId: number | null, course: any, ignore: boolean) => {
-  useDegreeStore().setDisableButtons(true)
+  const degreeStore = useDegreeStore()
+  degreeStore.setDisableButtons(true)
   return assignCourse(course.id, categoryId, ignore).then(() => {
-    const templateId: number = useDegreeStore().templateId
+    const templateId: number = degreeStore.templateId
     refreshDegreeTemplate(templateId).then(() => {
-      useDegreeStore().draggingContextReset()
-      useDegreeStore().setDisableButtons(false)
+      degreeStore.draggingContextReset()
+      degreeStore.setDisableButtons(false)
     })
   })
 }

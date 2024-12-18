@@ -6,7 +6,7 @@
           <b class="sr-only">BOA {{ getBoaEnvLabel() }} Environment</b>
         </div>
         <div v-if="config.isVueAppDebugMode" class="mr-4">
-          {{ get(contextStore.screenReaderAlert, 'message') }}
+          {{ contextStore.screenReaderAlert.message }}
         </div>
         <div v-if="!config.isVueAppDebugMode" class="mr-4">
           <span aria-live="polite">{{ config.fixedWarningOnAllPages }}</span>
@@ -29,7 +29,6 @@
 <script setup>
 import {alertScreenReader} from '@/lib/utils'
 import {computed} from 'vue'
-import {get} from 'lodash'
 import {mdiAirplane} from '@mdi/js'
 import {useContextStore} from '@/stores/context'
 

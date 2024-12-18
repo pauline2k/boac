@@ -45,8 +45,8 @@
             <router-link
               v-if="event.uid"
               :id="`event-${index}-student-name`"
-              :class="{'demo-mode-blur': get(currentUser, 'inDemoMode')}"
-              :to="studentRoutePath(event.uid, get(currentUser, 'inDemoMode'))"
+              :class="{'demo-mode-blur': currentUser.inDemoMode}"
+              :to="studentRoutePath(event.uid, currentUser.inDemoMode)"
             >
               <span v-html="lastNameFirst(event)" />
             </router-link>
@@ -60,7 +60,7 @@
           <td class="pr-2 py-1 text-no-wrap">
             <div
               :id="`event-${index}-sid`"
-              :class="{'demo-mode-blur': get(currentUser, 'inDemoMode')}"
+              :class="{'demo-mode-blur': currentUser.inDemoMode}"
             >
               {{ event.sid }}
             </div>

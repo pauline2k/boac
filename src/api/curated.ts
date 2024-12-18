@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {each, get} from 'lodash'
+import {each} from 'lodash'
 import ga from '@/lib/ga'
 import utils from '@/api/api-utils'
 import {useContextStore} from '@/stores/context'
@@ -8,22 +8,25 @@ import fileDownload from 'js-file-download'
 const $_track = (action, label?) => ga.cohort(action, label)
 
 const $_onCreate = (group: any) => {
-  useContextStore().addMyCuratedGroup(group)
-  useContextStore().broadcast('my-curated-groups-updated', group.domain)
+  const contextStore = useContextStore()
+  contextStore.addMyCuratedGroup(group)
+  contextStore.broadcast('my-curated-groups-updated', group.domain)
   $_track('create')
 }
 
 const $_onDelete = (domain: string, curatedGroupId: number) => {
-  useContextStore().removeMyCuratedGroup(curatedGroupId)
-  useContextStore().broadcast('my-curated-groups-updated', domain)
+  const contextStore = useContextStore()
+  contextStore.removeMyCuratedGroup(curatedGroupId)
+  contextStore.broadcast('my-curated-groups-updated', domain)
   $_track('delete')
 }
 
 const $_onUpdate = (curatedGroups: any[]) => {
+  const contextStore = useContextStore()
   each(curatedGroups, curatedGroup => {
-    useContextStore().updateMyCuratedGroup(curatedGroup)
+    contextStore.updateMyCuratedGroup(curatedGroup)
   })
-  useContextStore().broadcast('my-curated-groups-updated', curatedGroups[0].domain)
+  contextStore.broadcast('my-curated-groups-updated', curatedGroups[0].domain)
   $_track('update')
 }
 
@@ -54,7 +57,7 @@ export function deleteCuratedGroup(domain: string, curatedGroupId: number) {
 
 export function downloadCuratedGroupCsv(curatedGroupId: number, name: string, csvColumnsSelected: any[]) {
   const contextStore = useContextStore()
-  const termId = contextStore.currentUser.preferences.termId || get(contextStore.config, 'currentEnrollmentTermId')
+  const termId = contextStore.currentUser.preferences.termId || contextStore.config.currentEnrollmentTermId
   const url: string = `${utils.apiBaseUrl()}/api/curated_group/${curatedGroupId}/download_csv`
   return axios.post(url, {curatedGroupId, csvColumnsSelected, termId}).then(response => {
     $_track('download', `Curated group: ${name}`)

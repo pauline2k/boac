@@ -12,6 +12,8 @@ const $_getDefaultApplicationState = () => ({
 })
 
 export type BoaConfig = {
+  academicStandingDescriptions: any,
+  apiBaseUrl: string,
   currentEnrollmentTerm: string,
   currentEnrollmentTermId: number,
   defaultTermUnitsAllowed: {
@@ -24,6 +26,7 @@ export type BoaConfig = {
   isProduction: boolean,
   isVueAppDebugMode: boolean,
   maxAttachmentsPerNote: number,
+  notesDraftAutoSaveInterval: number,
   supportEmailAddress: string,
   timezone: string
 }

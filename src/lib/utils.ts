@@ -2,7 +2,7 @@ import numeral from 'numeral'
 import {concat, find, head, initial, isNil, isNumber, join, last, toLower, trim} from 'lodash'
 import {getUserProfile} from '@/api/user'
 import {nextTick} from 'vue'
-import {useContextStore} from '@/stores/context'
+import {CurrentUser, useContextStore} from '@/stores/context'
 
 let $_screenReaderAlertExpiry: number
 
@@ -52,7 +52,7 @@ export function escapeForRegExp(s) {
 }
 
 export function getDegreeCheckPath(student) {
-  const currentUser = useContextStore().currentUser
+  const currentUser: CurrentUser = useContextStore().currentUser
   const currentDegreeCheck = find(student.degreeChecks, 'isCurrent')
   if (currentDegreeCheck) {
     return `/student/degree/${currentDegreeCheck.id}`

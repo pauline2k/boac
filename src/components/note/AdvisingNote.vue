@@ -260,7 +260,7 @@ const loadAuthorDetails = () => {
         author.value = data
         author.value.role = author.value.role || author.value.title
         if (!author.value.role && author.value.departments.length) {
-          author.value.role = oxfordJoin(getBoaUserRoles(author.value, author.value.departments[0]))
+          author.value.role = oxfordJoin(getBoaUserRoles(author.value.departments[0]))
         }
       }
       if (author_uid) {

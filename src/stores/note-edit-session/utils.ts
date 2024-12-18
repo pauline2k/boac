@@ -1,7 +1,7 @@
 import {alertScreenReader} from '@/lib/utils'
-import {get, isString, map, trim} from 'lodash'
 import {deleteNote, removeAttachment, updateNote} from '@/api/notes'
 import {getDistinctSids} from '@/api/student'
+import {isString, map, trim} from 'lodash'
 import {NoteEditSessionModel, NoteRecipients} from '@/stores/note-edit-session/index'
 import {useContextStore} from '@/stores/context'
 import {useNoteStore} from '@/stores/note-edit-session'
@@ -67,7 +67,7 @@ export function scheduleAutoSaveJob() {
       })
     }
   }
-  const interval = get(useContextStore().config, 'notesDraftAutoSaveInterval')
+  const interval = useContextStore().config.notesDraftAutoSaveInterval
   const jobId = setTimeout(autoSaveDraftNote, interval)
   noteStore.setAutoSaveJob(jobId)
 }
@@ -95,7 +95,7 @@ export function setNoteRecipients(cohorts, curatedGroups, sids): Promise<void> {
     }
     const recipients: NoteRecipients = noteStore.recipients
     if (cohortIds.length || curatedGroupIds.length) {
-      getDistinctSids(recipients.sids, cohortIds, curatedGroupIds).then(data => onFinish(get(data, 'sids')))
+      getDistinctSids(recipients.sids, cohortIds, curatedGroupIds).then(data => onFinish(data.sids))
     } else {
       onFinish(recipients.sids)
     }

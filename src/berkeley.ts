@@ -1,14 +1,19 @@
 import {capitalize as _capitalize, each, filter, findIndex, get, includes, map, size, startsWith, toUpper, upperFirst, words} from 'lodash'
-
 import {DateTime} from 'luxon'
-import {useContextStore} from '@/stores/context'
+import {CurrentUser, useContextStore} from '@/stores/context'
 
-export function describeCuratedGroupDomain(domain, capitalize?) {
+type ExportListOption = {
+  text: string,
+  value: string,
+  disabled?: boolean
+}
+
+export function describeCuratedGroupDomain(domain: string, capitalize?: boolean): string {
   const format = s => capitalize ? _capitalize(s) : s
   return format(domain === 'admitted_students' ? 'admissions ' : 'curated ') + format('group')
 }
 
-export function displayAsAscInactive(student) {
+export function displayAsAscInactive(student: any) {
   return (
     includes(myDeptCodes(['advisor', 'director']), 'UWASC') &&
     get(student, 'athleticsProfile') &&
@@ -16,12 +21,12 @@ export function displayAsAscInactive(student) {
   )
 }
 
-export function displayAsCoeInactive(student) {
+export function displayAsCoeInactive(student: any) {
   const isAuthorized = useContextStore().currentUser.isAdmin || includes(myDeptCodes(['advisor', 'director']), 'COENG')
   return isAuthorized && get(student, 'coeProfile') && !get(student, 'coeProfile.isActiveCoe')
 }
 
-export function getAdmitCsvExportColumns() {
+export function getAdmitCsvExportColumns(): ExportListOption[] {
   return [
     {text: 'First name', value: 'first_name'},
     {text: 'Middle name', value: 'middle_name'},
@@ -87,7 +92,7 @@ export function getAdmitCsvExportColumns() {
   ]
 }
 
-export function getBoaUserRoles(user, department) {
+export function getBoaUserRoles(department: any): string[] {
   const roles: string[] = []
   if (department.role) {
     roles.push(upperFirst(department.role))
@@ -95,20 +100,20 @@ export function getBoaUserRoles(user, department) {
   return roles
 }
 
-export function getCsvExportColumns(domain) {
+export function getCsvExportColumns(domain: string) {
   return domain === 'default' ? getDefaultCsvExportColumns() : getAdmitCsvExportColumns()
 }
 
-export function getCsvExportColumnsSelected(domain) {
+export function getCsvExportColumnsSelected(domain: string) {
   return domain === 'default' ? ['first_name', 'last_name', 'sid', 'email', 'phone'] : map(getAdmitCsvExportColumns(), 'value')
 }
 
-export function getDefaultCsvExportColumns() {
+export function getDefaultCsvExportColumns(): ExportListOption[] {
   const contextStore = useContextStore()
-  const currentUser = contextStore.currentUser
-  const lastTermId = previousSisTermId(get(contextStore.config, 'currentEnrollmentTermId'))
+  const currentUser: CurrentUser = contextStore.currentUser
+  const lastTermId = previousSisTermId(contextStore.config.currentEnrollmentTermId)
   const previousTermId = previousSisTermId(lastTermId)
-  const columns = [
+  const columns: ExportListOption[] = [
     {text: 'First name', value: 'first_name'},
     {text: 'Last name', value: 'last_name'},
     {text: 'SID', value: 'sid'},
@@ -130,14 +135,20 @@ export function getDefaultCsvExportColumns() {
     {text: 'Units in progress', value: 'units_in_progress'},
     {text: 'College Advisor', value: 'college_advisor'}
   ]
-  if (currentUser.isAdmin || isCoe(currentUser)) {
-    columns.push({text: 'CoE status', value: 'coe_status'})
-  }
+  each([
+    {text: 'CoE status', value: 'coe_status', condition: currentUser.isAdmin || isCoe(currentUser), disabled: false},
+    {text: 'Cohorts', value: 'cohort', condition: true, disabled: !filter(currentUser.myCohorts, ['domain', 'default']).length},
+    {text: 'Curated Groups', value: 'curated_groups', condition: true, disabled: !filter(currentUser.myCuratedGroups, ['domain', 'default']).length}
+  ], option => {
+    if (option.condition) {
+      columns.push({text: option.text, value: option.value, disabled: option.disabled})
+    }
+  })
   return columns
 }
 
-export function getIncompleteGradeDescription(courseDisplayName, sections) {
-  let description
+export function getIncompleteGradeDescription(courseDisplayName: string, sections: any[]): string | undefined {
+  let description: string | undefined
   const sections_with_incomplete = getSectionsWithIncompleteStatus(sections)
   if (sections_with_incomplete.length) {
     if (sections.length === 1) {
@@ -188,24 +199,24 @@ export function getSectionsWithIncompleteStatus(sections) {
   return filter(sections, 'incompleteStatusCode')
 }
 
-export function isAdvisor(user) {
+export function isAdvisor(user: any) {
   return !!size(filter(user.departments, d => d.role === 'advisor'))
 }
 
-export function isAlertGrade(grade) {
+export function isAlertGrade(grade: string) {
   // Grades deserving alerts: D(+/-), F, I, NP, RD.
   return grade && /^[DFINR]/.test(grade)
 }
 
-export function isCoe(user) {
+export function isCoe(user: any) {
   return !!size(filter(user.departments, d => d.code === 'COENG' && includes(['advisor', 'director'], d.role)))
 }
 
-export function isDirector(user) {
+export function isDirector(user: any) {
   return !!size(filter(user.departments, d => d.role === 'director'))
 }
 
-export function lastActivityDays(analytics) {
+export function lastActivityDays(analytics: any) {
   const timestamp = parseInt(get(analytics, 'lastActivity.student.raw'), 10)
   if (!timestamp || isNaN(timestamp)) {
     return 'Never'
@@ -226,16 +237,16 @@ export function lastActivityDays(analytics) {
   }
 }
 
-export function myDeptCodes(roles) {
-  const departments = get(useContextStore().currentUser, 'departments')
+export function myDeptCodes(roles: any[]) {
+  const departments = useContextStore().currentUser.departments
   return map(filter(departments, (d: any) => findIndex(roles, role => d.role === role) > -1), 'code')
 }
 
-export function isGraduate(student) {
+export function isGraduate(student: any) {
   return get(student, 'sisProfile.level.description') === 'Graduate'
 }
 
-export function previousSisTermId(termId) {
+export function previousSisTermId(termId: number | string): string {
   let previousTermId = ''
   const term = termId.toString()
   switch (term.slice(3)) {
@@ -254,13 +265,13 @@ export function previousSisTermId(termId) {
   }
   return previousTermId
 }
-export function setWaitlistedStatus(course) {
+export function setWaitlistedStatus(course: any) {
   each(course.sections, function(section) {
     course.waitlisted = course.waitlisted || section.enrollmentStatus === 'W'
   })
 }
 
-export function sisIdForTermName(termName) {
+export function sisIdForTermName(termName: string) {
   const wordArray = words(termName)
   const season = wordArray[0]
   const year = wordArray[1]
@@ -281,7 +292,7 @@ export function sisIdForTermName(termName) {
   return termId
 }
 
-export function termNameForSisId(termId) {
+export function termNameForSisId(termId: number | string) {
   let termName = ''
   if (termId) {
     const strTermId = termId.toString()
@@ -304,7 +315,7 @@ export function termNameForSisId(termId) {
   return termName
 }
 
-export function translateSortByOption(option) {
+export function translateSortByOption(option: string) {
   const translations = {
     cs_empl_id: 'CS ID',
     group_name: 'Team',

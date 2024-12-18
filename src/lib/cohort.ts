@@ -1,9 +1,9 @@
 import {each, get, includes, isEmpty, size, trim} from 'lodash'
 import {myDeptCodes} from '@/berkeley'
-import {useContextStore} from '@/stores/context'
+import {CurrentUser, useContextStore} from '@/stores/context'
 
 const isExistingName = (name: string, id?: number) => {
-  const currentUser = useContextStore().currentUser
+  const currentUser: CurrentUser = useContextStore().currentUser
   const all = {
     'curated group': currentUser.myCuratedGroups,
     cohort: currentUser.myCohorts
