@@ -45,7 +45,7 @@ def all_curated_groups():
     scope = get_query_scope(current_user)
     uids = AuthorizedUser.get_all_uids_in_scope(scope)
     groups_per_uid = dict((uid, []) for uid in uids)
-    for group in CuratedGroup.get_groups_owned_by_uids(uids=uids):
+    for group in CuratedGroup.get_curated_groups_owned_by(uids=uids):
         groups_per_uid[group['ownerUid']].append(group)
     api_json = []
     for uid, user in calnet.get_calnet_users_for_uids(app, uids).items():

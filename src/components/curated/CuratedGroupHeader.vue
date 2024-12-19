@@ -25,56 +25,10 @@
       >
         Skip to students
       </a>
-      <div v-if="mode === 'rename'" class="mr-3 w-100">
-        <div class="align-center d-flex">
-          <div class="w-75">
-            <v-text-field
-              id="rename-curated-group-input"
-              v-model="renameInput"
-              :aria-invalid="!renameInput"
-              :aria-label="`${domainLabel(true)} name`"
-              class="mr-3"
-              :disabled="isSaving"
-              hide-details
-              maxlength="255"
-              required
-              @keyup.enter="rename"
-              @keyup.esc="exitRenameMode"
-            />
-          </div>
-          <div>
-            <v-btn
-              id="rename-curated-group-confirm"
-              aria-label="Rename Curated Group"
-              color="primary"
-              :disabled="!size(renameInput) || isSaving"
-              text="Rename"
-              @click="rename"
-            />
-          </div>
-          <div>
-            <v-btn
-              id="rename-curated-group-cancel"
-              aria-label="Cancel Rename Curated Group"
-              class="ml-1"
-              :disabled="isSaving"
-              text="Cancel"
-              variant="text"
-              @click="exitRenameMode"
-            />
-          </div>
-        </div>
-        <div v-if="renameError" class="text-error ml-2 my-2">{{ renameError }}</div>
-        <div class="text-medium-emphasis">255 character limit <span v-if="size(renameInput)">({{ 255 - size(renameInput) }} left)</span></div>
-        <span
-          v-if="size(renameInput) === 255"
-          aria-live="polite"
-          class="sr-only"
-          role="alert"
-        >
-          Name cannot exceed 255 characters.
-        </span>
-      </div>
+      <RenameCuratedGroup
+        v-if="mode === 'rename'"
+        class="mb-2 ml-1"
+      />
       <div v-if="!mode" class="d-flex align-center">
         <div v-if="ownerId === currentUser.id">
           <v-btn
@@ -211,15 +165,15 @@
 import AreYouSureModal from '@/components/util/AreYouSureModal'
 import ExportListModal from '@/components/util/ExportListModal'
 import FerpaReminderModal from '@/components/util/FerpaReminderModal'
-import {alertScreenReader, pluralize, setPageTitle} from '@/lib/utils'
-import {deleteCuratedGroup, downloadCuratedGroupCsv, renameCuratedGroup} from '@/api/curated'
+import RenameCuratedGroup from '@/components/curated/RenameCuratedGroup'
+import {alertScreenReader, pluralize} from '@/lib/utils'
+import {deleteCuratedGroup, downloadCuratedGroupCsv} from '@/api/curated'
 import {describeCuratedGroupDomain, getCsvExportColumns, getCsvExportColumnsSelected} from '@/berkeley'
-import {each, find, isNil, map, size, sortBy} from 'lodash'
+import {each, find, isNil, map, sortBy} from 'lodash'
 import {onMounted, ref, watch} from 'vue'
 import {putFocusNextTick} from '@/lib/utils'
 import {useContextStore} from '@/stores/context'
 import {useCuratedGroupStore} from '@/stores/curated-group'
-import {validateCohortName} from '@/lib/cohort'
 import {storeToRefs} from 'pinia'
 import {useRouter} from 'vue-router'
 
@@ -233,16 +187,10 @@ const exportEnabled = ref(true)
 const isCohortWarningModalOpen = ref(false)
 const isDeleteModalOpen = ref(false)
 const isDeleting = ref(false)
-const isSaving = ref(false)
 const referencingCohorts = ref([])
-const renameError = ref(undefined)
-const renameInput = ref(undefined)
 const showExportAdmitsModal = ref(false)
 const showExportStudentsModal = ref(false)
 
-watch(renameInput, () => {
-  renameError.value = undefined
-})
 watch(showExportAdmitsModal, isOpen => {
   if (isOpen) {
     putFocusNextTick('csv-column-options-0')
@@ -289,16 +237,8 @@ const enterBulkAddMode = () => {
 }
 
 const enterRenameMode = () => {
-  renameInput.value = curatedGroupName.value
   curatedStore.setMode('rename')
   putFocusNextTick('rename-curated-group-input')
-}
-
-const exitRenameMode = () => {
-  renameInput.value = undefined
-  curatedStore.resetMode()
-  alertScreenReader('Canceled rename')
-  putFocusNextTick('rename-curated-group-button')
 }
 
 const exportGroup = csvColumnsSelected => {
@@ -332,23 +272,5 @@ const onClickDelete = () => {
   const hasReferencingCohorts = !!referencingCohorts.value.length
   isCohortWarningModalOpen.value = hasReferencingCohorts
   isDeleteModalOpen.value = !hasReferencingCohorts
-}
-
-const rename = () => {
-  const error = validateCohortName({name: renameInput.value})
-  if (error !== true) {
-    renameError.value = error
-    putFocusNextTick('rename-curated-group-input')
-  } else {
-    isSaving.value = true
-    renameCuratedGroup(curatedGroupId.value, renameInput.value).then(curatedGroup => {
-      curatedStore.setCuratedGroupName(curatedGroup.name)
-      setPageTitle(curatedGroup.name)
-      exitRenameMode()
-      isSaving.value = false
-      alertScreenReader(`Renamed ${domainLabel(false)}`)
-      putFocusNextTick('rename-curated-group-button"')
-    })
-  }
 }
 </script>

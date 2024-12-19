@@ -459,6 +459,8 @@ def _response_with_students_csv_download(sids, fieldnames, benchmark, term_id):
         ),
         'units_in_progress': lambda profile: profile.get('enrolledUnits', {}),
         'college_advisor': lambda profile: '; '.join(_get_college_advisors(profile)),
+        'cohorts': lambda profile: '; '.join(_get_current_user_cohorts_containing(profile, cohorts)),
+        'curated_groups': lambda profile: '; '.join(_get_current_user_curated_groups_containing(profile, curated_groups)),
     }
     if current_user.is_admin or 'COENG' in dept_codes_where_advising(current_user):
         # Only admins and CoE advisors can access CoE-related data.
@@ -471,6 +473,12 @@ def _response_with_students_csv_download(sids, fieldnames, benchmark, term_id):
         # We are going to need CoE-related data.
         profiles_by_sid = dict((student['sid'], student.get('profile')) for student in students)
         merge_coe_student_profile_data(profiles_by_sid)
+    if 'cohorts' in fieldnames:
+        # We are going to need cohorts.
+        cohorts = CohortFilter.get_cohorts(user_id=current_user.get_id())
+    if 'curated_groups' in fieldnames:
+        # We are going to need curated_groups.
+        curated_groups = CuratedGroup.get_curated_groups_owned_by(uids=[current_user.uid])
     rows = []
     for student in students:
         profile = student.get('profile')
@@ -518,6 +526,16 @@ def _get_coe_status(profile):
     if profile.get('coeProfile'):
         status = 'active' if profile.get('coeProfile').get('isActiveCoe') else 'inactive'
     return status
+
+
+def _get_current_user_cohorts_containing(profile, cohorts):
+    sid = profile['sid']
+    return [cohort['name'] for cohort in cohorts if sid in cohort['sids']]
+
+
+def _get_current_user_curated_groups_containing(profile, curated_groups):
+    sid = profile['sid']
+    return [curated_group['name'] for curated_group in curated_groups if sid in curated_group['sids']]
 
 
 def _get_college_advisors(profile):
