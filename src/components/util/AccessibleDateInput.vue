@@ -54,7 +54,7 @@
       v-if="model"
       :id="`${idPrefix}-clear-btn`"
       :aria-label="`Clear ${ariaLabel}`"
-      class="clear-button clear-icon"
+      class="clear-button clear-icon mb-1"
       :disabled="disabled"
       @click.stop.prevent="onClickClear($event, dateInputEvents)"
     >
@@ -63,7 +63,7 @@
         height="20"
         :icon="mdiCloseCircle"
         width="20"
-      ></v-icon>
+      />
     </button>
   </div>
 </template>
@@ -324,7 +324,7 @@ const onUpdateFocus = (hasFocus, inputEvents) => {
   border: none;
   border-radius: 100%;
   cursor: pointer;
-  padding: 4px;
+  padding: 2px 4px 2px 2px;
   position: absolute;
   right: 5px;
   top: 5px;
