@@ -66,7 +66,7 @@ class CuratedGroup(Base):
         return cls.query.filter_by(id=curated_group_id).first()
 
     @classmethod
-    def get_curated_groups(cls, owner_id):
+    def get_curated_groups(cls, owner_id, include_sids=False):
         if app.config['FEATURE_FLAG_ADMITTED_STUDENTS']:
             filter_by = cls.query.filter_by(owner_id=owner_id)
         else:
@@ -74,27 +74,31 @@ class CuratedGroup(Base):
         return filter_by.order_by(cls.name).all()
 
     @classmethod
-    def get_groups_owned_by_uids(cls, uids):
+    def get_curated_groups_owned_by(cls, uids):
         domain_clause = 'true' if app.config['FEATURE_FLAG_ADMITTED_STUDENTS'] else "sg.domain = 'default'"
         query = text(f"""
-            SELECT sg.id, sg.domain, sg.name, count(sgm.sid) AS student_count, au.uid AS owner_uid
+            SELECT sg.id, sg.domain, sg.name, sgm.sid, au.uid AS owner_uid
             FROM student_groups sg
             LEFT JOIN student_group_members sgm ON sg.id = sgm.student_group_id
             JOIN authorized_users au ON sg.owner_id = au.id
             WHERE au.uid = ANY(:uids) AND {domain_clause}
-            GROUP BY sg.id, sg.name, au.id, au.uid
+            GROUP BY sg.id, sg.name, au.id, sgm.sid, au.uid
         """)
-        results = db.session.execute(query, {'uids': uids})
-
-        def transform(row):
-            return {
-                'id': row['id'],
+        curated_groups_by_id = {}
+        for row in db.session.execute(query, {'uids': uids}):
+            id_ = row['id']
+            curated_group = curated_groups_by_id[id_] if id_ in curated_groups_by_id else {
+                'id': id_,
                 'domain': row['domain'],
                 'name': row['name'],
-                'totalStudentCount': row['student_count'],
                 'ownerUid': row['owner_uid'],
+                'sids': [],
+                'totalStudentCount': 0,
             }
-        return [transform(row) for row in results]
+            curated_group['sids'].append(row['sid'])
+            curated_group['totalStudentCount'] += 1
+            curated_groups_by_id[id_] = curated_group
+        return list(curated_groups_by_id.values())
 
     @classmethod
     def curated_group_ids_per_sid(cls, domain, sid, user_id):

@@ -1,11 +1,7 @@
 <template>
-  <v-card
-    v-show="isOpen"
-    flat
-  >
-    <div class="align-center align-top d-flex flex-wrap">
+  <v-card flat>
+    <div class="align-center d-flex flex-wrap">
       <v-text-field
-        v-if="isOpen"
         id="rename-cohort-input"
         v-model="name"
         aria-label="Cohort name"
@@ -63,51 +59,45 @@
 import ProgressButton from '@/components/util/ProgressButton'
 import {alertScreenReader} from '@/lib/utils'
 import {putFocusNextTick, setPageTitle} from '@/lib/utils'
+import {onMounted, ref} from 'vue'
 import {saveCohort} from '@/api/cohort'
 import {size} from 'lodash'
+import {storeToRefs} from 'pinia'
 import {useCohortStore} from '@/stores/cohort-edit-session'
 import {validateCohortName} from '@/lib/cohort'
-import {ref, watch} from 'vue'
-
-const props = defineProps({
-  cancel: {
-    type: Function,
-    required: true
-  },
-  isOpen: {
-    type: Boolean,
-    required: true
-  }
-})
 
 const cohortStore = useCohortStore()
-
+const {cohortId, cohortName, filters} = storeToRefs(cohortStore)
 const isInvalid = ref(true)
 const isSaving = ref(false)
 const maxlength = ref(255)
-const name = ref('')
+const name = ref(undefined)
 const validationRules = {
   valid: name => {
-    const valid = validateCohortName({id: cohortStore.cohortId, name})
+    const valid = validateCohortName({id: cohortId.value, name})
     isInvalid.value = true !== valid
     return valid
   }
 }
 
-watch(() => props.isOpen, value => {
-  if (value) {
-    name.value = cohortStore.cohortName
-  }
+onMounted(() => {
+  name.value = cohortName.value
 })
 
+const cancel = () => {
+  cohortStore.setEditMode(null)
+  alertScreenReader(`Cancel renaming of cohort '${name.value}'`)
+  putFocusNextTick('rename-cohort-button')
+}
+
 const submit = () => {
-  if (true !== validateCohortName({id: cohortStore.cohortId, name: name.value})) {
+  if (true !== validateCohortName({id: cohortId.value, name: name.value})) {
     putFocusNextTick('rename-cohort-input')
   } else {
     isSaving.value = true
     alertScreenReader('Renaming cohort')
     cohortStore.renameCohort(name.value)
-    saveCohort(cohortStore.cohortId, cohortStore.cohortName, cohortStore.filters).then(() => {
+    saveCohort(cohortId.value, cohortName.value, filters.value).then(() => {
       isSaving.value = false
       alertScreenReader(`Cohort renamed to '${name.value}'`)
       setPageTitle(name.value)

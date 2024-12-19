@@ -137,7 +137,7 @@ export function getDefaultCsvExportColumns(): ExportListOption[] {
   ]
   each([
     {text: 'CoE status', value: 'coe_status', condition: currentUser.isAdmin || isCoe(currentUser), disabled: false},
-    {text: 'Cohorts', value: 'cohort', condition: true, disabled: !filter(currentUser.myCohorts, ['domain', 'default']).length},
+    {text: 'Cohorts', value: 'cohorts', condition: true, disabled: !filter(currentUser.myCohorts, ['domain', 'default']).length},
     {text: 'Curated Groups', value: 'curated_groups', condition: true, disabled: !filter(currentUser.myCuratedGroups, ['domain', 'default']).length}
   ], option => {
     if (option.condition) {
