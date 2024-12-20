@@ -133,7 +133,8 @@ export function getDefaultCsvExportColumns(): ExportListOption[] {
     {text: 'Transfer status', value: 'transfer'},
     {text: 'Intended Major', value: 'intended_major'},
     {text: 'Units in progress', value: 'units_in_progress'},
-    {text: 'College Advisor', value: 'college_advisor'}
+    {text: 'College Advisor', value: 'college_advisor'},
+    {text: 'Academic Standing', value: 'academic_standing'}
   ]
   each([
     {text: 'CoE status', value: 'coe_status', condition: currentUser.isAdmin || isCoe(currentUser), disabled: false},

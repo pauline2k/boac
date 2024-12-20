@@ -29,7 +29,7 @@ import json
 
 from boac.api.errors import BadRequestError, ResourceNotFoundError
 from boac.externals.data_loch import get_admitted_students_by_sids, get_sis_holds, get_student_profiles
-from boac.lib.berkeley import dept_codes_where_advising, previous_term_id
+from boac.lib.berkeley import ACADEMIC_STANDING_DESCRIPTIONS, dept_codes_where_advising, previous_term_id
 from boac.lib.http import response_with_csv_download
 from boac.lib.util import get_benchmarker, join_if_present
 from boac.merged import calnet
@@ -426,41 +426,38 @@ def _response_with_students_csv_download(sids, fieldnames, benchmark, term_id):
     term_id_last = previous_term_id(current_term_id())
     term_id_previous = previous_term_id(term_id_last)
     getters = {
-        'first_name': lambda profile: profile.get('firstName'),
-        'last_name': lambda profile: profile.get('lastName'),
-        'sid': lambda profile: profile.get('sid'),
-        'email': lambda profile: profile.get('sisProfile', {}).get('emailAddress'),
-        'phone': lambda profile: profile.get('sisProfile', {}).get('phoneNumber'),
-        'majors': lambda profile: '; '.join(
-            [plan.get('description') for plan in profile.get('sisProfile', {}).get('plans', []) if plan.get('status') == 'Active'],
-        ),
-        'intended_majors': lambda profile: '; '.join(
-            [major.get('description') for major in profile.get('sisProfile', {}).get('intendedMajors')],
-        ),
-        'level_by_units': lambda profile: profile.get('sisProfile', {}).get('level', {}).get('description'),
-        'minors': lambda profile: '; '.join(
-            [plan.get('description') for plan in profile.get('sisProfile', {}).get('plansMinor', []) if plan.get('status') == 'Active'],
-        ),
-        'subplans': lambda profile: '; '.join(
-            [plan['subplan'] for plan in profile.get('sisProfile', {}).get('plans', []) if plan.get('subplan') and plan.get('status') == 'Active'],
-        ),
-        'terms_in_attendance': lambda profile: profile.get('sisProfile', {}).get('termsInAttendance'),
-        'expected_graduation_term': lambda profile: profile.get('sisProfile', {}).get('expectedGraduationTerm', {}).get('name'),
-        'units_completed': lambda profile: profile.get('sisProfile', {}).get('cumulativeUnits'),
-        f'term_gpa_{term_id_previous}': lambda profile: profile.get('termGpa', {}).get(term_id_previous),
-        f'term_gpa_{term_id_last}': lambda profile: profile.get('termGpa', {}).get(term_id_last),
+        'academic_standing': lambda profile: _get_academic_standing(profile),
+        'cohorts': lambda profile: '; '.join(_get_current_user_cohorts_containing(profile, cohorts)),
+        'college_advisor': lambda profile: '; '.join(_get_college_advisors(profile)),
         'cumulative_gpa': lambda profile: profile.get('sisProfile', {}).get('cumulativeGPA'),
-        'program_status': lambda profile: '; '.join(
-            list(set([plan.get('status') for plan in profile.get('sisProfile', {}).get('plans', [])])),
-        ),
-        'transfer': lambda profile: 'Yes' if profile.get('sisProfile', {}).get('transfer') else '',
+        'curated_groups': lambda profile: '; '.join(_get_current_user_curated_groups_containing(profile, curated_groups)),
+        'email': lambda profile: profile.get('sisProfile', {}).get('emailAddress'),
+        'expected_graduation_term': lambda profile: profile.get('sisProfile', {}).get('expectedGraduationTerm', {}).get('name'),
+        'first_name': lambda profile: profile.get('firstName'),
         'intended_major': lambda profile: '; '.join(
             [major.get('description') for major in (profile.get('sisProfile', {}).get('intendedMajors') or [])],
         ),
+        'intended_majors': lambda profile: '; '.join([major.get('description') for major in profile.get('sisProfile', {}).get('intendedMajors')]),
+        'last_name': lambda profile: profile.get('lastName'),
+        'level_by_units': lambda profile: profile.get('sisProfile', {}).get('level', {}).get('description'),
+        'majors': lambda profile: '; '.join(
+            [plan.get('description') for plan in profile.get('sisProfile', {}).get('plans', []) if plan.get('status') == 'Active'],
+        ),
+        'minors': lambda profile: '; '.join(
+            [plan.get('description') for plan in profile.get('sisProfile', {}).get('plansMinor', []) if plan.get('status') == 'Active'],
+        ),
+        'phone': lambda profile: profile.get('sisProfile', {}).get('phoneNumber'),
+        'program_status': lambda profile: '; '.join(list(set([plan.get('status') for plan in profile.get('sisProfile', {}).get('plans', [])]))),
+        'sid': lambda profile: profile.get('sid'),
+        'subplans': lambda profile: '; '.join(
+            [plan['subplan'] for plan in profile.get('sisProfile', {}).get('plans', []) if plan.get('subplan') and plan.get('status') == 'Active'],
+        ),
+        f'term_gpa_{term_id_last}': lambda profile: profile.get('termGpa', {}).get(term_id_last),
+        f'term_gpa_{term_id_previous}': lambda profile: profile.get('termGpa', {}).get(term_id_previous),
+        'terms_in_attendance': lambda profile: profile.get('sisProfile', {}).get('termsInAttendance'),
+        'transfer': lambda profile: 'Yes' if profile.get('sisProfile', {}).get('transfer') else '',
+        'units_completed': lambda profile: profile.get('sisProfile', {}).get('cumulativeUnits'),
         'units_in_progress': lambda profile: profile.get('enrolledUnits', {}),
-        'college_advisor': lambda profile: '; '.join(_get_college_advisors(profile)),
-        'cohorts': lambda profile: '; '.join(_get_current_user_cohorts_containing(profile, cohorts)),
-        'curated_groups': lambda profile: '; '.join(_get_current_user_curated_groups_containing(profile, curated_groups)),
     }
     if current_user.is_admin or 'COENG' in dept_codes_where_advising(current_user):
         # Only admins and CoE advisors can access CoE-related data.
@@ -516,9 +513,20 @@ def _response_with_admits_csv_download(sids, fieldnames, benchmark):
     )
 
 
-def _norm(row, key):
-    value = row.get(key)
-    return value and value.upper()
+def _api_key_ok():
+    auth_key = app.config['API_KEY']
+    return auth_key and (request.headers.get('App-Key') == auth_key)
+
+
+def _get_academic_standing(profile):
+    academic_standing = profile.get('sisProfile', {}).get('academicStanding', {})
+    status = academic_standing.get('status')
+    if status:
+        term_name = academic_standing.get('termName')
+        status_name = ACADEMIC_STANDING_DESCRIPTIONS.get(status, status)
+        return f"{status_name}{f', {term_name}' if term_name else ''}"
+    else:
+        return ''
 
 
 def _get_coe_status(profile):
@@ -526,16 +534,6 @@ def _get_coe_status(profile):
     if profile.get('coeProfile'):
         status = 'active' if profile.get('coeProfile').get('isActiveCoe') else 'inactive'
     return status
-
-
-def _get_current_user_cohorts_containing(profile, cohorts):
-    sid = profile['sid']
-    return [cohort['name'] for cohort in cohorts if sid in cohort['sids']]
-
-
-def _get_current_user_curated_groups_containing(profile, curated_groups):
-    sid = profile['sid']
-    return [curated_group['name'] for curated_group in curated_groups if sid in curated_group['sids']]
 
 
 def _get_college_advisors(profile):
@@ -549,6 +547,16 @@ def _get_college_advisors(profile):
     return values
 
 
+def _get_current_user_cohorts_containing(profile, cohorts):
+    sid = profile['sid']
+    return [cohort['name'] for cohort in cohorts if sid in cohort['sids']]
+
+
+def _get_current_user_curated_groups_containing(profile, curated_groups):
+    sid = profile['sid']
+    return [curated_group['name'] for curated_group in curated_groups if sid in curated_group['sids']]
+
+
 def _has_role_in_any_department(user, role):
     return next((d for d in user.departments if d['role'] == role), False)
 
@@ -557,10 +565,10 @@ def _is_advisor_in_department(user, dept):
     return next((d for d in user.departments if d['code'] == dept and d['role'] in ('advisor', 'director')), False)
 
 
-def _api_key_ok():
-    auth_key = app.config['API_KEY']
-    return auth_key and (request.headers.get('App-Key') == auth_key)
-
-
 def _isoformat(value):
     return value and value.astimezone(tzutc()).isoformat()
+
+
+def _norm(row, key):
+    value = row.get(key)
+    return value and value.upper()
