@@ -2,7 +2,7 @@
   <div>
     <v-container class="pb-0 pl-0 pr-6" fluid>
       <v-row align-v="center" class="pt-2" no-gutters>
-        <v-col cols="3">
+        <v-col cols="2">
           <div class="pr-3">
             <select
               id="user-filter-options"
@@ -24,7 +24,7 @@
             </select>
           </div>
         </v-col>
-        <v-col cols="9">
+        <v-col cols="10">
           <div v-if="filterType === 'search'">
             <span id="user-search-input" class="sr-only">Search for user. Expect auto-suggest as you type name or UID.</span>
             <v-autocomplete
@@ -105,7 +105,7 @@
                 </option>
               </select>
             </div>
-            <div class="pr-2">
+            <div>
               <select
                 id="user-status-options"
                 v-model="filterBy.status"

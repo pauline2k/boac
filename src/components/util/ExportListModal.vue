@@ -20,11 +20,7 @@
           <div
             id="csv-column-options"
             aria-label="Select columns to export"
-            class="d-flex flex-column flex-wrap csv-column-options pb-5 px-1"
-            :class="{
-              'short-card': csvColumns.length > 21,
-              'tall-card': csvColumns.length <= 21
-            }"
+            class="d-flex flex-column flex-wrap card-height csv-column-options pb-5 px-1"
             role="group"
           >
             <template v-for="(option, index) in csvColumns" :key="index">
@@ -140,13 +136,10 @@ const onSubmit = () => {
 </script>
 
 <style scoped>
+.card-height {
+  height: 300px;
+}
 .csv-column-option {
   height: 30px;
-}
-.short-card {
-  height: 280px;
-}
-.tall-card {
-  height: 360px;
 }
 </style>

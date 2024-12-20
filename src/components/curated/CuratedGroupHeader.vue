@@ -132,7 +132,7 @@
         </div>
       </div>
     </div>
-    <div v-if="referencingCohorts.length" class="pb-2 pl-1">
+    <div v-if="referencingCohorts.length">
       <div v-if="ownerId === currentUser.id">
         Used as a filter in {{ referencingCohorts.length === 1 ? 'cohort' : 'cohorts' }}
         <router-link
