@@ -429,6 +429,7 @@ def _response_with_students_csv_download(sids, fieldnames, benchmark, term_id):
         'academic_standing': lambda profile: _get_academic_standing(profile),
         'cohorts': lambda profile: '; '.join(_get_current_user_cohorts_containing(profile, cohorts)),
         'college_advisor': lambda profile: '; '.join(_get_college_advisors(profile)),
+        'course_activity': lambda profile: _get_course_activity(profile),
         'cumulative_gpa': lambda profile: profile.get('sisProfile', {}).get('cumulativeGPA'),
         'curated_groups': lambda profile: '; '.join(_get_current_user_curated_groups_containing(profile, curated_groups)),
         'email': lambda profile: profile.get('sisProfile', {}).get('emailAddress'),
@@ -545,6 +546,10 @@ def _get_college_advisors(profile):
             advisor_name = f"{advisor['firstName']} {last_name}" if last_name else f'UID:{uid}'
             values.append(advisor_name)
     return values
+
+
+def _get_course_activity(profile):
+    return []
 
 
 def _get_current_user_cohorts_containing(profile, cohorts):
