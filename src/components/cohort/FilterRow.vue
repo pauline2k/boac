@@ -323,7 +323,7 @@ const onRangeUpdate = () => {
       disableUpdateButton.value = true
     } else {
       const isInt = v => /^\d+$/.test(v)
-      const isDefinedAndInvalid = v => (isInt(v) && parseInt(v, 10) < 0) || !isInt(v) || isNaN(v)
+      const isDefinedAndInvalid = v => (isInt(v) && parseInt(v, 10) < 0) || !isInt(v)
       if (isDefinedAndInvalid(min) || isDefinedAndInvalid(max)) {
         errorPerRangeInput.value = 'Dependents must be an integer greater than or equal to 0.'
         disableUpdateButton.value = true
