@@ -84,6 +84,7 @@ def academic_career_status_options():
     ]
 
 
+@stow('cohort_filter_options_academic_division_options')
 def academic_division_options():
     division_results = [row['division'] for row in data_loch.get_distinct_divisions()]
     return [{'name': division, 'value': division} for division in division_results if division]
@@ -216,6 +217,7 @@ def coe_prep_status_options():
     ]
 
 
+@stow('cohort_filter_options_team_groups')
 def team_groups():
     rows = athletics.all_team_groups()
     return [{'name': row['groupName'], 'value': row['groupCode']} for row in rows]
