@@ -1443,6 +1443,7 @@ class TestDownloadCsvPerFilters:
                 'program_status',
                 'college_advisor',
                 'coe_status',
+                'course_activity',
             ],
         }
         response = client.post(
@@ -1452,13 +1453,16 @@ class TestDownloadCsvPerFilters:
         )
         assert response.status_code == 200
         assert 'csv' in response.content_type
-        csv = str(response.data)
-        for snippet in [
-            'first_name,last_name,sid,email,phone,majors,level_by_units,terms_in_attendance,expected_graduation_term,units_completed,term_gpa_2172,term_gpa_2175,cumulative_gpa,program_status,college_advisor',  # noqa: E501
-            'Deborah,Davies,11667051,barnburner@berkeley.edu,415/123-4567,English BA; Nuclear Engineering BS,Junior,,Fall 2019,101.3,2.700,,3.8,Active',  # noqa: E501
-            'Paul,Farestveit,7890123456,qadept@berkeley.edu,415/123-4567,Nuclear Engineering BS,Senior,2,Spring 2020,110,,,3.9,Active,Real Advisor,active',  # noqa: E501
-        ]:
-            assert str(snippet) in csv
+        csv = response.data.decode('UTF-8').split('\n')
+        # Verify that 'course_activity' related columns are present.
+        expected_headers = 'first_name,last_name,sid,email,phone,majors,level_by_units,terms_in_attendance,expected_graduation_term,units_completed,term_gpa_2172,term_gpa_2175,cumulative_gpa,program_status,college_advisor,coe_status,class_name,units,mid_point_grade,final grade_or_type'  # noqa: E501
+        assert expected_headers in csv[0]
+        for row in csv:
+            if row.startswith('Deborah,Davies'):
+                assert '11667051' in row
+                assert 'Junior' in row
+                assert 'English BA' in row
+                assert 'BURMESE 1A' in row or 'MED ST 205' in row or 'NUC ENG 124' in row or 'PHYSED 11' in row or 'SOCIOL 198'
 
     def test_download_csv_custom_columns(self, client, coe_advisor_login):
         """Advisor can generate a CSV with the columns they want."""

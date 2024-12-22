@@ -28,6 +28,7 @@ from functools import wraps
 import json
 
 from boac.api.errors import BadRequestError, ResourceNotFoundError
+from boac.externals import data_loch
 from boac.externals.data_loch import get_admitted_students_by_sids, get_sis_holds, get_student_profiles
 from boac.lib.berkeley import ACADEMIC_STANDING_DESCRIPTIONS, dept_codes_where_advising, previous_term_id
 from boac.lib.http import response_with_csv_download
@@ -425,11 +426,17 @@ def validate_advising_note_set_date(params):
 def _response_with_students_csv_download(sids, fieldnames, benchmark, term_id):
     term_id_last = previous_term_id(current_term_id())
     term_id_previous = previous_term_id(term_id_last)
+    # The 'course_activity' option aliases a set of CSV columns: course_name, units, etc.
+    is_requesting_course_activity = 'course_activity' in fieldnames
+    if is_requesting_course_activity:
+        # Remove 'course_activity' from fieldnames because it will not be a column name in CSV. The course-related
+        # columns are added farther down in the code.
+        fieldnames.remove('course_activity')
+
     getters = {
         'academic_standing': lambda profile: _get_academic_standing(profile),
         'cohorts': lambda profile: '; '.join(_get_current_user_cohorts_containing(profile, cohorts)),
         'college_advisor': lambda profile: '; '.join(_get_college_advisors(profile)),
-        'course_activity': lambda profile: _get_course_activity(profile),
         'cumulative_gpa': lambda profile: profile.get('sisProfile', {}).get('cumulativeGPA'),
         'curated_groups': lambda profile: '; '.join(_get_current_user_curated_groups_containing(profile, curated_groups)),
         'email': lambda profile: profile.get('sisProfile', {}).get('emailAddress'),
@@ -460,6 +467,9 @@ def _response_with_students_csv_download(sids, fieldnames, benchmark, term_id):
         'units_completed': lambda profile: profile.get('sisProfile', {}).get('cumulativeUnits'),
         'units_in_progress': lambda profile: profile.get('enrolledUnits', {}),
     }
+
+    def _construct_csv_row():
+        return dict((fieldname, getters[fieldname](profile)) for fieldname in fieldnames)
     if current_user.is_admin or 'COENG' in dept_codes_where_advising(current_user):
         # Only admins and CoE advisors can access CoE-related data.
         getters['coe_status'] = lambda profile: _get_coe_status(profile) or ''
@@ -477,18 +487,35 @@ def _response_with_students_csv_download(sids, fieldnames, benchmark, term_id):
     if 'curated_groups' in fieldnames:
         # We are going to need curated_groups.
         curated_groups = CuratedGroup.get_curated_groups_owned_by(uids=[current_user.uid])
+    if is_requesting_course_activity:
+        # We are going to need enrollment data.
+        enrollments_for_term = data_loch.get_enrollments_for_term(term_id, sids)
+        enrollments_for_term_by_sid = dict((enrollments['sid'], json.loads(enrollments['enrollment_term'])) for enrollments in enrollments_for_term)
     rows = []
     for student in students:
         profile = student.get('profile')
-        profile['termGpa'] = term_gpas.get(profile['sid'], {})
-        profile['enrolledUnits'] = term_units.get(profile['sid'], '0')
-        row = {}
-        for fieldname in fieldnames:
-            row[fieldname] = getters[fieldname](profile)
-        rows.append(row)
+        sid = profile['sid']
+        profile['termGpa'] = term_gpas.get(sid, {})
+        profile['enrolledUnits'] = term_units.get(sid, '0')
+        if is_requesting_course_activity and sid in enrollments_for_term_by_sid:
+            enrollments_for_term = enrollments_for_term_by_sid[sid]
+            for enrollment in enrollments_for_term['enrollments']:
+                rows.append({
+                    **_construct_csv_row(),
+                    **{
+                        'class_name': enrollment['displayName'],
+                        'units': enrollment['units'],
+                        'mid_point_grade': enrollment.get('midtermGrade'),
+                        'final grade_or_type': enrollment['grade'] or enrollment['gradingBasis'],
+                    },
+                })
+        elif len(fieldnames):
+            rows.append(_construct_csv_row())
 
     benchmark('end')
 
+    if is_requesting_course_activity:
+        fieldnames.extend(['class_name', 'units', 'mid_point_grade', 'final grade_or_type'])
     return response_with_csv_download(
         rows=sorted(rows, key=lambda r: (_norm(r, 'last_name'), _norm(r, 'first_name'), _norm(r, 'sid'))),
         filename_prefix='cohort',
@@ -546,10 +573,6 @@ def _get_college_advisors(profile):
             advisor_name = f"{advisor['firstName']} {last_name}" if last_name else f'UID:{uid}'
             values.append(advisor_name)
     return values
-
-
-def _get_course_activity(profile):
-    return []
 
 
 def _get_current_user_cohorts_containing(profile, cohorts):
