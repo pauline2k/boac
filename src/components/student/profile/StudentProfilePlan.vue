@@ -13,7 +13,7 @@
     <div v-if="plan.program" class="text-medium-emphasis">
       {{ plan.program }}
     </div>
-    <div v-if="!active" class="font-weight-bold text-errorr small text-uppercase">
+    <div v-if="!active" class="font-weight-bold text-error small text-uppercase">
       {{ plan.status }}
     </div>
   </div>
