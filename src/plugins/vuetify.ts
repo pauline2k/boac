@@ -109,6 +109,15 @@ export default createVuetify({
       variant: 'outlined'
     }
   },
+  display: {
+    thresholds: {
+      xs: 0,
+      sm: 600,
+      md: 960,
+      lg: 1400,
+      xl: 1920,
+    }
+  },
   directives: {
     Intersect,
     Resize
