@@ -30,7 +30,7 @@ import json
 from boac.api.errors import BadRequestError, ResourceNotFoundError
 from boac.externals import data_loch
 from boac.externals.data_loch import get_admitted_students_by_sids, get_sis_holds, get_student_profiles
-from boac.lib.berkeley import ACADEMIC_STANDING_DESCRIPTIONS, dept_codes_where_advising, previous_term_id
+from boac.lib.berkeley import ACADEMIC_STANDING_DESCRIPTIONS, dept_codes_where_advising, previous_term_id, term_name_for_sis_id
 from boac.lib.http import response_with_csv_download
 from boac.lib.util import get_benchmarker, join_if_present
 from boac.merged import calnet
@@ -369,6 +369,39 @@ def get_my_curated_groups():
     return curated_groups
 
 
+def get_students_csv_header_labels(term_id):
+    term_id_last = previous_term_id(term_id)
+    term_id_previous = previous_term_id(term_id_last)
+    return {
+        'academic_standing': 'Academic Standing',
+        'coe_status': 'CoE status',
+        'cohorts': 'Cohorts',
+        'college_advisor': 'College Advisor',
+        'course_activity': 'Course Activity',
+        'cumulative_gpa': 'Cumulative GPA',
+        'curated_groups': 'Curated Groups',
+        'email': 'Email Address',
+        'expected_graduation_term': 'Expected Graduation Term',
+        'first_name': 'First Name',
+        'intended_major': 'Intended Major',
+        'intended_majors': 'Intended Majors',
+        'last_name': 'Last Name',
+        'level_by_units': 'Level by Units',
+        'majors': 'Major(s)',
+        'minors': 'Minor(s)',
+        'phone': 'Phone Number',
+        'program_status': 'Program Status',
+        'sid': 'SID',
+        'subplans': 'Academic Subplans',
+        f'term_gpa_{term_id_last}': f'{term_name_for_sis_id(term_id_last)} Term GPA',
+        f'term_gpa_{term_id_previous}': f'{term_name_for_sis_id(term_id_previous)} Term GPA',
+        'terms_in_attendance': 'Terms in Attendance',
+        'transfer': 'Transfer Status',
+        'units_completed': 'Units Completed',
+        'units_in_progress': 'Units in Progress',
+    }
+
+
 def is_unauthorized_domain(domain):
     if domain not in ['default', 'admitted_students']:
         raise BadRequestError(f'Invalid domain: {domain}')
@@ -503,23 +536,24 @@ def _response_with_students_csv_download(sids, fieldnames, benchmark, term_id):
                 rows.append({
                     **_construct_csv_row(),
                     **{
-                        'class_name': enrollment['displayName'],
-                        'units': enrollment['units'],
-                        'mid_point_grade': enrollment.get('midtermGrade'),
-                        'final grade_or_type': enrollment['grade'] or enrollment['gradingBasis'],
+                        'Class Name': enrollment['displayName'],
+                        'Units': enrollment['units'],
+                        'Mid-point Grade': enrollment.get('midtermGrade'),
+                        'Final Grade': enrollment['grade'] or enrollment['gradingBasis'],
                     },
                 })
         elif len(fieldnames):
             rows.append(_construct_csv_row())
 
     benchmark('end')
-
+    header_label_lookup = get_students_csv_header_labels(current_term_id())
     if is_requesting_course_activity:
-        fieldnames.extend(['class_name', 'units', 'mid_point_grade', 'final grade_or_type'])
+        fieldnames.extend(['Class Name', 'Units', 'Mid-point Grade', 'Final Grade'])
     return response_with_csv_download(
         rows=sorted(rows, key=lambda r: (_norm(r, 'last_name'), _norm(r, 'first_name'), _norm(r, 'sid'))),
         filename_prefix='cohort',
         fieldnames=fieldnames,
+        header_label_lookup=header_label_lookup,
     )
 
 

@@ -133,7 +133,7 @@ export function getDefaultCsvExportColumns(): ExportListOption[] {
     {text: 'Transfer Status', value: 'transfer'},
     {text: 'Intended Major', value: 'intended_major'},
     {text: 'Course Activity', value: 'course_activity'},
-    {text: 'Units in progress', value: 'units_in_progress'},
+    {text: 'Units in Progress', value: 'units_in_progress'},
     {text: 'College Advisor', value: 'college_advisor'},
     {text: 'Academic Standing', value: 'academic_standing'}
   ]

@@ -24,6 +24,7 @@ ENHANCEMENTS, OR MODIFICATIONS.
 """
 
 from boac import std_commit
+from boac.api.util import get_students_csv_header_labels
 from boac.merged.sis_terms import current_term_id
 from boac.models.authorized_user import AuthorizedUser
 from boac.models.curated_group import CuratedGroup
@@ -677,15 +678,25 @@ class TestDownloadCuratedGroupCSV:
         )
         assert response.status_code == 200
         assert 'csv' in response.content_type
-        csv = str(response.data)
-        for snippet in [
-            'first_name,last_name,sid,email,phone,majors,level_by_units,terms_in_attendance,expected_graduation_term,units_completed,term_gpa_2172,cumulative_gpa,program_status',  # noqa: E501
-            'Deborah,Davies,11667051,barnburner@berkeley.edu,415/123-4567,English BA; Nuclear Engineering BS,Junior,,Fall 2019,101.3,2.700,3.8,Active,',  # noqa: E501
-            'Pauline,Kerschen,3456789012,doctork@berkeley.edu,415/123-4567,English BA; Political Economy BA,Junior,5,Fall 2019,70,,3.005,Active,',
-            'Sandeep,Jayaprakash,5678901234,ilovela@berkeley.edu,415/123-4567,Letters & Sci Undeclared UG,Senior,,Fall 2019,102,,3.501,Active,',
-            'Paul,Farestveit,7890123456,qadept@berkeley.edu,415/123-4567,Nuclear Engineering BS,Senior,2,Spring 2020,110,,3.9,Active,Real Advisor',
-        ]:
-            assert str(snippet) in csv
+        csv = response.data.decode('UTF-8').split('\n')
+        header_label_lookup = get_students_csv_header_labels(current_term_id())
+        expected_headers = ['first_name', 'last_name', 'sid', 'email', 'phone', 'majors', 'level_by_units',
+                            'terms_in_attendance', 'expected_graduation_term', 'units_completed', 'term_gpa_2172',
+                            'cumulative_gpa', 'program_status']
+        for expected_header in expected_headers:
+            expected_label = header_label_lookup.get(expected_header, expected_header)
+            assert expected_label in csv[0]
+        for row in csv[1:]:
+            if row.startswith('Deborah,Davies'):
+                assert '11667051,barnburner@berkeley.edu,415/123-4567,English BA; Nuclear Engineering BS,Junior,,Fall 2019,101.3,2.700,3.8,Active,' in row  # noqa: E501
+            elif row.startswith('Pauline,Kerschen'):
+                assert '3456789012,doctork@berkeley.edu,415/123-4567,English BA; Political Economy BA,Junior,5,Fall 2019,70,,3.005,Active,' in row
+            elif row.startswith('Sandeep,Jayaprakash'):
+                assert '5678901234,ilovela@berkeley.edu,415/123-4567,Letters & Sci Undeclared UG,Senior,,Fall 2019,102,,3.501,Active,' in row
+            elif row.startswith('Paul,Farestveit'):
+                assert '7890123456,qadept@berkeley.edu,415/123-4567,Nuclear Engineering BS,Senior,2,Spring 2020,110,,3.9,Active,Real Advisor' in row
+            elif row:
+                pytest.fail(f'Unexpected CSV content: {row}')
 
     def test_download_csv_shared_dept(self, asc_curated_groups, authorized_advisor, client):
         """Advisor can download CSV if they share the group owner's department memberships."""
@@ -729,15 +740,24 @@ class TestDownloadCuratedGroupCSV:
         )
         assert response.status_code == 200
         assert 'csv' in response.content_type
-        csv = str(response.data)
-        for snippet in [
-            'majors,level_by_units,terms_in_attendance,expected_graduation_term,units_completed,term_gpa_2175,cumulative_gpa,program_status',  # noqa: E501
-            'English BA; Nuclear Engineering BS,Junior,,Fall 2019,101.3,,3.8,Active',
-            'English BA; Political Economy BA,Junior,5,Fall 2019,70,,3.005,Active',
-            'Letters & Sci Undeclared UG,Senior,,Fall 2019,102,,3.501,Active',
-            'Nuclear Engineering BS,Senior,2,Spring 2020,110,,3.9,Active',
-        ]:
-            assert str(snippet) in csv
+        csv = response.data.decode('UTF-8').split('\n')
+        header_label_lookup = get_students_csv_header_labels(current_term_id())
+        expected_headers = ['majors', 'level_by_units', 'terms_in_attendance', 'expected_graduation_term',
+                            'units_completed', 'term_gpa_2175', 'cumulative_gpa', 'program_status']
+        for expected_header in expected_headers:
+            expected_label = header_label_lookup.get(expected_header, expected_header)
+            assert expected_label in csv[0]
+        for row in csv[1:]:
+            if row.startswith('English BA; Nuclear Engineering BS'):
+                assert 'Junior,,Fall 2019,101.3,,3.8,Active' in row
+            elif row.startswith('English BA; Political Economy BA'):
+                assert 'Junior,5,Fall 2019,70,,3.005,Active' in row
+            elif row.startswith('Letters & Sci Undeclared UG'):
+                assert 'Senior,,Fall 2019,102,,3.501,Active' in row
+            elif row.startswith('Nuclear Engineering BS'):
+                assert 'Senior,2,Spring 2020,110,,3.9,Active' in row
+            elif row:
+                pytest.fail(f'Unexpected CSV content: {row}')
 
     def test_download_csv_per_term_id(self, coe_advisor_groups, authorized_advisor, client):
         """Advisor can download CSV per specified term_id."""

@@ -24,6 +24,8 @@ ENHANCEMENTS, OR MODIFICATIONS.
 """
 
 from boac import std_commit
+from boac.api.util import get_students_csv_header_labels
+from boac.merged.sis_terms import current_term_id
 from boac.models.authorized_user import AuthorizedUser
 from boac.models.cohort_filter import CohortFilter
 from boac.models.curated_group import CuratedGroup
@@ -1455,8 +1457,14 @@ class TestDownloadCsvPerFilters:
         assert 'csv' in response.content_type
         csv = response.data.decode('UTF-8').split('\n')
         # Verify that 'course_activity' related columns are present.
-        expected_headers = 'first_name,last_name,sid,email,phone,majors,level_by_units,terms_in_attendance,expected_graduation_term,units_completed,term_gpa_2172,term_gpa_2175,cumulative_gpa,program_status,college_advisor,coe_status,class_name,units,mid_point_grade,final grade_or_type'  # noqa: E501
-        assert expected_headers in csv[0]
+        header_label_lookup = get_students_csv_header_labels(current_term_id())
+        expected_headers = ['first_name', 'last_name', 'sid', 'email', 'phone', 'majors', 'level_by_units',
+                            'terms_in_attendance', 'expected_graduation_term', 'units_completed', 'term_gpa_2172',
+                            'term_gpa_2175', 'cumulative_gpa', 'program_status', 'college_advisor', 'coe_status',
+                            'Class Name', 'Units', 'Mid-point Grade', 'Final Grade']
+        for expected_header in expected_headers:
+            expected_label = header_label_lookup.get(expected_header, expected_header)
+            assert expected_label in csv[0]
         for row in csv:
             if row.startswith('Deborah,Davies'):
                 assert '11667051' in row
@@ -1490,13 +1498,21 @@ class TestDownloadCsvPerFilters:
         )
         assert response.status_code == 200
         assert 'csv' in response.content_type
-        csv = str(response.data)
-        for snippet in [
-            'majors,level_by_units,terms_in_attendance,expected_graduation_term,units_completed,term_gpa_2172,cumulative_gpa,program_status,intended_majors,minors',  # noqa: E501
-            'Chemistry BS,Junior,4,Fall 2019,34,3.500,3.495,Active,',
-            'English BA; Political Economy BA,Junior,5,Fall 2019,70,,3.005,Active,',
-        ]:
-            assert str(snippet) in csv
+        csv = response.data.decode('UTF-8').split('\n')
+        header_label_lookup = get_students_csv_header_labels(current_term_id())
+        expected_headers = ['majors', 'level_by_units', 'terms_in_attendance', 'expected_graduation_term',
+                            'units_completed', 'term_gpa_2172', 'cumulative_gpa', 'program_status', 'intended_majors',
+                            'minors']
+        for expected_header in expected_headers:
+            expected_label = header_label_lookup.get(expected_header, expected_header)
+            assert expected_label in csv[0]
+        for row in csv[1:]:
+            if row.startswith('Chemistry BS'):
+                assert 'Junior,4,Fall 2019,34,3.500,3.495,Active,' in row
+            elif row.startswith('English BA; Political Economy BA'):
+                assert 'Junior,5,Fall 2019,70,,3.005,Active,' in row
+            elif row:
+                pytest.fail(f'Unexpected CSV content: {row}')
 
     admit_keys = [
         'applyuc_cpid',

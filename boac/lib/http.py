@@ -128,7 +128,7 @@ def tolerant_jsonify(obj, status=200, **kwargs):
     return Response(content, mimetype='application/json', status=status)
 
 
-def response_with_csv_download(rows, filename_prefix, fieldnames=None):
+def response_with_csv_download(rows, filename_prefix, fieldnames, header_label_lookup=None):
     now = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     response = Response(
         content_type='text/csv',
@@ -137,6 +137,12 @@ def response_with_csv_download(rows, filename_prefix, fieldnames=None):
         },
     )
     csv_writer = csv.DictWriter(ResponseStream(response), fieldnames=fieldnames)
-    csv_writer.writeheader()
+    if header_label_lookup:
+        headers = {}
+        for fieldname in fieldnames:
+            headers[fieldname] = header_label_lookup.get(fieldname) or fieldname
+        csv_writer.writerow(headers)
+    else:
+        csv_writer.writeheader()
     csv_writer.writerows(rows)
     return response
