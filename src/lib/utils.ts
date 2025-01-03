@@ -1,8 +1,9 @@
 import numeral from 'numeral'
 import {concat, find, head, initial, isNil, isNumber, join, last, toLower, trim} from 'lodash'
+import {CurrentUser, useContextStore} from '@/stores/context'
+import {getDegreeChecks} from '@/api/degree'
 import {getUserProfile} from '@/api/user'
 import {nextTick} from 'vue'
-import {CurrentUser, useContextStore} from '@/stores/context'
 
 let $_screenReaderAlertExpiry: number
 
@@ -51,16 +52,20 @@ export function escapeForRegExp(s) {
   return s && s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-export function getDegreeCheckPath(student) {
-  const currentUser: CurrentUser = useContextStore().currentUser
-  const currentDegreeCheck = find(student.degreeChecks, 'isCurrent')
-  if (currentDegreeCheck) {
-    return `/student/degree/${currentDegreeCheck.id}`
-  } else if (currentUser.canEditDegreeProgress) {
-    return `${studentRoutePath(student.uid, currentUser.inDemoMode)}/degree/create`
-  } else {
-    return `${studentRoutePath(student.uid, currentUser.inDemoMode)}/degree/history`
-  }
+export function goToStudentDegreeChecksByUID(uid: string, openInSameTab?: boolean): void {
+  getDegreeChecks(uid).then(degreeChecks => {
+    const currentUser: CurrentUser = useContextStore().currentUser
+    const currentDegreeCheck = find(degreeChecks, 'isCurrent')
+    let path: string
+    if (currentDegreeCheck) {
+      path = `/student/degree/${currentDegreeCheck.id}`
+    } else if (currentUser.canEditDegreeProgress) {
+      path = `${studentRoutePath(uid, currentUser.inDemoMode)}/degree/create`
+    } else {
+      path = `${studentRoutePath(uid, currentUser.inDemoMode)}/degree/history`
+    }
+    window.open(path, openInSameTab ? undefined : '_blank')
+  })
 }
 
 export function invokeIfAuthenticated(callback: Function, onReject = () => {}) {
