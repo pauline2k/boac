@@ -27,10 +27,12 @@
         </v-btn>
       </div>
       <div v-if="currentUser.canReadDegreeProgress">
-        <router-link
-          id="view-degree-checks-link"
-          target="_blank"
-          :to="getDegreeCheckPath(student)"
+        <v-btn
+          id="degree-checks-of-student"
+          color="primary"
+          size="sm"
+          variant="text"
+          @click="() => goToStudentDegreeChecksByUID(student.uid)"
         >
           <div class="align-center d-flex text-anchor">
             <div>
@@ -38,7 +40,7 @@
             </div>
             <v-icon class="ml-1" :icon="mdiOpenInNew" size="18" />
           </div>
-        </router-link>
+        </v-btn>
       </div>
     </div>
     <div
@@ -131,7 +133,7 @@
 
 <script setup>
 import StudentEnrollmentTerm from '@/components/student/profile/StudentEnrollmentTerm'
-import {alertScreenReader, getDegreeCheckPath} from '@/lib/utils'
+import {alertScreenReader, goToStudentDegreeChecksByUID} from '@/lib/utils'
 import {each, find, groupBy, includes, map, orderBy, sumBy} from 'lodash'
 import {mdiArrowDownThin, mdiArrowUpThin, mdiMenuDown, mdiMenuRight, mdiOpenInNew} from '@mdi/js'
 import {onMounted, ref} from 'vue'
