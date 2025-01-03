@@ -291,7 +291,7 @@ class StudentPage(CuratedAddSelector, StudentPageAdvisingNote, StudentPageAppoin
 
     # TERM DATA
 
-    DEGREE_CHECKS_LINK = By.ID, 'view-degree-checks-link'
+    DEGREE_CHECKS_LINK = By.ID, 'degree-checks-of-student'
     WITHDRAWAL_MSG = By.XPATH, '//span[contains(@id, "withdrawal-term-")]'
     TOGGLE_COLLAPSE_ALL_YEARS = By.ID, 'toggle-collapse-all-years'
 

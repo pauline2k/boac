@@ -123,13 +123,20 @@
       </div>
     </div>
     <div v-if="currentUser.canReadDegreeProgress" class="font-size-13 font-weight-medium">
-      <router-link
+      <v-btn
         :id="`degree-checks-of-${student.sid}`"
-        target="_blank"
-        :to="getDegreeCheckPath(student)"
+        color="primary"
+        size="sm"
+        variant="text"
+        @click="() => goToStudentDegreeChecksByUID(student.uid)"
       >
-        Undergraduate Degree Checks <span class="sr-only">of {{ student.name }} (will open new browser tab)</span>
-      </router-link>
+        <div class="align-center d-flex text-anchor">
+          <div>
+            Undergraduate Degree Checks <span class="sr-only">of {{ student.name }} (will open new browser tab)</span>
+          </div>
+          <v-icon class="ml-1" :icon="mdiOpenInNew" size="18" />
+        </div>
+      </v-btn>
     </div>
   </div>
 </template>
@@ -137,13 +144,13 @@
 <script setup>
 import DegreesAwarded from '@/components/student/DegreesAwarded'
 import StudentAcademicStanding from '@/components/student/profile/StudentAcademicStanding'
+import {computed} from 'vue'
 import {DateTime} from 'luxon'
 import {displayAsAscInactive, displayAsCoeInactive} from '@/berkeley'
 import {get, map, uniq} from 'lodash'
-import {getDegreeCheckPath, lastNameFirst, studentRoutePath} from '@/lib/utils'
-import {mdiSchool} from '@mdi/js'
+import {goToStudentDegreeChecksByUID, lastNameFirst, studentRoutePath} from '@/lib/utils'
+import {mdiOpenInNew, mdiSchool} from '@mdi/js'
 import {useContextStore} from '@/stores/context'
-import {computed} from 'vue'
 
 const props = defineProps({
   rowIndex: {
