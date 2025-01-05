@@ -459,8 +459,8 @@ class TestCohortById:
 class TestCohortsEveryone:
 
     @classmethod
-    def _api_cohorts_all(cls, client, expected_status_code=200):
-        response = client.get('/api/cohorts/all')
+    def _api_cohorts_by_dept_code(cls, client, dept_code, expected_status_code=200):
+        response = client.get(f'/api/cohorts/by_dept_code/{dept_code}')
         assert response.status_code == expected_status_code
         return response.json
 
@@ -468,26 +468,25 @@ class TestCohortsEveryone:
         """Deny non-CE3 advisor access to non-default cohort domain."""
         with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', False):
             fake_auth.login(ce3_advisor_uid)
-            api_json = self._api_cohorts_all(client)
+            api_json = self._api_cohorts_by_dept_code(client, 'ZCEEE')
             all_cohorts = [cohort for row in api_json for cohort in row['cohorts']]
             iterator = (cohort for cohort in all_cohorts if cohort['domain'] == 'admitted_students')
             assert next(iterator, None) is None
 
     def test_cohorts_all(self, asc_advisor_login, client):
         """Returns all cohorts per owner."""
-        api_json = self._api_cohorts_all(client)
-        count = len(api_json)
-        assert count == 3
-        for index, entry in enumerate(api_json):
-            user = entry['user']
-            if 0 < index < count:
+        api_json = self._api_cohorts_by_dept_code(client, 'COENG')
+        assert len(api_json) == 1
+        for index, user in enumerate(api_json):
+            cohorts = user['cohorts']
+            # count = len(cohorts)
+            assert len(cohorts)
+            if 0 < index < len(cohorts):
                 # Verify order
-                assert user['name'] > api_json[index - 1]['user']['name']
+                assert user['name'] > cohorts[index - 1]['user']['name']
             assert 'uid' in user
-            cohorts = entry['cohorts']
-            cohort_count = len(cohorts)
             for c_index, cohort in enumerate(cohorts):
-                if 0 < c_index < cohort_count:
+                if 0 < c_index < len(cohorts):
                     # Verify order
                     assert cohort['name'] > cohorts[c_index - 1]['name']
                 assert 'id' in cohort
@@ -495,17 +494,18 @@ class TestCohortsEveryone:
     def test_all_cohorts_of_default_domain(self, client, fake_auth):
         """Returns all cohorts, excluding admitted students."""
         fake_auth.login(ce3_advisor_uid)
-        api_json = self._api_cohorts_all(client)
-        for row in api_json:
-            for cohort in row['cohorts']:
-                assert cohort['domain'] == 'default'
-                assert cohort['name'] != 'First Generation Students'
+        api_json = self._api_cohorts_by_dept_code(client, 'UWASC')
+        assert len(api_json)
+        cohorts = api_json[0]['cohorts']
+        assert len(cohorts)
+        assert cohorts[0]['domain'] == 'default'
+        assert cohorts[0]['name'] == 'All sports'
 
     def test_all_admitted_students_cohorts(self, client, fake_auth):
         """Returns all cohorts, excluding admitted students."""
         with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
             fake_auth.login(ce3_advisor_uid)
-            api_json = self._api_cohorts_all(client)
+            api_json = self._api_cohorts_by_dept_code(client, 'ZCEEE')
             all_cohorts = [cohort for row in api_json for cohort in row['cohorts']]
             iterator = (cohort for cohort in all_cohorts if cohort['domain'] == 'admitted_students')
             assert next(iterator, None) is not None
@@ -514,7 +514,7 @@ class TestCohortsEveryone:
         """The cohort history feature is not available if domain is 'admitted_students'."""
         with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
             fake_auth.login(ce3_advisor_uid)
-            api_json = self._api_cohorts_all(client)
+            api_json = self._api_cohorts_by_dept_code(client, 'ZCEEE')
             cohorts = next(row['cohorts'] for row in api_json if len(row['cohorts']))
             api_cohort_events(client, cohorts[0]['id'], expected_status_code=400)
 

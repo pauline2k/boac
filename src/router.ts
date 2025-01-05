@@ -3,7 +3,6 @@ import {useSearchStore} from '@/stores/search'
 const AdmitStudent = () => import('@/views/AdmitStudent.vue')
 const AdmitStudents = () => import('@/views/AdmitStudents.vue')
 const AllCohorts = () => import('@/views/AllCohorts.vue')
-const AllGroups = () => import('@/views/AllGroups.vue')
 const BatchDegreeCheck = () => import('@/views/degree/BatchDegreeCheck.vue')
 const Cohort = () => import('@/views/Cohort.vue')
 const CohortHistory = () => import('@/views/CohortHistory.vue')
@@ -91,7 +90,7 @@ const routes:RouteRecordRaw[] = [
     },
     children: [
       {
-        path: '/cohorts/all',
+        path: '/all/:mode',
         component: AllCohorts,
         name: 'All Cohorts'
       },
@@ -121,11 +120,6 @@ const routes:RouteRecordRaw[] = [
         component: CreateCuratedGroup,
         props: true,
         name: 'Create Curated Group'
-      },
-      {
-        path: '/groups/all',
-        component: AllGroups,
-        name: 'All Groups'
       },
       {
         path: '/note/drafts',
