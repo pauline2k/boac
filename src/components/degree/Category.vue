@@ -4,7 +4,8 @@
       id="drop-zone-category"
       class="w-100"
       :class="{
-        'drop-zone-container': !size(category.subcategories) && !printable,
+        'drop-zone-container-category': category.categoryType === 'Category' && !printable,
+        'drop-zone-container-subcategory': category.categoryType === 'Subcategory' && !size(category.subcategories) && !printable,
         'drop-zone-on': isDroppable() && degreeStore.draggingContext.target === category.id
       }"
       @dragend="onDrag($event, 'end')"
@@ -17,15 +18,15 @@
       <div class="align-center d-flex justify-space-between w-100">
         <h3
           v-if="category.categoryType === 'Category'"
-          class="category-header"
-          :class="{'font-size-14': printable, 'font-size-18': !printable}"
+          class="category-header text-grey"
+          :class="{'font-size-14': printable, 'font-size-16': !printable}"
         >
           {{ category.name }}
         </h3>
         <h4
           v-if="category.categoryType === 'Subcategory'"
-          class="subcategory-header"
-          :class="{'font-size-12': printable, 'font-size-16': !printable}"
+          class="subcategory-header text-grey"
+          :class="{'font-size-12': printable, 'font-size-14': !printable}"
         >
           {{ category.name }}
         </h4>
@@ -67,12 +68,7 @@
           class="border-0 text-wrap"
           v-html="category.description"
         />
-        <span
-          v-if="!printable"
-          v-linkified
-          class="text-wrap"
-          v-html="category.description"
-        />
+        <pre v-if="!printable"><span v-linkified v-html="category.description" /></pre>
       </div>
     </div>
     <AreYouSureModal
@@ -209,8 +205,13 @@ pre {
   margin-bottom: 0;
   padding: 0;
 }
-.drop-zone-container {
-  border-left: 2px solid rgb(var(--v-theme-primary));
+.drop-zone-container-category {
+  border-left: 3px solid rgb(var(--v-theme-primary));
+  padding: 0 0 0 0.5em;
+  margin: 0.2em 0 0.2em 0;
+}
+.drop-zone-container-subcategory {
+  border-left: 3px solid rgb(var(--v-theme-secondary));
   padding: 0 0 0 0.5em;
   margin: 0.2em 0 0.2em 0;
 }

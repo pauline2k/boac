@@ -157,14 +157,15 @@
                 @click="cancelEdit"
               />
             </div>
-            <div v-if="item.id !== get(templateForEdit, 'id')" class="align-center d-flex flex-wrap justify-end">
+            <div v-if="item.id !== get(templateForEdit, 'id')" class="align-center d-flex justify-end text-no-wrap">
               <v-btn
                 :id="`degree-check-${item.id}-print-link`"
                 :disabled="isBusy"
+                class="font-size-15 pr-1 print-degree-check-btn"
                 color="primary"
+                size="x-sm"
                 target="_blank"
                 variant="text"
-                width="60"
                 :to="`/degree/${item.id}/print`"
               >
                 Print
@@ -174,10 +175,11 @@
                 <span class="text-disabled" role="separator">|</span>
                 <v-btn
                   :id="`degree-check-${item.id}-rename-btn`"
+                  class="font-size-14 px-1"
                   color="primary"
                   :disabled="isBusy"
+                  size="x-sm"
                   variant="text"
-                  width="80"
                   @click="() => edit(item)"
                 >
                   Rename<span class="sr-only"> {{ item.name }}</span>
@@ -187,10 +189,11 @@
                 <span class="text-disabled" role="separator">|</span>
                 <v-btn
                   :id="`degree-check-${item.id}-copy-btn`"
+                  class="font-size-14 px-1"
                   color="primary"
                   :disabled="isBusy"
+                  size="x-sm"
                   variant="text"
-                  width="50"
                   @click="openCreateCloneModal(item)"
                 >
                   Copy<span class="sr-only"> {{ item.name }}</span>
@@ -200,10 +203,11 @@
                 <span class="text-disabled" role="separator">|</span>
                 <v-btn
                   :id="`degree-check-${item.id}-delete-btn`"
+                  class="font-size-14 pl-1"
                   color="primary"
                   :disabled="isBusy"
+                  size="x-sm"
                   variant="text"
-                  width="70"
                   @click="showDeleteModal(item)"
                   @keydown.enter.prevent="showDeleteModal(item)"
                 >
@@ -370,6 +374,9 @@ const showDeleteModal = template => {
 </style>
 
 <style scoped>
+.print-degree-check-btn {
+  padding-top: 2px;
+}
 .rename-btn {
   height: 36px;
 }
