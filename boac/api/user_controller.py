@@ -262,15 +262,8 @@ def download_boa_users_csv():
 @app.route('/api/users/departments')
 @admin_required
 def get_departments():
-    exclude_empty = to_bool_or_none(util.get(request.args, 'excludeEmpty', None))
-    api_json = []
-    for d in UniversityDept.get_all(exclude_empty=exclude_empty):
-        api_json.append({
-            'id': d.id,
-            'code': d.dept_code,
-            'name': d.dept_name,
-        })
-    return tolerant_jsonify(api_json)
+    exclude_empty = to_bool_or_none(util.get(request.args, 'excludeEmpty')) or False
+    return tolerant_jsonify(UniversityDept.get_all_departments(exclude_empty=exclude_empty))
 
 
 def _get_boa_users():
