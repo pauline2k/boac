@@ -260,7 +260,7 @@ def download_boa_users_csv():
 
 
 @app.route('/api/users/departments')
-@admin_required
+@advisor_required
 def get_departments():
     exclude_empty = to_bool_or_none(util.get(request.args, 'excludeEmpty')) or False
     return tolerant_jsonify(UniversityDept.get_all_departments(exclude_empty=exclude_empty))

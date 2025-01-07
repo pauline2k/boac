@@ -382,43 +382,47 @@ class TestUniversityDeptMember:
         )
 
 
+class TestDepartments:
+    """Departments API."""
+
+    def test_not_authenticated(self, client):
+        """Returns 'unauthorized' response status if user is not authenticated."""
+        assert client.get('/api/users/departments').status_code == 401
+
+    def test_authorized(self, app, client, fake_auth):
+        """Returns a well-formed response including cached, uncached, and deleted users."""
+        fake_auth.login(coe_advisor_uid)
+        response = client.get('/api/users/departments')
+        assert response.status_code == 200
+        api_json = response.json
+        assert len(api_json) > 1
+        for index, department in enumerate(api_json):
+            assert 'id' in department
+            assert department['memberCount'] > 0
+            if index > 0:
+                previous_department = api_json[index - 1]
+                assert department['name'] > previous_department['name']
+
+
 class TestUsers:
     """Users API."""
 
     def test_not_authenticated(self, client):
         """Returns 'unauthorized' response status if user is not authenticated."""
-        response = client.post('/api/users')
-        assert response.status_code == 401
-        response = client.get('/api/users/departments')
-        assert response.status_code == 401
+        assert client.post('/api/users').status_code == 401
 
     def test_unauthorized(self, client, fake_auth):
-        """Returns 'unauthorized' response status if user is not admin."""
+        """Advisors are unauthorized to use /api/users."""
         fake_auth.login(coe_advisor_uid)
-        response = client.post('/api/users')
-        assert response.status_code == 401
-        response = client.get('/api/users/departments')
-        assert response.status_code == 401
+        assert client.post('/api/users').status_code == 401
 
     def test_authorized(self, app, client, fake_auth):
         """Returns a well-formed response including cached, uncached, and deleted users."""
         fake_auth.login(admin_uid)
-        response = client.post(
-            '/api/users',
-            data=json.dumps({
-                'deptCode': 'QCADV',
-            }),
-            content_type='application/json',
-        )
+        response = client.post('/api/users', data=json.dumps({'deptCode': 'QCADV'}), content_type='application/json')
         assert response.status_code == 200
         users = response.json['users']
         assert len(users) == 4
-
-    def test_get_departments(self, client, fake_auth):
-        """Get all departments."""
-        fake_auth.login(admin_uid)
-        response = client.get('/api/users/departments')
-        assert response.status_code == 200
 
 
 class TestGetAdminUsers:
