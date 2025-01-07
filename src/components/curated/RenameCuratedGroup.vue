@@ -1,31 +1,44 @@
 <template>
   <v-card class="w-100" flat>
-    <div class="align-center d-flex flex-wrap pt-1">
+    <div class="align-start d-flex flex-wrap pt-1">
       <v-text-field
         id="rename-curated-group-input"
         v-model="name"
         :aria-invalid="!name"
         :aria-label="`${describeCuratedGroupDomain(domain, true)} name`"
-        class="v-input-details-override mr-3"
-        counter="255"
+        class="v-input-details-override mb-1 mr-3"
         density="comfortable"
         :disabled="isSaving"
-        hide-details
         label="Curated Group Name"
-        maxlength="255"
+        :maxlength="maxlength"
         persistent-counter
         required
-        :rules="[validationRules.valid]"
+        :rules="[() => isValidName]"
+        validate-on="lazy input"
         @keyup.enter="rename"
         @keyup.esc="exitRenameMode"
-      />
+      >
+        <template #details>
+          <div class="pt-1">
+            {{ size(name) ? `${maxlength} character limit (${maxlength - size(name)} left)` : `${maxlength} character limit` }}
+          </div>
+        </template>
+      </v-text-field>
+      <span
+        v-if="size(name) === maxlength"
+        aria-live="polite"
+        class="sr-only"
+        role="alert"
+      >
+        Name cannot exceed {{ maxlength }} characters.
+      </span>
       <div class="d-flex justify-end">
         <ProgressButton
           id="rename-curated-group-confirm"
           :action="rename"
           aria-label="Rename Curated Group"
-          color="primary"
-          :disabled="!size(name) || isSaving"
+          :disabled="isValidName !== true || isSaving"
+          :in-progress="isSaving"
           size="large"
           :text="isSaving ? 'Renaming' : 'Rename'"
         />
@@ -41,15 +54,6 @@
         />
       </div>
     </div>
-    <div class="text-medium-emphasis">255 character limit <span v-if="size(name)">({{ 255 - size(name) }} left)</span></div>
-    <span
-      v-if="size(name) === 255"
-      aria-live="polite"
-      class="sr-only"
-      role="alert"
-    >
-      Name cannot exceed 255 characters.
-    </span>
   </v-card>
 </template>
 
@@ -57,7 +61,7 @@
 import ProgressButton from '@/components/util/ProgressButton'
 import {alertScreenReader, putFocusNextTick, setPageTitle} from '@/lib/utils'
 import {describeCuratedGroupDomain} from '@/berkeley'
-import {onMounted, ref} from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import {renameCuratedGroup} from '@/api/curated'
 import {size} from 'lodash'
 import {storeToRefs} from 'pinia'
@@ -66,16 +70,10 @@ import {validateCohortName} from '@/lib/cohort'
 
 const curatedStore = useCuratedGroupStore()
 const {curatedGroupId, curatedGroupName, domain} = storeToRefs(curatedStore)
-const isInvalid = ref(false)
 const isSaving = ref(false)
+const isValidName = computed(() => validateCohortName({id: curatedGroupId.value, name: name.value}))
+const maxlength = 255
 const name = ref(undefined)
-const validationRules = {
-  valid: name => {
-    const valid = validateCohortName({id: curatedGroupId.value, name})
-    isInvalid.value = true !== valid
-    return valid
-  }
-}
 
 onMounted(() => {
   name.value = curatedGroupName.value
