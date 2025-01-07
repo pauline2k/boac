@@ -124,6 +124,7 @@ class TestFilteredAdmitResults:
         failures = []
         visible_sids = self.filtered_admits_page.admit_cohort_row_sids()
         members_to_check = [member for member in cohort.members if member.sid in visible_sids]
+        nessie_utils.get_admits_data(members_to_check)
         for admit in members_to_check:
             self.filtered_admits_page.verify_admit_row_data(admit, failures)
         if failures:

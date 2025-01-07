@@ -103,6 +103,7 @@ class StudentPageTimeline(BoaPages):
         return By.ID, f'{self.item_type(item)}-{item.record_id}-is-open'
 
     def is_item_expanded(self, item):
+        time.sleep(1)
         self.is_present(self.expanded_item_loc(item)) and self.element(self.expanded_item_loc(item)).is_displayed()
 
     def expand_item(self, item):

@@ -63,7 +63,7 @@ class TestSearchAppointment:
     def test_adv_search_matching_topics(self, tc):
         if tc.appt.topics:
             all_topics = [t.value['name'].title() for t in Topics]
-            if tc.note.topics[0] in all_topics:
+            if tc.appt.topics[0] in all_topics:
                 self.homepage.reopen_and_reset_adv_search()
                 self.homepage.select_note_topic(tc.appt.topics[0])
                 self.homepage.enter_adv_search_and_hit_enter(tc.search_string)
@@ -99,24 +99,30 @@ class TestSearchAppointment:
 
     def test_adv_search_matching_author(self, tc):
         if tc.appt.advisor:
-            author = nessie_timeline_utils.get_advising_note_author(tc.appt.advisor.uid)
-            if author:
-                name = f'{author.first_name} {author.last_name}'
-                self.homepage.reopen_and_reset_adv_search()
-                self.homepage.set_notes_author(name)
-                self.homepage.enter_adv_search_and_hit_enter(tc.search_string)
-                self.search_results_page.assert_appt_result_present(tc.appt)
+            if tc.appt.advisor.uid == 'UCBCONVERSION':
+                app.logger.info('Skipping appointment author search since UID is UCBCONVERSION')
+            else:
+                author = nessie_timeline_utils.get_advising_note_author(tc.appt.advisor.uid)
+                if author:
+                    name = f'{author.first_name} {author.last_name}'
+                    self.homepage.reopen_and_reset_adv_search()
+                    self.homepage.set_notes_author(name)
+                    self.homepage.enter_adv_search_and_hit_enter(tc.search_string)
+                    self.search_results_page.assert_appt_result_present(tc.appt)
 
     def test_adv_search_non_matching_author(self, tc):
         if tc.appt.advisor:
-            authors = nessie_timeline_utils.get_all_advising_note_authors()
-            author = next(filter(lambda a: a.uid != tc.appt.advisor.uid, authors))
-            author_name = f'{author.first_name} {author.last_name}'
-            self.search_results_page.reopen_and_reset_adv_search()
-            self.homepage.set_notes_author(author_name)
-            self.homepage.enter_adv_search(tc.search_string)
-            self.homepage.click_adv_search_button()
-            self.search_results_page.assert_appt_result_not_present(tc.appt)
+            if tc.appt.advisor.uid == 'UCBCONVERSION':
+                app.logger.info('Skipping appointment author search since UID is UCBCONVERSION')
+            else:
+                authors = nessie_timeline_utils.get_all_advising_note_authors()
+                author = next(filter(lambda a: a.uid != tc.appt.advisor.uid, authors))
+                author_name = f'{author.first_name} {author.last_name}'
+                self.search_results_page.reopen_and_reset_adv_search()
+                self.homepage.set_notes_author(author_name)
+                self.homepage.enter_adv_search(tc.search_string)
+                self.homepage.click_adv_search_button()
+                self.search_results_page.assert_appt_result_not_present(tc.appt)
 
     def test_adv_search_matching_student(self, tc):
         self.search_results_page.reopen_and_reset_adv_search()

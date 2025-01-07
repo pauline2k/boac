@@ -149,6 +149,15 @@ def assert_actual_includes_expected(actual, expected):
     assert expected in actual
 
 
+def assert_matching_advisor_name(actual_name, advisor):
+    names = [advisor.full_name.lower()]
+    if advisor.alt_names:
+        alt_names_lower = list(map(lambda n: n.lower(), advisor.alt_names))
+        names.extend(alt_names_lower)
+    app.logger.info(f'Expecting possible advisor names {names} to include {actual_name}')
+    assert actual_name.lower() in names
+
+
 def assert_existence(actual):
     app.logger.info(f'Expecting {actual} not to be null or empty')
     assert actual

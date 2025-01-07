@@ -120,7 +120,6 @@ class BEATestConfig(BEATestBaseConfigs):
         self.set_dept(Department.ZCEEE)
         self.set_advisor()
         self.set_admits()
-        nessie_utils.get_admits_data(self.admits)
         self.set_search_cohorts(opts={'admits': True})
 
     def filtered_cohorts(self):

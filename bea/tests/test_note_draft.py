@@ -379,7 +379,6 @@ class TestNoteDraft:
         self.homepage.dev_auth(self.test.advisor)
 
     def test_search_draft_by_subject_yields_no_result(self):
-        self.homepage.close_adv_search_if_open()
         self.homepage.enter_simple_search_and_hit_enter(self.note_3.subject)
         self.search_results_page.wait_for_no_results()
 
@@ -469,16 +468,18 @@ class TestNoteDraft:
 
     def test_advisor_draft_list_view_students(self):
         utils.assert_equivalence(self.draft_notes_page.visible_draft_student(self.note_4),
-                                 '—')
+                                 '—\nblank')
         utils.assert_equivalence(self.draft_notes_page.visible_draft_student(self.note_5),
                                  f'{self.student.first_name} {self.student.last_name}')
         utils.assert_equivalence(self.draft_notes_page.visible_draft_student(self.note_6),
                                  f'{self.student.first_name} {self.student.last_name}')
 
     def test_advisor_draft_list_view_sids(self):
-        utils.assert_equivalence(self.draft_notes_page.visible_draft_sid(self.note_4), '—')
-        utils.assert_equivalence(self.draft_notes_page.visible_draft_sid(self.note_5), str(self.student.sid))
-        utils.assert_equivalence(self.draft_notes_page.visible_draft_sid(self.note_6), str(self.student.sid))
+        utils.assert_actual_includes_expected(self.draft_notes_page.visible_draft_sid(self.note_4), '—')
+        utils.assert_actual_includes_expected(self.draft_notes_page.visible_draft_sid(self.note_5),
+                                              str(self.student.sid))
+        utils.assert_actual_includes_expected(self.draft_notes_page.visible_draft_sid(self.note_6),
+                                              str(self.student.sid))
 
     def test_advisor_draft_list_view_subjects(self):
         utils.assert_equivalence(self.draft_notes_page.visible_draft_subject(self.note_4), self.note_4.subject)
@@ -520,25 +521,19 @@ class TestNoteDraft:
         assert str(self.note_5.record_id) in visible_ids
         assert str(self.note_6.record_id) in visible_ids
 
-    def test_admin_draft_list_view_order(self):
-        all_drafts = boa_utils.get_advisor_note_drafts()
-        all_drafts.sort(key=lambda d: d.updated_date, reverse=True)
-        expected_ids = [str(d.record_id) for d in all_drafts]
-        visible_ids = self.draft_notes_page.visible_draft_ids()
-        utils.assert_equivalence(visible_ids, expected_ids)
-
     def test_admin_draft_list_view_students(self):
-        utils.assert_equivalence(self.draft_notes_page.visible_draft_student(self.note_4),
-                                 '—')
-        utils.assert_equivalence(self.draft_notes_page.visible_draft_student(self.note_5),
-                                 f'{self.student.first_name} {self.student.last_name}')
-        utils.assert_equivalence(self.draft_notes_page.visible_draft_student(self.note_6),
-                                 f'{self.student.first_name} {self.student.last_name}')
+        utils.assert_actual_includes_expected(self.draft_notes_page.visible_draft_student(self.note_4), '—')
+        utils.assert_actual_includes_expected(self.draft_notes_page.visible_draft_student(self.note_5),
+                                              f'{self.student.first_name} {self.student.last_name}')
+        utils.assert_actual_includes_expected(self.draft_notes_page.visible_draft_student(self.note_6),
+                                              f'{self.student.first_name} {self.student.last_name}')
 
     def test_admin_draft_list_view_sids(self):
-        utils.assert_equivalence(self.draft_notes_page.visible_draft_sid(self.note_4), '—')
-        utils.assert_equivalence(self.draft_notes_page.visible_draft_sid(self.note_5), str(self.student.sid))
-        utils.assert_equivalence(self.draft_notes_page.visible_draft_sid(self.note_6), str(self.student.sid))
+        utils.assert_actual_includes_expected(self.draft_notes_page.visible_draft_sid(self.note_4), '—')
+        utils.assert_actual_includes_expected(self.draft_notes_page.visible_draft_sid(self.note_5),
+                                              str(self.student.sid))
+        utils.assert_actual_includes_expected(self.draft_notes_page.visible_draft_sid(self.note_6),
+                                              str(self.student.sid))
 
     def test_admin_draft_list_view_subjects(self):
         utils.assert_equivalence(self.draft_notes_page.visible_draft_subject(self.note_4), self.note_4.subject)

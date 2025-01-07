@@ -60,6 +60,7 @@ class StudentPageAdvisingNote(StudentPageTimeline, CreateNoteModal):
 
     def toggle_my_notes(self):
         self.wait_for_element_and_click(self.FILTER_NOTES_BUTTON)
+        time.sleep(1)
 
     def expand_all_notes(self):
         app.logger.info('Expanding all notes')

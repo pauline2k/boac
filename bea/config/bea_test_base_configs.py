@@ -173,7 +173,9 @@ class BEATestBaseConfigs(object):
         elif uid:
             boa_advisor = next(filter(lambda a: a.uid == uid, boa_advisors))
         else:
-            boa_advisor = next(filter(lambda a: a.depts == [self.dept], boa_advisors))
+            boa_advisor = next(
+                filter(lambda a: a.depts == [self.dept] and a.can_access_advising_data and a.can_access_canvas_data,
+                       boa_advisors))
 
         nessie_advisor = nessie_timeline_utils.get_advising_note_author(boa_advisor.uid)
         if nessie_advisor:
@@ -209,7 +211,8 @@ class BEATestBaseConfigs(object):
     def get_no_canvas_no_notes_advisor():
         users = boa_utils.get_authorized_users()
         return next(filter(
-            lambda a: len(a.depts) == 1 and not a.can_access_advising_data and not a.can_access_canvas_data and a.active,
+            lambda a: len(
+                a.depts) == 1 and not a.can_access_advising_data and not a.can_access_canvas_data and a.active,
             users))
 
     def set_students(self, students=None, opts=None):
@@ -340,7 +343,8 @@ class BEATestBaseConfigs(object):
                 ei_sids = list(set(sids) & set(ei_sids))
                 app.logger.info(f'There are {len(ei_sids)} students with E&I notes')
 
-                eop_sids = nessie_timeline_utils.get_sids_with_notes_of_src(TimelineRecordSource.EOP, eop_private=private)
+                eop_sids = nessie_timeline_utils.get_sids_with_notes_of_src(TimelineRecordSource.EOP,
+                                                                            eop_private=private)
                 eop_sids = list(set(sids) & set(eop_sids))
                 app.logger.info(f'There are {len(eop_sids)} students with EOP notes')
 

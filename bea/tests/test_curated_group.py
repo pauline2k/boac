@@ -113,15 +113,13 @@ class TestCuratedGroup:
         assert not self.student_page.element(self.student_page.GROUP_SAVE_BUTTON).is_enabled()
 
     def test_group_name_truncated_255_chars(self):
-        self.student_page.cancel_group_if_modal()
+        self.student_page.cancel_group()
         group = Cohort({'name': ('A llooooong title ' * 15)})
-        self.student_page.click_add_to_group_per_student_button(self.test_student)
         self.student_page.click_create_new_grp(group)
         self.student_page.enter_group_name(group)
         self.student_page.when_present(self.student_page.NO_CHARS_LEFT_MSG, 1)
 
     def test_group_name_cannot_match_existing_group_of_same_advisor(self):
-        self.student_page.cancel_group_if_modal()
         existing_group = Cohort({'name': f'Existing Group {self.test.test_id}'})
         self.student_page.load_page(self.test_student)
         self.student_page.click_add_to_group_per_student_button(self.test_student)
@@ -134,15 +132,14 @@ class TestCuratedGroup:
         self.student_page.when_visible(self.student_page.DUPE_GROUP_NAME_MSG, utils.get_short_timeout())
 
     def test_group_name_cannot_match_existing_cohort_of_same_advisor(self):
-        self.student_page.cancel_group_if_modal()
+        self.student_page.cancel_group()
         new_group = Cohort({'name': self.test.default_cohort.name})
-        self.student_page.click_add_to_group_per_student_button(self.test_student)
         self.student_page.click_create_new_grp(new_group)
         self.student_page.name_and_save_group(new_group)
         self.student_page.when_visible(self.student_page.DUPE_FILTERED_NAME_MSG, utils.get_short_timeout())
 
     def test_group_name_can_match_deleted_group_of_same_advisor(self):
-        self.filtered_students_page.cancel_group_if_modal()
+        self.filtered_students_page.cancel_group()
         deleted_group = Cohort({'name': f'Deleted Group {self.test.test_id}'})
         self.student_page.load_page(self.test_student)
         self.student_page.click_add_to_group_per_student_button(self.test_student)
@@ -260,12 +257,14 @@ class TestCuratedGroup:
 
     def test_group_bulk_add_sids_rejects_malformed_input(self):
         self.curated_students_page.load_page(self.group_4)
+        self.curated_students_page.click_add_sids_button()
         self.curated_students_page.enter_text_in_sids_input('Fiat Lux')
         self.curated_students_page.click_add_sids_to_group_button()
         self.curated_students_page.click_remove_invalid_sids()
 
     def test_group_bulk_add_sids_rejects_input_not_matching_boa_students(self):
         self.curated_students_page.load_page(self.group_4)
+        self.curated_students_page.click_add_sids_button()
         self.curated_students_page.enter_text_in_sids_input('9999999990, 9999999991')
         self.curated_students_page.click_add_sids_to_group_button()
         self.curated_students_page.click_remove_invalid_sids()
@@ -275,6 +274,7 @@ class TestCuratedGroup:
         for i in range(16):
             a.append(f'99999999{10 + i}')
         self.curated_students_page.load_page(self.group_4)
+        self.curated_students_page.click_add_sids_button()
         self.curated_students_page.enter_text_in_sids_input(', '.join(a))
         self.curated_students_page.click_add_sids_to_group_button()
         self.curated_students_page.click_remove_invalid_sids()

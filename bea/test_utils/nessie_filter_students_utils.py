@@ -98,9 +98,10 @@ def academic_standing_cond(cohort_filter, conditions_list):
 def career_status_cond(cohort_filter, conditions_list):
     if cohort_filter.career_statuses:
         statuses = list(map(lambda c: c.lower(), cohort_filter.career_statuses))
+        cond = f'student.student_profile_index.academic_career_status IN({utils.in_op(statuses)})'
         if 'inactive' in statuses:
-            statuses.append('NULL')
-        conditions_list.append(f'student.student_profile_index.academic_career_status IN({utils.in_op(statuses)})')
+            cond = f'({cond} OR student.student_profile_index.academic_career_status IS NULL)'
+        conditions_list.append(cond)
 
 
 def college_cond(cohort_filter, conditions_list):

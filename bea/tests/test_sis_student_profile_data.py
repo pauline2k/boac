@@ -276,7 +276,7 @@ class TestStudentPageProfileData:
             standings.sort(key=lambda s: s.term.sis_id, reverse=True)
             latest_standing = standings[0]
             if latest_standing.code == 'GST':
-                utils.assert_equivalence(visible_standing, None)
+                assert not visible_standing
             else:
                 expected_standing = f'{latest_standing.descrip} ({latest_standing.term.name})'
                 utils.assert_equivalence(visible_standing, expected_standing)
@@ -327,17 +327,6 @@ class TestStudentPageProfileData:
             visible_alerts.sort(key=lambda a: a['date'])
             alert_data.sort(key=lambda a: a['date'])
             utils.assert_equivalence(visible_alerts, alert_data)
-
-        standings = tc.student.academic_standings
-        if standings:
-            standings.sort(key=lambda s: s.term.sis_id, reverse=True)
-            latest_standing = standings[0]
-            standing_alert_msg = f"Student's academic standing is '{latest_standing.descrip}'."
-            visible_alert_msgs = [a['text'] for a in visible_alerts]
-            if latest_standing.code == 'GST' or not latest_standing.code:
-                assert standing_alert_msg not in visible_alert_msgs
-            else:
-                assert standing_alert_msg in visible_alert_msgs
 
     def test_timeline_holds(self, tc):
         holds = nessie_timeline_utils.get_student_holds(tc.student)

@@ -254,14 +254,15 @@ class DegreeTemplatePage(BoaPages):
                 self.wait_for_element_and_click(self.COL_REQT_UNIT_RANGE_TOGGLE)
             self.wait_for_textbox_and_type(self.COL_REQT_UNIT_NUM_INPUT_0, unit_range[0])
             self.wait_for_textbox_and_type(self.COL_REQT_UNIT_NUM_INPUT_1, unit_range[1])
-        elif units == '0':
-            app.logger.info('Skipping empty units entry')
         else:
             if self.is_present(self.COL_REQT_COURSE_UNITS_HIDE_RANGE):
                 self.scroll_to_top()
                 self.wait_for_element_and_click(self.COL_REQT_UNIT_RANGE_TOGGLE)
                 time.sleep(utils.get_click_sleep())
-            self.wait_for_textbox_and_type(self.COL_REQT_UNIT_NUM_INPUT_0, units)
+            if units == '' or units == '0':
+                self.remove_chars(self.COL_REQT_UNIT_NUM_INPUT_0)
+            else:
+                self.wait_for_textbox_and_type(self.COL_REQT_UNIT_NUM_INPUT_0, units)
 
     def col_reqt_unit_input_0_value(self):
         return self.el_value(self.COL_REQT_UNIT_NUM_INPUT_0)

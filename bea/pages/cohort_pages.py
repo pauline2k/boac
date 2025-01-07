@@ -50,7 +50,7 @@ class CohortPages(BoaPages):
     def results_count(self):
         time.sleep(2)
         Wait(self.driver, utils.get_short_timeout())
-        return int(self.element(self.RESULTS).text.split(' ')[0])
+        return int(self.element(self.RESULTS).text.split(' ')[0].replace(',', ''))
 
     def click_export_list(self):
         self.wait_for_element(self.EXPORT_LIST_BUTTON, utils.get_medium_timeout())

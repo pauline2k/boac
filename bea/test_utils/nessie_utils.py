@@ -236,6 +236,7 @@ def get_admits_data(admits):
     sql = f"""SELECT *
                 FROM boac_advising_oua.student_admits
                WHERE cs_empl_id IN ({utils.in_op(cs_empl_ids)})"""
+    app.logger.info(sql)
     results = data_loch.safe_execute_rds(sql)
     for row in results:
         for ad in admits:

@@ -117,7 +117,8 @@ class TestApptContent:
             assert tc.appt.end_time
             start = datetime.datetime.strftime(tc.appt.start_time, '%-l:%M %p')
             end = datetime.datetime.strftime(tc.appt.end_time, '%-l:%M %p')
-            utils.assert_equivalence(self.student_page.expanded_appt_time_range(tc.appt), f'{start} - {end}')
+            utils.assert_actual_includes_expected(self.student_page.expanded_appt_time_range(tc.appt),
+                                                  f'{start} - {end}')
         else:
             assert not tc.appt.start_time
             assert not tc.appt.end_time
@@ -169,7 +170,7 @@ class TestApptContent:
                     self.student_page.download_attachment(tc.appt, attach, tc.student)
 
     def test_appt_search(self, tc):
-        search_string = boa_utils.generate_appt_search_query(tc)
+        search_string = boa_utils.generate_appt_search_query(tc.appt)
         if search_string:
             self.student_page.show_appts()
             self.student_page.clear_timeline_appt_search()

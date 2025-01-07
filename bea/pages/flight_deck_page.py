@@ -147,6 +147,7 @@ class FlightDeckPage(BoaPages):
 
     @staticmethod
     def set_new_topic_id(topic):
+        time.sleep(1)
         timeout = utils.get_short_timeout()
         tries = 0
         while tries <= timeout:

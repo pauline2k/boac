@@ -190,7 +190,7 @@ class TestListViewTermSelect:
                 msg = tc.student.enrollment_data.last_activity_day(site)
                 utils.assert_actual_includes_expected(visible_activity, msg)
         else:
-            utils.assert_equivalence(visible_activity, '— ')
+            utils.assert_equivalence(visible_activity, '—')
 
 
 @pytest.mark.usefixtures('page_objects')
