@@ -137,7 +137,7 @@
 </template>
 
 <script setup>
-import {alertScreenReader, pluralize} from '@/lib/utils'
+import {alertScreenReader, pluralize, setPageTitle} from '@/lib/utils'
 import {computed, onMounted, ref} from 'vue'
 import {each, filter as _filter, get, isNil, map, startsWith, toLower} from 'lodash'
 import {getDepartments} from '@/api/user'
@@ -159,9 +159,11 @@ const panels = ref([])
 contextStore.loadingStart()
 
 onMounted(() => {
+  // This component is used for both "All Cohorts" and "All Curated Groups".
   const param = toLower(get(useRoute().params, 'mode'))
   mode.value = startsWith(param, 'cohort') ? 'cohort' : 'curated'
   modeLabel.value = mode.value === 'cohort' ? 'Cohort' : 'Curated Group'
+  setPageTitle(`All ${modeLabel.value}s`)
   getDepartments().then(data => {
     departments.value = data
     contextStore.loadingComplete('List of departments has loaded')
