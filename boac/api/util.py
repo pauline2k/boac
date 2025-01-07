@@ -27,7 +27,7 @@ from datetime import datetime
 from functools import wraps
 import json
 
-from boac.api.errors import BadRequestError, ResourceNotFoundError
+from boac.api.errors import BadRequestError
 from boac.externals import data_loch
 from boac.externals.data_loch import get_admitted_students_by_sids, get_sis_holds, get_student_profiles
 from boac.lib.berkeley import ACADEMIC_STANDING_DESCRIPTIONS, dept_codes_where_advising, previous_term_id, term_name_for_sis_id
@@ -115,9 +115,7 @@ def advisor_required(func):
 
 
 def can_access_admitted_students(user):
-    return app.config['FEATURE_FLAG_ADMITTED_STUDENTS'] \
-        and user.is_authenticated \
-        and (current_user.is_admin or _is_advisor_in_department(current_user, 'ZCEEE'))
+    return user.is_authenticated and (current_user.is_admin or _is_advisor_in_department(current_user, 'ZCEEE'))
 
 
 def ce3_required(func):
@@ -405,8 +403,6 @@ def get_students_csv_header_labels(term_id):
 def is_unauthorized_domain(domain):
     if domain not in ['default', 'admitted_students']:
         raise BadRequestError(f'Invalid domain: {domain}')
-    elif domain == 'admitted_students' and not app.config['FEATURE_FLAG_ADMITTED_STUDENTS']:
-        raise ResourceNotFoundError('Unknown path')
     return domain == 'admitted_students' and not current_user.is_admin and 'ZCEEE' not in dept_codes_where_advising(current_user)
 
 

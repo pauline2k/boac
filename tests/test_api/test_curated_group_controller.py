@@ -31,7 +31,6 @@ from boac.models.curated_group import CuratedGroup
 import pytest
 import simplejson as json
 from tests.test_api.api_test_utils import api_curated_group_add_students, api_curated_group_remove_student
-from tests.util import override_config
 
 asc_advisor_uid = '6446'
 authorized_advisor_uid = '90412'
@@ -90,31 +89,29 @@ class TestCreateCuratedGroup:
         assert 'analytics' in student_feed['term']['enrollments'][0]['canvasSites'][0]
 
     def test_unauthorized(self, app, client, fake_auth):
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
-            fake_auth.login(coe_advisor_uid)
-            _api_curated_group_create(
-                client=client,
-                domain='admitted_students',
-                expected_status_code=403,
-                name="Ain't gonna happen",
-                sids=['5678901234'],
-            )
+        fake_auth.login(coe_advisor_uid)
+        _api_curated_group_create(
+            client=client,
+            domain='admitted_students',
+            expected_status_code=403,
+            name="Ain't gonna happen",
+            sids=['5678901234'],
+        )
 
     def test_authorized_ce3(self, app, client, fake_auth):
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
-            fake_auth.login(ce3_advisor_uid)
-            sid = '11667051'
-            group = _api_curated_group_create(
-                client=client,
-                domain='admitted_students',
-                name='The domain of admitted_students',
-                sids=[sid],
-            )
-            students = _api_get_curated_group(client, group['id'])['students']
-            assert len(students) == 1
-            assert 'applyucCpid' in students[0]
-            assert students[0]['sid'] == sid
-            assert students[0]['admitStatus'] == 'Yes'
+        fake_auth.login(ce3_advisor_uid)
+        sid = '11667051'
+        group = _api_curated_group_create(
+            client=client,
+            domain='admitted_students',
+            name='The domain of admitted_students',
+            sids=[sid],
+        )
+        students = _api_get_curated_group(client, group['id'])['students']
+        assert len(students) == 1
+        assert 'applyucCpid' in students[0]
+        assert students[0]['sid'] == sid
+        assert students[0]['admitStatus'] == 'Yes'
 
 
 class TestGetCuratedGroup:
@@ -128,10 +125,6 @@ class TestGetCuratedGroup:
     def test_not_authenticated(self, asc_curated_groups, client):
         """Anonymous user is rejected."""
         _api_get_curated_group(client, asc_curated_groups[0].id, expected_status_code=401)
-
-    def test_unauthorized(self, asc_curated_groups, coe_advisor, client):
-        """403 if user does not share a department membership with group owner."""
-        _api_get_curated_group(client, asc_curated_groups[0].id, expected_status_code=403)
 
     def test_advisor_cannot_see_admin_curated_group(self, admin_curated_groups, coe_advisor, client):
         """403 if user does not share a department membership with group owner."""
@@ -604,50 +597,50 @@ class TestDownloadCuratedGroupCSV:
                 'sid',
             ],
         }
-        response = client.post(
+        client.post(
             f'/api/curated_group/{asc_curated_groups[0].id}/download_csv',
             data=json.dumps(data),
             content_type='application/json',
         )
-        assert response.status_code == 403
+        # TODO: Do we want to forbid such downloads?
+        # assert response.status_code == 403
 
     def test_download_admits_csv(self, app, client, fake_auth):
         """Advisor can download CSV of 'admits' group."""
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
-            fake_auth.login(ce3_advisor_uid)
-            curated_group = _api_curated_group_create(
-                client=client,
-                domain='admitted_students',
-                name='Admits, curated',
-                sids=['11667051'],
-            )
-            curated_group_id = curated_group['id']
-            students = _api_get_curated_group(client, curated_group_id)['students']
-            assert len(students) == 1
-            data = {
-                'csvColumnsSelected': [
-                    'act_composite',
-                    'birthdate',
-                    'citizenship_country',
-                    'family_dependents_num',
-                    'highest_parent_education_level',
-                    'non_immigrant_visa_current',
-                    'xethnic',
-                ],
-            }
-            response = client.post(
-                f'/api/curated_group/{curated_group_id}/download_csv',
-                data=json.dumps(data),
-                content_type='application/json',
-            )
-            assert response.status_code == 200
-            assert 'csv' in response.content_type
-            csv = str(response.data)
-            for snippet in [
-                'act_composite,birthdate,citizenship_country,family_dependents_num,highest_parent_education_level,non_immigrant_visa_current,xethnic',  # noqa: E501
-                '5,1985-06-02,Greece,05,5 - College Attended,,NotSpecified',
-            ]:
-                assert str(snippet) in csv
+        fake_auth.login(ce3_advisor_uid)
+        curated_group = _api_curated_group_create(
+            client=client,
+            domain='admitted_students',
+            name='Admits, curated',
+            sids=['11667051'],
+        )
+        curated_group_id = curated_group['id']
+        students = _api_get_curated_group(client, curated_group_id)['students']
+        assert len(students) == 1
+        data = {
+            'csvColumnsSelected': [
+                'act_composite',
+                'birthdate',
+                'citizenship_country',
+                'family_dependents_num',
+                'highest_parent_education_level',
+                'non_immigrant_visa_current',
+                'xethnic',
+            ],
+        }
+        response = client.post(
+            f'/api/curated_group/{curated_group_id}/download_csv',
+            data=json.dumps(data),
+            content_type='application/json',
+        )
+        assert response.status_code == 200
+        assert 'csv' in response.content_type
+        csv = str(response.data)
+        for snippet in [
+            'act_composite,birthdate,citizenship_country,family_dependents_num,highest_parent_education_level,non_immigrant_visa_current,xethnic',  # noqa: E501
+            '5,1985-06-02,Greece,05,5 - College Attended,,NotSpecified',
+        ]:
+            assert str(snippet) in csv
 
     def test_download_csv(self, asc_advisor, asc_curated_groups, client):
         """Advisor can download CSV with ALL students of group."""

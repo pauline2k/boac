@@ -63,7 +63,6 @@ def app_config():
         'draftNoteSubjectPlaceholder': '[DRAFT NOTE]',
         'ebEnvironment': app.config['EB_ENVIRONMENT'] if 'EB_ENVIRONMENT' in app.config else None,
         'ec2InstanceId': os.environ.get('EC2_INSTANCE_ID'),
-        'featureFlagAdmittedStudents': app.config['FEATURE_FLAG_ADMITTED_STUDENTS'],
         'fixedWarningOnAllPages': app.config['FIXED_WARNING_ON_ALL_PAGES'],
         'futureTermId': int(future_term_id()),
         'gaMeasurementId': app.config['GA_MEASUREMENT_ID'],

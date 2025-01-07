@@ -40,7 +40,7 @@
               v-if="size(errors)"
               id="edit-user-error"
               aria-live="polite"
-              class="mt-1 mb-4"
+              class="mb-4"
               closable
               density="compact"
               :icon="mdiAlert"
@@ -55,22 +55,22 @@
                 </ul>
               </template>
             </v-alert>
-            <div v-if="!isExistingUser" class="align-items-center pb-3">
-              <label for="uid-input" class="sr-only">U I D </label>
+            <div v-if="!isExistingUser" class="align-center d-flex pb-3">
+              <label class="font-size-18 mr-2" for="uid-input">UID:</label>
               <v-text-field
                 id="uid-input"
                 v-model="userProfile.uid"
                 :error="isUidInvalid"
                 hide-details
-                label="UID"
-                width="50%"
+                maxlength="10"
+                max-width="140"
                 @keydown.enter.prevent="save"
                 @update:model-value="isUidInvalid = false"
               />
             </div>
             <div class="pb-3">
               <div class="d-flex">
-                <div class="w-50">
+                <div class="w-33">
                   <v-checkbox
                     id="is-admin"
                     v-model="userProfile.isAdmin"
@@ -117,7 +117,6 @@
                 </div>
               </div>
             </div>
-            <hr class="mb-3" />
             <div
               v-if="isCoe({departments: memberships}) || userProfile.degreeProgressPermission"
               class="pb-3"
@@ -150,11 +149,10 @@
                 />
               </div>
             </div>
-            <h4 class="font-size-18">Departments</h4>
+            <h4 class="sr-only">Departments</h4>
             <v-card
               v-for="dept in memberships"
               :key="dept.code"
-              class="my-2"
               flat
               variant="tonal"
             >
@@ -216,7 +214,7 @@
             <div v-if="memberships.length >= 3">
               <span class="text-info"><v-icon class="mb-1" :icon="mdiCheckBold" /> Three departments is enough!</span>
             </div>
-            <div v-if="memberships.length < 3" class="py-3 w-75">
+            <div v-if="memberships.length < 3" class="pt-2">
               <select
                 id="department-select-list"
                 v-model="deptCode"
@@ -239,18 +237,16 @@
               </select>
             </div>
           </v-card-text>
-          <hr />
           <v-card-actions class="modal-footer">
             <ProgressButton
               id="save-changes-to-user-profile"
               :action="save"
-              :disabled="isSaving || !userProfile.uid || memberships.findIndex(d => !d.role) >= 0"
+              :disabled="isSaving || isUidInvalid || !userProfile.uid || memberships.findIndex(d => !d.role) >= 0"
               :in-progress="isSaving"
               :text="isSaving ? 'Saving' : 'Save'"
             />
             <v-btn
               id="cancel-changes-to-user-profile"
-              class="ml-2"
               text="Cancel"
               variant="text"
               @click="cancel"
@@ -436,10 +432,6 @@ const save = () => {
 </script>
 
 <style scoped>
-hr {
-  margin-left: -24px;
-  margin-right: -24px
-}
 .select-department-role {
   background-color: rgb(var(--v-theme-surface));
   min-width: 120px;
