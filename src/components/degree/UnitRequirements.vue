@@ -2,7 +2,7 @@
   <div v-if="render">
     <div class="align-center d-flex flex-row justify-space-between">
       <h3
-        class="font-weight-bold mr-2 text-no-wrap unit-requirements-header"
+        class="mr-2 text-grey text-no-wrap unit-requirements-header"
         :class="{'font-size-14': printable, 'font-size-20': !printable}"
       >
         Unit Requirements
@@ -11,8 +11,8 @@
         <v-btn
           id="unit-requirement-create-link"
           color="primary"
-          density="compact"
           :disabled="degreeStore.disableButtons"
+          slim
           text="Add Unit Requirement"
           variant="text"
           :append-icon="mdiPlus"
