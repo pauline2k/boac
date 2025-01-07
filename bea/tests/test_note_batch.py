@@ -205,4 +205,4 @@ class TestNoteBatch:
         self.homepage.reopen_and_reset_adv_search()
         self.homepage.set_notes_student(student)
         self.homepage.enter_adv_search_and_hit_enter(self.batch_note_1.subject)
-        assert self.search_results_page.is_note_in_search_result(self.batch_note_1, is_batch=True)
+        self.search_results_page.assert_note_result_present(self.batch_note_1)

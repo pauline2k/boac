@@ -91,7 +91,8 @@ class TestAdmitPage:
         utils.assert_equivalence(self.admit_page.admit_term(), tc.student.admit_data['admit_term'])
 
     def test_email(self, tc):
-        utils.assert_equivalence(self.admit_page.email(), tc.student.admit_data['email'])
+        email = tc.student.admit_data['email'] or '—'
+        utils.assert_equivalence(self.admit_page.email(), email)
 
     def test_campus_email(self, tc):
         email = tc.student.admit_data['campus_email_1'] or '—'

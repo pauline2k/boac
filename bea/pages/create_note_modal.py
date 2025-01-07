@@ -364,12 +364,10 @@ class CreateNoteModal(Page):
         for student in students:
             sid = f'{student.sid}'
             app.logger.info(f'Adding SID {sid} to batch note {note_batch.subject}')
+            self.remove_chars(self.BATCH_ADD_STUDENT_INPUT)
             self.enter_chars(self.BATCH_ADD_STUDENT_INPUT, f'{sid}')
-            self.when_present(self.AUTO_SUGGEST_OPTION, utils.get_medium_timeout())
-            for el in self.elements(self.AUTO_SUGGEST_OPTION):
-                text = el.get_attribute('innerText')
-                if sid in text:
-                    el.click()
+            loc = By.XPATH, f'//div[@role="option" and contains(., "{sid}")]'
+            self.wait_for_element_and_click(loc)
             self.append_student_to_batch(note_batch, student)
 
     def append_student_to_batch(self, note_batch, student):
@@ -467,7 +465,7 @@ class CreateNoteModal(Page):
             self.add_topics(note_batch, topics)
         self.set_note_privacy(note_batch)
         self.click_save_new_note()
-        time.sleep(utils.get_click_sleep())
+        time.sleep(utils.get_short_timeout())
         return boa_utils.unique_students_in_batch(students, cohorts, groups)
 
     # TEMPLATES

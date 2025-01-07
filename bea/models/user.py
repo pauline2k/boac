@@ -29,6 +29,14 @@ from bea.models.person import Person
 class User(Person):
 
     @property
+    def alt_names(self):
+        return self.data.get('alt_names')
+
+    @alt_names.setter
+    def alt_names(self, value):
+        self.data['alt_names'] = value
+
+    @property
     def can_access_advising_data(self):
         return self.data.get('can_access_advising_data')
 

@@ -25,6 +25,7 @@ ENHANCEMENTS, OR MODIFICATIONS.
 import datetime
 import os
 import random
+import time
 
 from bea.config.bea_test_config import BEATestConfig
 from bea.models.notes_and_appts.note import Note
@@ -176,20 +177,17 @@ class TestNoteMgmt:
         self.student_page.exclude_classes()
         self.student_page.select_notes_posted_by_you()
         self.student_page.enter_adv_search_and_hit_enter(self.note_1.subject)
-        self.search_results_page.wait_for_note_search_result_rows()
-        assert self.search_results_page.is_note_in_search_result(self.note_1)
+        self.search_results_page.assert_note_result_present(self.note_1)
 
     def test_search_my_new_note_by_body(self):
         self.search_results_page.reopen_and_reset_adv_search()
         self.search_results_page.enter_adv_search_and_hit_enter(self.note_2.body)
-        self.search_results_page.wait_for_note_search_result_rows()
-        assert self.search_results_page.is_note_in_search_result(self.note_2)
+        self.search_results_page.assert_note_result_present(self.note_2)
 
     def test_search_my_new_note_special_characters(self):
         self.search_results_page.reopen_and_reset_adv_search()
         self.search_results_page.enter_adv_search_and_hit_enter(self.note_3.subject)
-        self.search_results_page.wait_for_note_search_result_rows()
-        assert self.search_results_page.is_note_in_search_result(self.note_3)
+        self.search_results_page.assert_note_result_present(self.note_3)
 
     def test_search_anyone_new_note_by_subject(self):
         self.search_results_page.reopen_and_reset_adv_search()
@@ -197,20 +195,17 @@ class TestNoteMgmt:
         self.search_results_page.exclude_classes()
         self.search_results_page.select_notes_posted_by_anyone()
         self.search_results_page.enter_adv_search_and_hit_enter(self.note_1.subject)
-        self.search_results_page.wait_for_note_search_result_rows()
-        assert self.search_results_page.is_note_in_search_result(self.note_1)
+        self.search_results_page.assert_note_result_present(self.note_1)
 
     def test_search_anyone_new_note_by_body(self):
         self.search_results_page.reopen_and_reset_adv_search()
         self.search_results_page.enter_adv_search_and_hit_enter(self.note_2.body)
-        self.search_results_page.wait_for_note_search_result_rows()
-        assert self.search_results_page.is_note_in_search_result(self.note_2)
+        self.search_results_page.assert_note_result_present(self.note_2)
 
     def test_search_anyone_new_note_special_characters(self):
         self.search_results_page.reopen_and_reset_adv_search()
         self.search_results_page.enter_adv_search_and_hit_enter(self.note_3.subject)
-        self.search_results_page.wait_for_note_search_result_rows()
-        assert self.search_results_page.is_note_in_search_result(self.note_3)
+        self.search_results_page.assert_note_result_present(self.note_3)
 
     def test_view_new_note_download_attachments(self):
         self.student_page.load_page(self.test_student)
@@ -406,6 +401,7 @@ class TestNoteMgmt:
         self.student_page.expand_item(self.note_2)
         self.student_page.when_present(self.student_page.edit_note_button_loc(self.note_2), 2)
         self.student_page.click_edit_note_button(self.note_1)
+        time.sleep(utils.get_click_sleep())
         assert not self.student_page.is_present(self.student_page.edit_note_button_loc(self.note_2))
         assert not self.student_page.element(self.student_page.NEW_NOTE_BUTTON).is_enabled()
 
@@ -458,7 +454,7 @@ class TestNoteMgmt:
         self.homepage.log_out()
         self.homepage.dev_auth(self.test.advisor)
         self.homepage.enter_simple_search_and_hit_enter(self.note_1.subject)
-        assert self.search_results_page.is_note_in_search_result(self.note_1)
+        self.search_results_page.assert_note_result_present(self.note_1)
 
     def test_no_deleted_attachment_downloads(self):
         utils.prepare_download_dir()
@@ -477,7 +473,6 @@ class TestNoteMgmt:
         assert not self.student_page.is_present(self.student_page.edit_note_button_loc(self.note_5))
 
     def test_no_non_author_attachment_deletion(self):
-        self.student_page.expand_item(self.note_5)
         current_attachments = list(filter(lambda attach: not attach.deleted_at, self.note_5.attachments))
         for a in current_attachments:
             assert not self.student_page.is_present(self.student_page.existing_note_attachment_delete_button(self.note_5, a))
@@ -491,7 +486,7 @@ class TestNoteMgmt:
         self.student_page.reopen_and_reset_adv_search()
         self.student_page.select_notes_posted_by_anyone()
         self.student_page.enter_adv_search_and_hit_enter(self.note_1.subject)
-        assert self.search_results_page.is_note_in_search_result(self.note_1)
+        self.search_results_page.assert_note_result_present(self.note_1)
 
     def test_non_author_search_self_for_edited_note(self):
         self.search_results_page.reopen_and_reset_adv_search()
@@ -524,7 +519,7 @@ class TestNoteMgmt:
         advisor_note_ids.sort()
         visible_note_ids = self.student_page.visible_collapsed_note_ids()
         visible_note_ids.sort()
-        assert visible_note_ids == advisor_note_ids
+        utils.assert_equivalence(visible_note_ids, advisor_note_ids)
 
     def test_director_can_download_notes(self):
         self.homepage.load_page()

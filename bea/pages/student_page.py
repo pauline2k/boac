@@ -224,10 +224,10 @@ class StudentPage(CuratedAddSelector, StudentPageAdvisingNote, StudentPageAppoin
 
     REQTS_BUTTON = By.ID, 'timeline-tab-requirement'
     SHOW_HIDE_REQTS_BUTTON = By.ID, 'timeline-tab-requirement-previous-messages'
-    WRITING_REQT = By.XPATH, '//span[contains(text(),"Entry Level Writing")]'
-    HISTORY_REQT = By.XPATH, '//span[contains(text(),"American History")]'
-    INSTITUTIONS_REQT = By.XPATH, '//span[contains(text(),"American Institutions")]'
-    CULTURES_REQT = By.XPATH, '//span[contains(text(),"American Cultures")]'
+    WRITING_REQT = By.XPATH, '//span[contains(text(),"Entry Level Writing") and not(contains(@class, "sr-only"))]'
+    HISTORY_REQT = By.XPATH, '//span[contains(text(),"American History") and not(contains(@class, "sr-only"))]'
+    INSTITUTIONS_REQT = By.XPATH, '//span[contains(text(),"American Institutions") and not(contains(@class, "sr-only"))]'
+    CULTURES_REQT = By.XPATH, '//span[contains(text(),"American Cultures") and not(contains(@class, "sr-only"))]'
 
     def show_reqts(self):
         if self.is_present(self.REQTS_BUTTON) and self.element(self.REQTS_BUTTON).is_enabled():
@@ -253,7 +253,7 @@ class StudentPage(CuratedAddSelector, StudentPageAdvisingNote, StudentPageAppoin
 
     HOLDS_BUTTON = By.ID, 'timeline-tab-hold'
     SHOW_HIDE_HOLDS_BUTTON = By.ID, 'timeline-tab-hold-previous-messages'
-    HOLD = By.XPATH, '//div[contains(@id,"timeline-tab-hold-message")]/span[2]'
+    HOLD = By.XPATH, '//div[contains(@id,"timeline-tab-hold-message")]'
 
     def visible_holds(self):
         if self.is_present(self.HOLDS_BUTTON) and self.element(self.HOLDS_BUTTON).is_enabled():
@@ -267,14 +267,14 @@ class StudentPage(CuratedAddSelector, StudentPageAdvisingNote, StudentPageAppoin
     ALERTS_BUTTON = By.ID, 'timeline-tab-alert'
     SHOW_HIDE_ALERTS_BUTTON = By.ID, 'timeline-tab-alert-previous-messages'
     ALERT = By.XPATH, '//tr[contains(@id, "permalink-alert-")]'
-    ALERT_TEXT = By.XPATH, '//div[contains(@id,"timeline-tab-alert-message")]/span[1]'
+    ALERT_TEXT = By.XPATH, '//div[contains(@id,"timeline-tab-alert-message")]'
     ALERT_DATE = By.XPATH, '//tr[contains(@id, "permalink-alert-")]//div[contains(@id, "collapsed-alert-")][contains(@id, "-created-at")]'
 
     def visible_alerts(self):
-        if self.is_present(self.HOLDS_BUTTON) and self.element(self.HOLDS_BUTTON).is_enabled():
-            self.wait_for_element_and_click(self.HOLDS_BUTTON)
-        if self.is_present(self.SHOW_HIDE_HOLDS_BUTTON) and 'Show' in self.element(self.SHOW_HIDE_HOLDS_BUTTON).text:
-            self.wait_for_element_and_click(self.SHOW_HIDE_HOLDS_BUTTON)
+        if self.is_present(self.ALERTS_BUTTON) and self.element(self.ALERTS_BUTTON).is_enabled():
+            self.wait_for_element_and_click(self.ALERTS_BUTTON)
+        if self.is_present(self.SHOW_HIDE_ALERTS_BUTTON) and 'Show' in self.element(self.SHOW_HIDE_ALERTS_BUTTON).text:
+            self.wait_for_element_and_click(self.SHOW_HIDE_ALERTS_BUTTON)
         alerts = []
         alert_els = self.elements(self.ALERT)
         alert_text_els = self.elements(self.ALERT_TEXT)
@@ -362,7 +362,7 @@ class StudentPage(CuratedAddSelector, StudentPageAdvisingNote, StudentPageAppoin
         return f'term-{term_sis_id}-course-{ccn}'
 
     def collapsed_course_code(self, term_sis_id, ccn):
-        return self.el_text_if_exists((By.ID, f'{self.course_row_id(term_sis_id, ccn)}-name'))
+        return self.el_text_if_exists((By.ID, f'{self.course_row_id(term_sis_id, ccn)}-toggle'))
 
     def collapsed_course_wait_list_flag(self, term_sis_id, ccn):
         return self.el_text_if_exists((By.ID, f'waitlisted-for-{term_sis_id}-{ccn}'))
@@ -400,8 +400,7 @@ class StudentPage(CuratedAddSelector, StudentPageAdvisingNote, StudentPageAppoin
         return self.el_text_if_exists((By.ID, f'term-{term_sis_id}-section-{ccn}-has-incomplete-grade'))
 
     def expanded_course_reqts(self, term_sis_id, ccn):
-        xpath = self.expanded_course_xpath(term_sis_id, ccn)
-        return self.els_text_if_exist((By.XPATH, f'{xpath}//div[contains(@id, "term-{term_sis_id}-section-{ccn}-meets-")]'))
+        return self.els_text_if_exist((By.XPATH, f'//div[contains(@id, "term-{term_sis_id}-section-{ccn}-meets-")]'))
 
     CLASS_PAGE_LINKS = By.XPATH, '//a[contains(@href, "/course/")]'
 

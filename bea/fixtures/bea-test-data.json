@@ -81,6 +81,11 @@
                     {
                         "minor": "Aerospace Engineering UG"
                     }
+                ],
+                "career_statuses": [
+                    {
+                        "status": "Completed"
+                    }
                 ]
             },
             {
@@ -128,11 +133,6 @@
                 "ethnicities": [
                     {
                         "ethnicity": "Other Spanish-American / Latino"
-                    }
-                ],
-                "career_statuses": [
-                    {
-                        "status": "Completed"
                     }
                 ]
             },
@@ -266,10 +266,10 @@
             {
                 "academic_standings": [
                     {
-                        "standing": "2202-PRO"
+                        "standing": "2222-PRO"
                     },
                     {
-                        "standing": "2198-DIS"
+                        "standing": "2218-DIS"
                     }
                 ],
                 "career_statuses": [

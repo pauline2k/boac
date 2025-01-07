@@ -163,7 +163,7 @@ class TestStudentPageTermData:
     def test_student_page_term_units(self, tc):
         term_sis_id = tc.student.enrollment_data.term_id(tc.term)
         if term_sis_id == current_term.sis_id:
-            term_units = tc.student.enrollment_data.term_units(tc.term)
+            term_units = str(float(tc.student.enrollment_data.term_units(tc.term)))
             visible_term_units = self.student_page.visible_term_units(term_sis_id)
             if term_units and term_units == '0':
                 utils.assert_equivalence(visible_term_units, '—')

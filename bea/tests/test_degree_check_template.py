@@ -290,7 +290,7 @@ class TestColumnReqtSubCategoryCourseCreation:
 
     def test_sub_cat_course_creation_unit_reqt_fulfillment_selection(self):
         reqt = template.categories[0].sub_categories[0].course_reqts[0].unit_reqts[0]
-        self.degree_template_page.select_col_reqt_unit_reqt(reqt.name)
+        self.degree_template_page.select_col_reqt_unit_reqt(reqt)
         self.degree_template_page.when_present(
             self.degree_template_page.col_reqt_unit_reqt_remove_button(reqt), 1)
 
@@ -473,7 +473,7 @@ class TestColumnReqtCategoryCourseCreation:
         assert self.degree_template_page.is_col_reqt_create_enabled()
 
     def test_cat_course_creation_unit_reqt_fulfillment_selection(self):
-        self.degree_template_page.select_col_reqt_unit_reqt(cat_1_course_1.unit_reqts[0].name)
+        self.degree_template_page.select_col_reqt_unit_reqt(cat_1_course_1.unit_reqts[0])
         self.degree_template_page.when_present(
             self.degree_template_page.col_reqt_unit_reqt_remove_button(cat_1_course_1.unit_reqts[0]),
             utils.get_short_timeout())

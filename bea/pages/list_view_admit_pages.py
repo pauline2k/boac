@@ -87,8 +87,9 @@ class ListViewAdmitPages(Pagination, AdmitPages):
             utils.assert_equivalence(
                 self.visible_admit_1st_gen_college(admit), (admit_data['first_generation_college'] or '—\nNo data'))
             utils.assert_equivalence(self.visible_admit_urem(admit), admit_data['urem'])
-            utils.assert_equivalence(
-                self.visible_admit_fee_waiver(admit), ('Fee' if admit_data['application_fee_waiver_flag'] else '—\nNo data'))
+            waiver = admit_data['application_fee_waiver_flag']
+            expected_waiver = waiver.replace('Waiver', '') if waiver else '—\nNo data'
+            utils.assert_equivalence(self.visible_admit_fee_waiver(admit), expected_waiver)
             utils.assert_equivalence(self.visible_admit_fresh_trans(admit), admit_data['freshman_or_transfer'])
             utils.assert_equivalence(self.visible_admit_residency(admit), admit_data['residency_category'])
         except AssertionError:

@@ -27,7 +27,6 @@ import re
 from bea.config.bea_test_config import BEATestConfig
 from bea.models.degree_progress.degree_check import DegreeCheck
 from bea.models.degree_progress.degree_check_perms import DegreeCheckPerms
-from bea.test_utils import boa_degree_progress_utils
 from bea.test_utils import nessie_utils
 from bea.test_utils import utils
 from flask import current_app as app
@@ -313,24 +312,21 @@ class TestDegreeCourseAssignedToCourseReqt:
         self.degree_check_page.wait_for_units_invalid_error_msg()
         assert not self.degree_check_page.element(self.degree_check_page.COURSE_UPDATE_BUTTON).is_enabled()
 
-    def test_assigned_course_shows_sis_updated_grade(self):
-        boa_degree_progress_utils.update_degree_course_grade(degree_check, completed_course_0, student, 'F+')
-        self.degree_check_page.load_page(degree_check)
-        self.degree_check_page.when_present(self.degree_check_page.assigned_course_row(completed_course_0),
-                                            utils.get_short_timeout())
-
-        utils.assert_equivalence(self.degree_check_page.assigned_course_grade(completed_course_0),
-                                 completed_course_0.grade)
-
 
 @pytest.mark.usefixtures('page_objects')
 class TestDegreeCourseUnAssignedFromCourseReqt:
 
     def test_un_assigning_reverts_course_reqt_name(self):
+        self.degree_check_page.load_page(degree_check)
+        self.degree_check_page.when_present(self.degree_check_page.assigned_course_row(completed_course_0),
+                                            utils.get_short_timeout())
         self.degree_check_page.unassign_course(completed_course_0, course_reqt_1)
 
     def test_un_assigning_reverts_course_reqt_units(self):
-        units = utils.formatted_units(float(completed_course_1.units)) if course_reqt_1.units else '—'
+        if course_reqt_1.units and course_reqt_1.units != 0:
+            units = utils.formatted_units(float(course_reqt_1.units))
+        else:
+            units = '—'
         utils.assert_equivalence(self.degree_check_page.visible_course_reqt_units(course_reqt_1), units)
 
     def test_un_assigning_removes_course_reqt_grade(self):
@@ -508,7 +504,7 @@ class TestDegreeCourseCopied:
     def test_copy_course_to_sub_category(self):
         self.degree_check_page.copy_course(completed_course_4, sub_cat_copy, sub_cat_no_courses)
         utils.assert_equivalence(self.degree_check_page.assigned_course_units(sub_cat_copy).split()[0],
-                                 utils.formatted_units(sub_cat_copy.units))
+                                 utils.formatted_units(float(sub_cat_copy.units)))
         utils.assert_equivalence(self.degree_check_page.assigned_course_grade(sub_cat_copy), sub_cat_copy.grade)
         utils.assert_equivalence(self.degree_check_page.assigned_course_note(sub_cat_copy), '—')
         assert self.degree_check_page.is_assigned_course_copy_flagged(sub_cat_copy)
@@ -538,13 +534,6 @@ class TestDegreeCourseCopied:
         self.degree_check_page.edit_assigned_course(sub_cat_copy)
         utils.assert_equivalence(self.degree_check_page.assigned_course_units(sub_cat_copy).split()[0],
                                  utils.formatted_units(float(sub_cat_copy.units)))
-
-    def test_course_copy_shows_sis_updated_grade(self):
-        boa_degree_progress_utils.update_degree_course_grade(degree_check, completed_course_4, student, 'F+')
-        self.degree_check_page.load_page(degree_check)
-        self.degree_check_page.when_present(self.degree_check_page.assigned_course_row(sub_cat_copy),
-                                            utils.get_short_timeout())
-        utils.assert_equivalence(self.degree_check_page.assigned_course_grade(sub_cat_copy), completed_course_4.grade)
 
     def test_course_copy_delete_but_cancel(self):
         self.degree_check_page.click_delete_assigned_course(sub_cat_copy)

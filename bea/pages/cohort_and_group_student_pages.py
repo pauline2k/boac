@@ -22,7 +22,6 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 "AS IS". REGENTS HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES,
 ENHANCEMENTS, OR MODIFICATIONS.
 """
-import time
 
 from bea.pages.cohort_pages import CohortPages
 from bea.pages.list_view_student_pages import ListViewStudentPages
@@ -52,9 +51,7 @@ class CohortAndGroupStudentPages(CohortPages, ListViewStudentPages):
         utils.prepare_download_dir()
         self.click_export_list()
         for i in range(19):
-            loc = (By.ID, f'csv-column-options-{i}')
-            self.wait_for_element(loc, utils.get_short_timeout())
-            self.click_element_js(loc)
+            self.wait_for_element_and_click((By.ID, f'csv-column-options-{i}'))
         self.confirm_export(cohort)
         return utils.wait_for_export_csv()
 
@@ -136,7 +133,7 @@ class CohortAndGroupStudentPages(CohortPages, ListViewStudentPages):
     def select_term(self, term_sis_id):
         app.logger.info(f'Selecting term ID {term_sis_id}')
         self.wait_for_select_and_click_option(self.TERM_SELECT, term_sis_id)
-        time.sleep(1)
+        self.wait_for_spinner()
 
     def selected_term_sis_id(self):
         select = Select(self.element(self.TERM_SELECT))
@@ -224,14 +221,14 @@ class CohortAndGroupStudentPages(CohortPages, ListViewStudentPages):
         return self.el_text_if_exists((By.XPATH, f'{self.course_row_xpath(student, course_idx)}/td[4]'), 'No data')
 
     def is_course_mid_flagged(self, student, course_idx):
-        xpath = f'{self.course_row_xpath(student, course_idx)}/td[4]//i[contains(@class, "grade-alert")]'
+        xpath = f'{self.course_row_xpath(student, course_idx)}/td[4]//i[contains(@class, "text-warning")]'
         return self.is_present((By.XPATH, xpath))
 
     def course_final_grade(self, student, course_idx):
         return self.el_text_if_exists((By.XPATH, f'{self.course_row_xpath(student, course_idx)}/td[5]'))
 
     def is_course_final_flagged(self, student, course_idx):
-        xpath = f'{self.course_row_xpath(student, course_idx)}/td[5]//i[contains(@class, "grade-alert")]'
+        xpath = f'{self.course_row_xpath(student, course_idx)}/td[5]//i[contains(@class, "text-warning")]'
         return self.is_present((By.XPATH, xpath))
 
     def wait_lists(self, student):

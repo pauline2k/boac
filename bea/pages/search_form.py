@@ -172,7 +172,7 @@ class SearchForm(Page):
 
     # Author / Student
 
-    AUTHOR_AUTO_SUGGEST_OPTION = (By.XPATH, '//div[contains(@id, "search-options-")]/div')
+    AUTHOR_AUTO_SUGGEST_OPTION = (By.XPATH, '//div[contains(@id, "search-options-note-author-option")]')
     NOTE_AUTHOR = (By.ID, 'search-options-note-author-input')
     NOTE_STUDENT = (By.ID, 'search-options-note-student-input')
 
@@ -195,7 +195,7 @@ class SearchForm(Page):
         sid = f'{student.sid}'
         app.logger.info(f'Setting note search student {sid}')
         self.wait_for_textbox_and_type(self.NOTE_STUDENT, sid)
-        loc = By.XPATH, f'//div[contains(@id, "search-options-")]/div[contains(., "{sid}")]'
+        loc = By.XPATH, f'//div[contains(@id, "search-options-note-student-option") and contains(., "{sid}")]'
         self.wait_for_element_and_click(loc)
 
     # Dates
@@ -243,10 +243,10 @@ class SearchForm(Page):
         self.wait_for_element_and_click(self.ADV_SEARCH_CXL_BUTTON)
 
     def close_adv_search_if_open(self):
-        if self.is_present(self.ADV_SEARCH_CXL_BUTTON):
+        if self.is_visible(self.ADV_SEARCH_CXL_BUTTON):
             self.wait_for_element_and_click(self.ADV_SEARCH_CXL_BUTTON)
 
     def reopen_and_reset_adv_search(self):
-        self.close_adv_search_if_open()
+        self.hit_escape()
         self.open_adv_search()
         self.reset_adv_search()

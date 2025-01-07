@@ -104,7 +104,7 @@ class PassengerManifestPage(Pagination):
 
     def wait_for_advisor_list(self):
         try:
-            time.sleep(1)
+            time.sleep(2)
             self.when_present(self.ADVISOR_ROW, utils.get_medium_timeout())
         except TimeoutException:
             app.logger.info('There are no advisors listed')

@@ -266,8 +266,7 @@ class TestDegreeCheckHeader:
     def test_create_degree_note(self):
         self.degree_check_page.create_note(note_str)
         utils.assert_equivalence(self.degree_check_page.visible_note_body(), note_str.strip())
-        utils.assert_actual_includes_expected(self.degree_check_page.visible_note_update_advisor(),
-                                              test.advisor.full_name)
+        utils.assert_matching_advisor_name(self.degree_check_page.visible_note_update_advisor(), test.advisor)
         utils.assert_actual_includes_expected(
             self.degree_check_page.element(self.degree_check_page.NOTE_UPDATE_DATE).text,
             'today')
@@ -279,8 +278,7 @@ class TestDegreeCheckHeader:
     def test_edit_degree_note(self):
         self.degree_check_page.edit_note(f'EDITED - {note_str}')
         utils.assert_equivalence(self.degree_check_page.visible_note_body(), f'EDITED - {note_str}'.strip())
-        utils.assert_actual_includes_expected(self.degree_check_page.visible_note_update_advisor(),
-                                              test.advisor.full_name)
+        utils.assert_matching_advisor_name(self.degree_check_page.visible_note_update_advisor(), test.advisor)
         utils.assert_actual_includes_expected(
             self.degree_check_page.element(self.degree_check_page.NOTE_UPDATE_DATE).text,
             'today')
@@ -459,7 +457,8 @@ class TestDegreeCheckBatch:
         students = boa_utils.unique_students_in_batch(batch_students, cohorts, groups)
         expected_msg = f'Success! Degree check {template.name} added to {len(students)} student profiles'
         utils.assert_actual_includes_expected(
-            self.degree_template_mgmt_page.element(self.degree_template_mgmt_page.BATCH_SUCCESS_MSG).text,
+            self.degree_template_mgmt_page.element(self.degree_template_mgmt_page.BATCH_SUCCESS_MSG).get_attribute(
+                'innerText'),
             expected_msg,
         )
 

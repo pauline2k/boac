@@ -292,7 +292,7 @@ def get_advising_data_advisor(dept, test_advisor):
     dept_advisors.reverse()
     app.logger.info(f'Dept advisor UIDs are {list(map(lambda a: a.uid, dept_advisors))}')
     for a in dept_advisors:
-        if a.can_access_advising_data and a.uid != test_advisor.uid:
+        if a.can_access_advising_data and a.uid != test_advisor.uid and len(a.uid) == 7:
             return a
 
 

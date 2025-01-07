@@ -48,7 +48,6 @@ admin_groups = boa_utils.get_everyone_curated_groups(Department.ADMIN)
 # ASC config
 test_asc = BEATestConfig()
 test_asc.user_role_asc(test)
-boa_utils.hard_delete_user(test_asc.advisor)
 asc_cohorts = boa_utils.get_everyone_filtered_cohorts(test_asc.dept)
 asc_groups = boa_utils.get_everyone_curated_groups(test_asc.dept)
 

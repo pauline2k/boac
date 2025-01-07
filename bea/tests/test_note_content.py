@@ -92,12 +92,14 @@ class TestNoteDetail:
     def test_collapsed_subject(self, tc):
         visible = self.student_page.collapsed_note_subject(tc.note).strip()
         if tc.note.subject:
-            utils.assert_equivalence(visible, tc.note.subject)
+            utils.assert_equivalence(visible, tc.note.subject.strip())
         elif tc.note.source in [TimelineRecordSource.ASC, TimelineRecordSource.DATA, TimelineRecordSource.HISTORY,
                                 TimelineRecordSource.SIS] and tc.note.body:
             assert visible
         elif tc.note.source == TimelineRecordSource.ASC:
             utils.assert_actual_includes_expected(visible, 'Athletic Study Center advisor')
+        elif tc.note.source == TimelineRecordSource.HISTORY:
+            assert visible
         else:
             assert not visible
 
@@ -111,7 +113,7 @@ class TestNoteDetail:
 
     def test_expanded_source(self, tc):
         visible = self.student_page.expanded_note_source(tc.note)
-        if tc.note.source:
+        if tc.note.source and tc.note.source != TimelineRecordSource.BOA:
             utils.assert_equivalence(visible, f"(note imported from {tc.note.source.value['name']})")
         else:
             assert not visible

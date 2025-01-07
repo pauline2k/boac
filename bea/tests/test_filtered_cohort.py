@@ -86,31 +86,9 @@ class TestFilteredCohortResults:
 
 
 @pytest.mark.usefixtures('page_objects')
-class TestFilteredCohortExport:
-
-    test.searches.sort(key=lambda c: len(c.members), reverse=True)
-    cohort = test.searches[0]
-
-    def test_ferpa_before_export(self):
-        self.filtered_students_page.load_cohort(self.cohort)
-        self.filtered_students_page.click_export_list()
-        title = 'FERPA (Privacy Disclosure) - Office of the Registrar'
-        assert self.filtered_students_page.is_external_link_valid(self.filtered_students_page.FERPA_WARNING_LINK, title)
-
-    def test_default_cohort_export(self):
-        self.filtered_students_page.click_cancel_export_list()
-        downloaded_csv = self.filtered_students_page.export_default_student_list(self.cohort)
-        self.filtered_students_page.verify_default_export_student_list(self.cohort, downloaded_csv)
-
-    def test_custom_cohort_export(self):
-        downloaded_csv = self.filtered_students_page.export_custom_student_list(self.cohort)
-        self.filtered_students_page.verify_custom_export_student_list(self.cohort, downloaded_csv)
-
-
-@pytest.mark.usefixtures('page_objects')
 class TestFilteredCohortSorting:
 
-    cohort = next(filter(lambda c: len(c.members) in list(range(50, 150)), test.searches))
+    cohort = next(filter(lambda c: len(c.members) in list(range(25, 100)), test.searches))
     cohort_alerts = boa_utils.get_un_dismissed_users_alerts(cohort.members, test.advisor)
 
     def test_sort_cohort_by_first_name(self):
@@ -153,7 +131,7 @@ class TestFilteredCohortSorting:
 
     def test_sort_cohort_by_last_last_term_gpa_desc(self):
         term = utils.get_previous_term(utils.get_previous_term())
-        self.filtered_students_page.sort_by_last_term_gpa_desc()
+        self.filtered_students_page.sort_by_last_term_gpa_desc(term)
         expected = nessie_filter_students_utils.cohort_by_gpa_last_term_desc(test, self.cohort.search_criteria, term)
         self.filtered_students_page.compare_visible_sid_sorting_to_expected(expected)
 
@@ -408,3 +386,23 @@ class TestFilteredCohortEdits:
         self.filtered_students_page.delete_cohort(test.searches[0])
         self.driver.get(f'{boa_utils.get_boa_base_url()}/cohort/{test.searches[0].cohort_id}')
         self.filtered_students_page.wait_for_404()
+
+
+@pytest.mark.usefixtures('page_objects')
+class TestFilteredCohortExport:
+
+    def test_ferpa_before_export(self):
+        test.set_default_cohort()
+        self.filtered_students_page.search_and_create_new_student_cohort(test.default_cohort)
+        self.filtered_students_page.click_export_list()
+        title = 'FERPA (Privacy Disclosure) - Office of the Registrar'
+        assert self.filtered_students_page.is_external_link_valid(self.filtered_students_page.FERPA_WARNING_LINK, title)
+
+    def test_default_cohort_export(self):
+        self.filtered_students_page.click_cancel_export_list()
+        downloaded_csv = self.filtered_students_page.export_default_student_list(test.default_cohort)
+        self.filtered_students_page.verify_default_export_student_list(test.default_cohort, downloaded_csv)
+
+    def test_custom_cohort_export(self):
+        downloaded_csv = self.filtered_students_page.export_custom_student_list(test.default_cohort)
+        self.filtered_students_page.verify_custom_export_student_list(test.default_cohort, downloaded_csv)

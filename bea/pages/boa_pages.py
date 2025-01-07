@@ -169,8 +169,9 @@ class BoaPages(CreateNoteModal, SearchForm):
             try:
                 tries -= 1
                 self.when_present(self.sidebar_member_count_loc(cohort), utils.get_short_timeout())
-                utils.assert_equivalence(self.element(self.sidebar_member_count_loc(cohort)).text.split()[0],
-                                         f'{len(cohort.members)}')
+                utils.assert_equivalence(
+                    self.element(self.sidebar_member_count_loc(cohort)).text.split()[0].replace(',', ''),
+                    f'{len(cohort.members)}')
                 break
             except (AssertionError, TimeoutError):
                 if tries == 0:
