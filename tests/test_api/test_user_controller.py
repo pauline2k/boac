@@ -131,30 +131,21 @@ class TestMyCohorts:
         for key in 'name', 'alertCount', 'criteria', 'totalStudentCount', 'isOwnedByCurrentUser':
             assert key in cohorts[0], f'Missing cohort element: {key}'
 
-    def test_feature_flag_false_for_admitted_students_domain(self, client, fake_auth):
-        """No 'admitted_students' cohorts if feature flag is false."""
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', False):
-            fake_auth.login(ce3_advisor_uid)
-            cohorts = self._api_my_profile(client)['myCohorts']
-            assert not [c for c in cohorts if c['domain'] == 'admitted_students']
-
     def test_cohorts_all_for_ce3(self, client, fake_auth):
         """Returns all standard cohorts for CE3 advisor."""
         fake_auth.login(ce3_advisor_uid)
         cohorts = self._api_my_profile(client)['myCohorts']
-        count = len(cohorts)
-        assert count == 1
+        assert len(cohorts)
         assert cohorts[0]['name'] == 'Undeclared students'
 
     def test_admitted_students_cohorts_all_for_ce3(self, client, fake_auth):
         """Returns all standard cohorts for CE3 advisor."""
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
-            fake_auth.login(ce3_advisor_uid)
-            cohorts = self._api_my_profile(client)['myCohorts']
-            cohorts = [c for c in cohorts if c['domain'] == 'admitted_students']
-            count = len(cohorts)
-            assert count == 1
-            assert cohorts[0]['name'] == 'First Generation Students'
+        fake_auth.login(ce3_advisor_uid)
+        cohorts = self._api_my_profile(client)['myCohorts']
+        cohorts = [c for c in cohorts if c['domain'] == 'admitted_students']
+        count = len(cohorts)
+        assert count == 1
+        assert cohorts[0]['name'] == 'First Generation Students'
 
 
 class TestMyCuratedGroups:
@@ -179,13 +170,12 @@ class TestMyCuratedGroups:
     def test_admitted_students_domain(self, app, client, fake_auth):
         """Returns 'admitted_students' groups of CE3 advisor."""
         fake_auth.login(ce3_advisor_uid)
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
-            curated_groups = self._api_my_profile(client)['myCuratedGroups']
-            assert len(curated_groups) > 0
-            domains = set([c['domain'] for c in curated_groups])
-            assert len(domains) == 1
-            assert list(domains)[0] == 'admitted_students'
-            next((c for c in curated_groups if c['name'] == "My 'admitted_students' group"), False)
+        curated_groups = self._api_my_profile(client)['myCuratedGroups']
+        assert len(curated_groups) > 0
+        domains = set([c['domain'] for c in curated_groups])
+        assert len(domains) == 1
+        assert list(domains)[0] == 'admitted_students'
+        next((c for c in curated_groups if c['name'] == "My 'admitted_students' group"), False)
 
 
 class TestCalnetProfileByUid:
@@ -382,14 +372,14 @@ class TestUniversityDeptMember:
         )
 
 
-class TestDepartments:
+class TestGetDepartments:
     """Departments API."""
 
     def test_not_authenticated(self, client):
         """Returns 'unauthorized' response status if user is not authenticated."""
         assert client.get('/api/users/departments').status_code == 401
 
-    def test_authorized(self, app, client, fake_auth):
+    def test_authorized(self, client, fake_auth):
         """Returns a well-formed response including cached, uncached, and deleted users."""
         fake_auth.login(coe_advisor_uid)
         response = client.get('/api/users/departments')
@@ -404,7 +394,7 @@ class TestDepartments:
                 assert department['name'] > previous_department['name']
 
 
-class TestUsers:
+class TestGetUsers:
     """Users API."""
 
     def test_not_authenticated(self, client):
@@ -416,7 +406,7 @@ class TestUsers:
         fake_auth.login(coe_advisor_uid)
         assert client.post('/api/users').status_code == 401
 
-    def test_authorized(self, app, client, fake_auth):
+    def test_authorized(self, client, fake_auth):
         """Returns a well-formed response including cached, uncached, and deleted users."""
         fake_auth.login(admin_uid)
         response = client.post('/api/users', data=json.dumps({'deptCode': 'QCADV'}), content_type='application/json')

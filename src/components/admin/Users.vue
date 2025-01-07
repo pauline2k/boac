@@ -210,11 +210,11 @@
         :headers="[
           {title: '', key: 'data-table-expand', sortable: false, width: 40},
           {title: 'UID', key: 'uid', sortable: false, align: 'start'},
-          {title: '', key: 'edit', align: 'end', ariaLabel: 'edit user', sortable: false, cellProps: {class: ['manifest-column-name']}},
-          {title: 'Name', key: 'lastName', align: 'start', sortable: true, cellProps: {class: ['manifest-column-name']}},
+          {title: '', key: 'edit', align: 'end', ariaLabel: 'edit user', sortable: false, cellProps: {class: ['td-name']}},
+          {title: 'Name', key: 'lastName', align: 'start', sortable: true, cellProps: {class: ['td-name']}},
           {title: 'Departments', key: 'departments', align: 'start', headerProps: {class: 'pl-2'}, sortable: false},
           {title: 'Status', key: 'deletedAt', align: 'start', sortable: false},
-          {title: 'Last Login', key: 'lastLogin', align: 'start', sortable: true, cellProps: {class: 'manifest-column-last-login'}},
+          {title: 'Last Login', key: 'lastLogin', align: 'start', sortable: true, cellProps: {class: 'td-last-login'}},
           {title: 'Email', key: 'campusEmail', align: 'start', sortable: false},
           {title: '', key: 'becomeUser', sortable: false}
         ]"
@@ -592,14 +592,14 @@ const quickLink = (role, deptCode=null, returnFocusId) => {
 </script>
 
 <style>
-.manifest-column-name {
+.td-last-login {
+  background-color: rgba(var(--v-theme-light-blue), var(--v-medium-emphasis-opacity));
+  font-weight: 600;
+}
+.td-name {
   background-color: rgba(var(--v-theme-secondary), var(--v-medium-emphasis-opacity));
   color: rgb(var(--v-theme-primary));
   font-weight: 900;
-}
-.manifest-column-last-login {
-  background-color: rgba(var(--v-theme-light-blue), var(--v-medium-emphasis-opacity));
-  font-weight: 600;
 }
 </style>
 

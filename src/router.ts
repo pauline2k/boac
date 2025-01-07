@@ -321,6 +321,7 @@ router.beforeEach((to: any) => {
     useSearchStore().resetAdvancedSearch()
   }
 })
+
 router.afterEach((to: any, from: any) => {
   const samePageLink = to.name === from.name && to.hash
   if (!samePageLink) {

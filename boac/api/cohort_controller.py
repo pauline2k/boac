@@ -51,9 +51,8 @@ def get_cohorts_by_dept_code(dept_code):
     if department and scope:
         uids = UniversityDeptMember.get_membership_uids(department.id)
         calnet_users = calnet.get_calnet_users_for_uids(app, uids)
-        include_admitted_students = app.config['FEATURE_FLAG_ADMITTED_STUDENTS'] and current_user.can_access_admitted_students
         for cohort in CohortFilter.get_cohorts_owned_by_uids(
-            include_admitted_students=include_admitted_students,
+            include_admitted_students=current_user.can_access_admitted_students,
             uids=uids,
         ):
             cohort_owner = calnet_users.get(cohort['ownerUid'], None)

@@ -147,11 +147,10 @@ class CohortFilter(Base):
 
     @classmethod
     def get_cohorts(cls, user_id):
-        domain_clause = '' if app.config['FEATURE_FLAG_ADMITTED_STUDENTS'] else " AND c.domain = 'default'"
-        query = text(f"""
+        query = text("""
             SELECT id, domain, name, filter_criteria, alert_count, sids, student_count
             FROM cohort_filters c
-            WHERE c.owner_id = :user_id {domain_clause}
+            WHERE c.owner_id = :user_id
             ORDER BY c.domain, c.name
         """)
         results = db.session.execute(query, {'user_id': user_id})

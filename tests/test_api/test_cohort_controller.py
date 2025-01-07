@@ -29,12 +29,10 @@ from boac.merged.sis_terms import current_term_id
 from boac.models.authorized_user import AuthorizedUser
 from boac.models.cohort_filter import CohortFilter
 from boac.models.curated_group import CuratedGroup
-from flask import current_app as app
 import pytest
 import simplejson as json
 from tests.test_api.api_test_utils import all_cohorts_owned_by, api_cohort_create, api_cohort_events, api_cohort_get, \
     api_curated_group_add_students, api_curated_group_remove_student
-from tests.util import override_config
 
 asc_advisor_uid = '1081940'
 coe_advisor_uid = '1133399'
@@ -464,15 +462,6 @@ class TestCohortsEveryone:
         assert response.status_code == expected_status_code
         return response.json
 
-    def test_admitted_students_feature_flag(self, client, fake_auth):
-        """Deny non-CE3 advisor access to non-default cohort domain."""
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', False):
-            fake_auth.login(ce3_advisor_uid)
-            api_json = self._api_cohorts_by_dept_code(client, 'ZCEEE')
-            all_cohorts = [cohort for row in api_json for cohort in row['cohorts']]
-            iterator = (cohort for cohort in all_cohorts if cohort['domain'] == 'admitted_students')
-            assert next(iterator, None) is None
-
     def test_cohorts_all(self, asc_advisor_login, client):
         """Returns all cohorts per owner."""
         api_json = self._api_cohorts_by_dept_code(client, 'COENG')
@@ -503,20 +492,18 @@ class TestCohortsEveryone:
 
     def test_all_admitted_students_cohorts(self, client, fake_auth):
         """Returns all cohorts, excluding admitted students."""
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
-            fake_auth.login(ce3_advisor_uid)
-            api_json = self._api_cohorts_by_dept_code(client, 'ZCEEE')
-            all_cohorts = [cohort for row in api_json for cohort in row['cohorts']]
-            iterator = (cohort for cohort in all_cohorts if cohort['domain'] == 'admitted_students')
-            assert next(iterator, None) is not None
+        fake_auth.login(ce3_advisor_uid)
+        api_json = self._api_cohorts_by_dept_code(client, 'ZCEEE')
+        all_cohorts = [cohort for row in api_json for cohort in row['cohorts']]
+        iterator = (cohort for cohort in all_cohorts if cohort['domain'] == 'admitted_students')
+        assert next(iterator, None) is not None
 
     def test_history_not_available_when_admitted_students_domain(self, client, fake_auth):
         """The cohort history feature is not available if domain is 'admitted_students'."""
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
-            fake_auth.login(ce3_advisor_uid)
-            api_json = self._api_cohorts_by_dept_code(client, 'ZCEEE')
-            cohorts = next(row['cohorts'] for row in api_json if len(row['cohorts']))
-            api_cohort_events(client, cohorts[0]['id'], expected_status_code=400)
+        fake_auth.login(ce3_advisor_uid)
+        api_json = self._api_cohorts_by_dept_code(client, 'ZCEEE')
+        cohorts = next(row['cohorts'] for row in api_json if len(row['cohorts']))
+        api_cohort_events(client, cohorts[0]['id'], expected_status_code=400)
 
 
 class TestCohortCreate:
@@ -1598,37 +1585,30 @@ class TestDownloadCsvPerFilters:
         return response
 
     def test_download_csv_admit_domain(self, client, fake_auth):
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
-            fake_auth.login(ce3_advisor_uid)
-            response = self._api_download_admit_csv(client)
-            assert 'csv' in response.content_type
-            csv = str(response.data)
-            assert ','.join(self.admit_keys) in csv
-            print(csv)
-            assert (
-                '19938035,00005852,RES,Transfer,Spring,No,No,College of Letters and Science,'
-                'Ralph,,Burgess,1984-09-04,984.110.7693x347,681-857-8070,9590 Chang Extensions,'
-                'Suite 478,East Jacobton,NY,55531,United States,International,F,No,Yes,MasterDegree,'
-                '3 - High School Graduate,,0.86,0.51,2.47,7,18,29,18,3,603,707,241,3,2,4,FeeWaiver,Y,,,05,02,41852,942,Y,'
-                'ReserveOfficersTrainingProgram,No,,,,,Citizen,,United States,,,,123'
-            ) in csv
-            assert (
-                '98002344,00029117,INT,Freshman,Spring,No,No,College of Engineering,Daniel,J,Mcknight,1993-07-06,859-319-8215x8689,'
-                '231.865.8093,87758 Brown Throughway,Suite 657,West Andrea,M,25101,United States,White,T,,'
-                'Yes,,5 - College Attended,,2.51,2.7,3.23,25,19,2,15,9,1445,639,724,7,5,5,,,,Y,0,02,23915,426,Y,,,Committed,,1,'
-                'Destination College,Citizen,,United States,,,,'
-            ) in csv
+        fake_auth.login(ce3_advisor_uid)
+        response = self._api_download_admit_csv(client)
+        assert 'csv' in response.content_type
+        csv = str(response.data)
+        assert ','.join(self.admit_keys) in csv
+        print(csv)
+        assert (
+            '19938035,00005852,RES,Transfer,Spring,No,No,College of Letters and Science,'
+            'Ralph,,Burgess,1984-09-04,984.110.7693x347,681-857-8070,9590 Chang Extensions,'
+            'Suite 478,East Jacobton,NY,55531,United States,International,F,No,Yes,MasterDegree,'
+            '3 - High School Graduate,,0.86,0.51,2.47,7,18,29,18,3,603,707,241,3,2,4,FeeWaiver,Y,,,05,02,41852,942,Y,'
+            'ReserveOfficersTrainingProgram,No,,,,,Citizen,,United States,,,,123'
+        ) in csv
+        assert (
+            '98002344,00029117,INT,Freshman,Spring,No,No,College of Engineering,Daniel,J,Mcknight,1993-07-06,859-319-8215x8689,'
+            '231.865.8093,87758 Brown Throughway,Suite 657,West Andrea,M,25101,United States,White,T,,'
+            'Yes,,5 - College Attended,,2.51,2.7,3.23,25,19,2,15,9,1445,639,724,7,5,5,,,,Y,0,02,23915,426,Y,,,Committed,,1,'
+            'Destination College,Citizen,,United States,,,,'
+        ) in csv
 
     def test_admit_domain_denies_non_ce3_advisor(self, user_factory, client, fake_auth):
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
-            advisor = user_factory(dept_codes=['GUEST'])
-            fake_auth.login(advisor.uid)
-            self._api_download_admit_csv(client, 403)
-
-    def test_admit_domain_respects_feature_flag(self, client, fake_auth):
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', False):
-            fake_auth.login(ce3_advisor_uid)
-            self._api_download_admit_csv(client, 404)
+        advisor = user_factory(dept_codes=['GUEST'])
+        fake_auth.login(advisor.uid)
+        self._api_download_admit_csv(client, 403)
 
 
 class TestCohortFilterOptions:
@@ -1840,60 +1820,45 @@ class TestCohortFilterOptions:
                     verified = True
         assert verified
 
-    def test_404_when_feature_flag_is_false(self, client, fake_auth):
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', False):
-            fake_auth.login(ce3_advisor_uid)
-            self._api_cohort_filter_options(
-                client,
-                {
-                    'domain': 'admitted_students',
-                    'existingFilters': [],
-                },
-                expected_status_code=404,
-            )
-
     def test_invalid_domain_value(self, user_factory, client, fake_auth):
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
-            advisor = user_factory(dept_codes=['GUEST'])
-            fake_auth.login(advisor.uid)
-            self._api_cohort_filter_options(
-                client,
-                {
-                    'domain': 'this_is_an_invalid_domain',
-                    'existingFilters': [],
-                },
-                expected_status_code=400,
-            )
+        advisor = user_factory(dept_codes=['GUEST'])
+        fake_auth.login(advisor.uid)
+        self._api_cohort_filter_options(
+            client,
+            {
+                'domain': 'this_is_an_invalid_domain',
+                'existingFilters': [],
+            },
+            expected_status_code=400,
+        )
 
     def test_admitted_students_domain_denied(self, user_factory, client, fake_auth):
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
-            advisor = user_factory(dept_codes=['GUEST'])
-            fake_auth.login(advisor.uid)
-            self._api_cohort_filter_options(
-                client,
-                {
-                    'domain': 'admitted_students',
-                    'existingFilters': [],
-                },
-                expected_status_code=403,
-            )
+        advisor = user_factory(dept_codes=['GUEST'])
+        fake_auth.login(advisor.uid)
+        self._api_cohort_filter_options(
+            client,
+            {
+                'domain': 'admitted_students',
+                'existingFilters': [],
+            },
+            expected_status_code=403,
+        )
 
     def test_admitted_students_domain(self, client, fake_auth):
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
-            fake_auth.login(ce3_advisor_uid)
-            api_json = self._api_cohort_filter_options(
-                client,
-                {
-                    'domain': 'admitted_students',
-                    'existingFilters': [],
-                },
-            )
-            assert len(api_json)
-            for label, option_group in api_json.items():
-                for entry in option_group:
-                    # Verify the 'default' filters are not present.
-                    assert 'unitRanges' != entry['key']
-                    assert entry['domain'] == 'admitted_students'
+        fake_auth.login(ce3_advisor_uid)
+        api_json = self._api_cohort_filter_options(
+            client,
+            {
+                'domain': 'admitted_students',
+                'existingFilters': [],
+            },
+        )
+        assert len(api_json)
+        for label, option_group in api_json.items():
+            for entry in option_group:
+                # Verify the 'default' filters are not present.
+                assert 'unitRanges' != entry['key']
+                assert entry['domain'] == 'admitted_students'
 
 
 class TestTranslateToFilterOptions:

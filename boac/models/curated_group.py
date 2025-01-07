@@ -30,7 +30,6 @@ from boac.merged.student import query_students
 from boac.models.base import Base
 from boac.models.cohort_filter import CohortFilter
 from boac.models.db_relationships import cohort_domain_type
-from flask import current_app as app
 from sqlalchemy import text
 
 
@@ -66,12 +65,8 @@ class CuratedGroup(Base):
         return cls.query.filter_by(id=curated_group_id).first()
 
     @classmethod
-    def get_curated_groups(cls, owner_id, include_sids=False):
-        if app.config['FEATURE_FLAG_ADMITTED_STUDENTS']:
-            filter_by = cls.query.filter_by(owner_id=owner_id)
-        else:
-            filter_by = cls.query.filter_by(domain='default', owner_id=owner_id)
-        return filter_by.order_by(cls.name).all()
+    def get_curated_groups(cls, owner_id):
+        return cls.query.filter_by(owner_id=owner_id).order_by(cls.name).all()
 
     @classmethod
     def get_curated_groups_owned_by(cls, uids, include_admitted_students=False):

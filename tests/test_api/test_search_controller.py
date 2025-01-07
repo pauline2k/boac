@@ -27,10 +27,8 @@ from boac import std_commit
 from boac.externals import data_loch
 from boac.models.authorized_user import AuthorizedUser
 from boac.models.note import Note
-from flask import current_app as app
 import pytest
 import simplejson as json
-from tests.util import override_config
 
 asc_advisor_uid = '1081940'
 
@@ -172,7 +170,7 @@ class TestStudentSearch:
             assert len(students) == api_json['totalStudentCount'] == 1
             assert students[0]['lastName'] == 'Crossman'
 
-    def test_search_by_name_coe(self, coe_advisor, client, app):
+    def test_search_by_name_coe(self, coe_advisor, client):
         """A COE name search finds all Pauls, including COE-specific data for COE Pauls."""
         api_json = _api_search(client, 'Paul', students=True)
         students = api_json['students']
@@ -799,47 +797,37 @@ class TestAdmittedStudentSearch:
             assert 'applicationFeeWaiverFlag' in admit
             assert 'freshmanOrTransfer' in admit
 
-    def test_search_admits_when_feature_flag_false(self, client, ce3_advisor):
-        """Excludes admit results if feature flag is false."""
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', False):
-            api_json = self._api_search_admits(client, '0000', expected_status_code=401)
-            assert 'admits' not in api_json
-
     def test_search_admits_performed_by_non_ce3_advisor(self, client, coe_advisor):
         """Excludes admit results if user is a non-CE3 advisor."""
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
-            api_json = self._api_search_admits(client, '0000', expected_status_code=401)
-            assert 'admits' not in api_json
+        api_json = self._api_search_admits(client, '0000', expected_status_code=401)
+        assert 'admits' not in api_json
 
     def test_search_admits_by_sid(self, client, ce3_advisor):
         """Search by SID yields admit results."""
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
-            api_json = self._api_search_admits(client, '0000')
-            self._assert(api_json, admit_count=1)
+        api_json = self._api_search_admits(client, '0000')
+        self._assert(api_json, admit_count=1)
 
     def test_search_admits_by_name(self, client, ce3_advisor):
         """Search by first, last, and/or middle name yields admits."""
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
-            api_json = self._api_search_admits(client, 'da')
-            self._assert(api_json, admit_count=2)
+        api_json = self._api_search_admits(client, 'da')
+        self._assert(api_json, admit_count=2)
 
-            api_json = self._api_search_admits(client, 'da de')
-            self._assert(api_json, admit_count=1)
+        api_json = self._api_search_admits(client, 'da de')
+        self._assert(api_json, admit_count=1)
 
-            api_json = self._api_search_admits(client, 'j ly')
-            self._assert(api_json, admit_count=1)
+        api_json = self._api_search_admits(client, 'j ly')
+        self._assert(api_json, admit_count=1)
 
     def test_search_admits_ordering(self, client, ce3_advisor):
-        with override_config(app, 'FEATURE_FLAG_ADMITTED_STUDENTS', True):
-            api_json = self._api_search_admits(client, 'da', order_by='first_name')
-            self._assert(api_json, admit_count=2)
-            assert api_json['admits'][0]['firstName'] == 'Daniel'
-            assert api_json['admits'][1]['firstName'] == 'Deborah'
+        api_json = self._api_search_admits(client, 'da', order_by='first_name')
+        self._assert(api_json, admit_count=2)
+        assert api_json['admits'][0]['firstName'] == 'Daniel'
+        assert api_json['admits'][1]['firstName'] == 'Deborah'
 
-            api_json = self._api_search_admits(client, 'da', order_by='last_name')
-            self._assert(api_json, admit_count=2)
-            assert api_json['admits'][0]['lastName'] == 'Davies'
-            assert api_json['admits'][1]['lastName'] == 'Mcknight'
+        api_json = self._api_search_admits(client, 'da', order_by='last_name')
+        self._assert(api_json, admit_count=2)
+        assert api_json['admits'][0]['lastName'] == 'Davies'
+        assert api_json['admits'][1]['lastName'] == 'Mcknight'
 
 
 class TestSearchHistory:
