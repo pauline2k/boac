@@ -92,7 +92,6 @@ const routes:RouteRecordRaw[] = [
       {
         path: '/all/:mode',
         component: AllCohorts,
-        name: 'All Cohorts'
       },
       {
         path: '/cohort/history',
