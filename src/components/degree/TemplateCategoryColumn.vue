@@ -1,6 +1,6 @@
 <template>
   <div :id="`category-column-${position}`">
-    <div v-if="!degreeStore.sid" class="align-center d-flex flex-wrap justify-space-between pb-3">
+    <div v-if="!degreeStore.sid" class="align-center d-flex flex-wrap justify-space-between">
       <v-chip
         class="font-size-13 text-no-wrap mr-1 px-2 text-uppercase column-label"
         color="grey"
@@ -35,6 +35,7 @@
       v-for="category in _filter(degreeStore.categories, c => c.position === position && isNil(c.parentCategoryId))"
       :id="`column-${position}-category-${category.id}`"
       :key="category.id"
+      class="mt-4"
     >
       <Category
         v-if="category.id !== get(categoryForEdit, 'id')"
@@ -71,11 +72,12 @@
           :position="position"
         />
       </div>
-      <div v-if="category.subcategories.length" class="mt-2">
+      <div v-if="category.subcategories.length">
         <div
           v-for="subcategory in category.subcategories"
           :id="`column-${position}-subcategory-${subcategory.id}`"
           :key="subcategory.id"
+          class="mt-4"
         >
           <Category
             v-if="subcategory.id !== get(categoryForEdit, 'id')"
