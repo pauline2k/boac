@@ -30,16 +30,11 @@
         <v-btn
           id="degree-checks-of-student"
           color="primary"
-          size="sm"
           variant="text"
           @click="() => goToStudentDegreeChecksByUID(student.uid)"
         >
-          <div class="align-center d-flex text-anchor">
-            <div>
-              Undergraduate Degree Checks <span class="sr-only">of {{ student.name }} (will open new browser tab)</span>
-            </div>
-            <v-icon class="ml-1" :icon="mdiOpenInNew" size="18" />
-          </div>
+          Undergraduate Degree Checks <span class="sr-only">of {{ student.name }} (will open new browser tab)</span>
+          <v-icon class="ml-1" :icon="mdiOpenInNew" size="16" />
         </v-btn>
       </div>
     </div>
