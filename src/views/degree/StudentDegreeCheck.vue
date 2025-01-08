@@ -30,7 +30,7 @@
                   @dragstart="onDrag($event,'start', 'ignored')"
                   @drop="dropToUnassign($event, 'ignored')"
                 >
-                  <h3 id="ignored-header" class="font-size-20 font-weight-bold pb-0 text-no-wrap" tabindex="-1">Other Coursework</h3>
+                  <h3 id="ignored-header" class="font-size-18 text-medium-emphasis pb-0 text-no-wrap" tabindex="-1">Other Coursework</h3>
                   <UnassignedCourses :ignored="true" />
                 </div>
               </v-col>
@@ -49,7 +49,7 @@
               @dragstart="onDrag($event,'start', 'unassigned')"
               @drop="dropToUnassign($event, 'unassigned')"
             >
-              <h3 id="unassigned-header" class="font-size-20 font-weight-bold pb-0 text-no-wrap" tabindex="-1">Unassigned Courses</h3>
+              <h3 id="unassigned-header" class="font-size-18 text-medium-emphasis pb-0 text-no-wrap" tabindex="-1">Unassigned Courses</h3>
               <div v-if="currentUser.canEditDegreeProgress" class="pb-2 pr-2">
                 <DuplicateExistingCourse />
               </div>

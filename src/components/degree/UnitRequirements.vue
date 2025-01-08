@@ -2,7 +2,7 @@
   <div v-if="render">
     <div class="align-center d-flex flex-row justify-space-between">
       <h3
-        class="mr-2 text-grey text-no-wrap unit-requirements-header"
+        class="font-size-18 mr-2 text-medium-emphasis text-no-wrap unit-requirements-header"
         :class="{'font-size-14': printable, 'font-size-20': !printable}"
       >
         Unit Requirements

@@ -61,13 +61,9 @@
         v-if="category.description"
         :id="`column-${category.id}-category-header-description`"
         class="py-1"
-        :class="{'font-size-12': printable, 'pl-1': !printable}"
+        :class="{'font-size-12 text-wrap': printable, 'pl-1': !printable}"
       >
-        <pre
-          v-if="printable"
-          class="border-0 text-wrap"
-          v-html="category.description"
-        />
+        <pre v-if="printable" class="border-0"><span v-html="category.description" /></pre>
         <pre v-if="!printable"><span v-linkified v-html="category.description" /></pre>
       </div>
     </div>
