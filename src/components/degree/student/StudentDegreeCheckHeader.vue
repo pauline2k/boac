@@ -36,7 +36,7 @@
       <v-container class="py-2 px-0" fluid>
         <v-row>
           <v-col cols="12" md="7">
-            <h2 class="mb-1 page-section-header">{{ degreeStore.degreeName }}</h2>
+            <h2 class="font-size-20 mb-1 page-section-header">{{ degreeStore.degreeName }}</h2>
             <div class="text-surface-variant font-size-16 font-weight-500 pb-2">
               {{ updatedAtDescription }}
             </div>
@@ -194,7 +194,7 @@
           </v-col>
           <v-col class="justify-center d-flex flex-column py-1" cols="12" sm="6">
             <div class="d-flex align-center pt-1 pb-2">
-              <h3 class="font-size-20 font-weight-bold px-2 text-no-wrap">In-progress Courses</h3>
+              <h3 class="font-size-18 text-medium-emphasis px-2 text-no-wrap">In-progress Courses</h3>
               <div v-if="degreeStore.courses.inProgress.length" class="text-no-wrap px-1">
                 [<v-btn
                   id="show-upper-units-input"
