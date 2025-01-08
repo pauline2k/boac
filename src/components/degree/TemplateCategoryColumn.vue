@@ -35,7 +35,9 @@
       v-for="category in _filter(degreeStore.categories, c => c.position === position && isNil(c.parentCategoryId))"
       :id="`column-${position}-category-${category.id}`"
       :key="category.id"
+      :aria-labelledby="`column-${position}-category-${category.id}-header`"
       class="mt-4"
+      role="region"
     >
       <Category
         v-if="category.id !== get(categoryForEdit, 'id')"

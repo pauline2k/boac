@@ -393,6 +393,9 @@
   max-width: inherit;
   width: inherit;
 }
+.v-table.no-scrollbar .v-table__wrapper {
+  overflow: hidden;
+}
 .v-table-hidden-row-override table tbody tr[style="height: 0px; border: 0px;"] {
   display: none;
 }
@@ -404,9 +407,6 @@
 .v-table-sort-btn-override:focus .v-btn__append .v-icon,
 .v-table-sort-btn-override.icon-visible .v-btn__append .v-icon {
   opacity: 1;
-}
-.v-table.no-scrollbar .v-table__wrapper {
-  overflow: hidden;
 }
 .vertical-bottom {
   vertical-align: bottom !important;

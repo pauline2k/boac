@@ -121,6 +121,7 @@ const publish = () => {
 
 const saveTemplate = () => {
   isSavingTemplate.value = true
+  alertScreenReader('Preparing to create template')
   props.saveAsTemplate().then(() => isSavingTemplate.value = false)
 }
 

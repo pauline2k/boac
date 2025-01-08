@@ -75,7 +75,7 @@
               <v-col cols="8">
                 <v-btn
                   :id="`load-note-template-${template.id}`"
-                  :aria-label="`Use template ${template.title}`"
+                  :aria-label="`Use template &quot;${template.title}&quot;`"
                   class="font-weight-bold d-flex justify-start template-dropdown-title"
                   color="primary"
                   block
@@ -100,7 +100,7 @@
                     variant="text"
                     @click.stop.prevent="openRenameTemplateDialog(template)"
                   >
-                    Rename<span class="sr-only"> template {{ template.title }}</span>
+                    Rename<span class="sr-only"> template &quot;{{ template.title }}&quot;</span>
                   </v-btn>
                   <div class="font-weight-light mx-1" role="separator">
                     |
@@ -115,7 +115,7 @@
                     variant="text"
                     @click="editTemplate(template)"
                   >
-                    Edit<span class="sr-only"> template {{ template.title }}</span>
+                    Edit<span class="sr-only"> template &quot;{{ template.title }}&quot;</span>
                   </v-btn>
                   <div class="font-weight-light mx-1" role="separator">
                     |
@@ -130,7 +130,7 @@
                     variant="text"
                     @click.stop="openDeleteTemplateDialog(template)"
                   >
-                    Delete<span class="sr-only"> template {{ template.title }}</span>
+                    Delete<span class="sr-only"> template &quot;{{ template.title }}&quot;</span>
                   </v-btn>
                 </div>
               </v-col>
@@ -322,9 +322,7 @@ const onToggleTemplatesMenu = isOpen => {
   if (isOpen) {
     let count = size(noteStore.noteTemplates)
     const suffix = count === 1 ? 'one saved template' : `${count || 'no'} saved templates`
-    alertScreenReader(`Templates menu open. You have ${suffix}.`)
-  } else {
-    alertScreenReader('Templates menu closed.')
+    alertScreenReader(`You have ${suffix}.`)
   }
 }
 

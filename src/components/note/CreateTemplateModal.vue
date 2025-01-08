@@ -137,6 +137,7 @@ const createTemplate = () => {
     props.create(templateTitle)
   } else {
     isSaving.value = false
+    putFocusNextTick('template-title-input')
   }
 }
 
