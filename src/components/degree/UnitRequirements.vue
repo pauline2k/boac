@@ -1,8 +1,9 @@
 <template>
-  <div v-if="render">
+  <div v-if="render" aria-labelledby="unit-requirements-header" role="region">
     <div class="align-center d-flex flex-row justify-space-between">
       <h3
-        class="font-size-18 mr-2 text-medium-emphasis text-no-wrap unit-requirements-header"
+        id="unit-requirements-header"
+        class="font-size-18 mb-1 px-2 text-medium-emphasis text-no-wrap"
         :class="{'font-size-14': printable, 'font-size-20': !printable}"
       >
         Unit Requirements
@@ -354,9 +355,6 @@ th {
 }
 .th-units {
   width: 15%;
-}
-.unit-requirements-header {
-  margin-bottom: 2px;
 }
 .unit-requirements-table {
   min-width: 250px;

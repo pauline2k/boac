@@ -36,7 +36,7 @@
       <v-container class="py-2 px-0" fluid>
         <v-row>
           <v-col cols="12" md="7">
-            <h2 class="font-size-20 mb-1 page-section-header">{{ degreeStore.degreeName }}</h2>
+            <h2 id="degree-check-header" class="font-size-20 mb-1 page-section-header">{{ degreeStore.degreeName }}</h2>
             <div class="text-surface-variant font-size-16 font-weight-500 pb-2">
               {{ updatedAtDescription }}
             </div>
@@ -85,13 +85,15 @@
       <v-container class="px-0" fluid>
         <v-row align="start">
           <v-col
+            aria-labelledby="degree-notes-header"
             class="align-self-stretch border-e-sm pb-0 pt-1"
             :class="{'border-b-sm': $vuetify.display.xs}"
             cols="12"
+            role="region"
             sm="6"
           >
+            <h3 id="degree-notes-header" class="font-size-20 font-weight-bold text-no-wrap mr-3 px-2">Degree Notes</h3>
             <div v-if="isEditingNote || noteBody" class="align-center d-flex flex-wrap justify-space-between">
-              <h3 id="degree-notes-header" class="font-size-20 font-weight-bold text-no-wrap mr-3">Degree Notes</h3>
               <label for="degree-note-print-toggle" class="d-flex flex-grow-1 justify-end align-center pr-2">
                 <span class="font-size-14 font-weight-500 text-no-wrap text-surface-variant">
                   Show notes when printed?
@@ -117,9 +119,10 @@
             <v-btn
               v-if="currentUser.canEditDegreeProgress && !isEditingNote && !noteBody"
               id="create-degree-note-btn"
-              class="font-size-16 pl-0"
+              class="font-size-16 mt-2"
               color="primary"
               :disabled="degreeStore.disableButtons"
+              slim
               text="Create degree note"
               variant="text"
               @click="editNote"
@@ -192,9 +195,15 @@
               </div>
             </div>
           </v-col>
-          <v-col class="justify-center d-flex flex-column py-1" cols="12" sm="6">
-            <div class="d-flex align-center pt-1 pb-2">
-              <h3 class="font-size-18 text-medium-emphasis px-2 text-no-wrap">In-progress Courses</h3>
+          <v-col
+            aria-labelledby="in-progress-courses-header"
+            class="justify-center d-flex flex-column py-1"
+            cols="12"
+            role="region"
+            sm="6"
+          >
+            <div class="d-flex align-center pb-2">
+              <h3 id="in-progress-courses-header" class="font-size-18 text-medium-emphasis px-2 text-no-wrap">In-progress Courses</h3>
               <div v-if="degreeStore.courses.inProgress.length" class="text-no-wrap px-1">
                 [<v-btn
                   id="show-upper-units-input"

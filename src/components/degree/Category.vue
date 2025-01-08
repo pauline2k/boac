@@ -18,6 +18,7 @@
       <div class="align-center d-flex justify-space-between w-100">
         <h3
           v-if="category.categoryType === 'Category'"
+          :id="`column-${position}-category-${category.id}-header`"
           class="category-header text-medium-emphasis"
           :class="{'font-size-14': printable, 'font-size-16': !printable}"
         >

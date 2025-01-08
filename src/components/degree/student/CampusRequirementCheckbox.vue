@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
+import {putFocusNextTick} from '@/lib/utils'
 import {mdiCheckBold, mdiCloseThick} from '@mdi/js'
 import {refreshDegreeTemplate} from '@/stores/degree-edit-session/utils'
 import {toggleCampusRequirement} from '@/api/degree'
@@ -58,7 +58,6 @@ const isSatisfied = ref(props.campusRequirement.category.categoryType === 'Campu
 const toggle = () => {
   toggleCampusRequirement(props.campusRequirement.category.id, isSatisfied.value).then(() => {
     refreshDegreeTemplate(degreeStore.templateId)
-    alertScreenReader(`${props.campusRequirement.name} requirement ${isSatisfied.value ? 'satisfied' : 'unsatisfied'}`)
     putFocusNextTick(`column-${props.position}-${props.campusRequirement.key}-satisfy-checkbox`)
   })
 }

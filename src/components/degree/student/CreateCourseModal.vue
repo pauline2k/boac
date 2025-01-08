@@ -2,6 +2,7 @@
   <div>
     <v-btn
       :id="`create-course-under-parent-category-${parentCategory.id}`"
+      :aria-label="`Manually Create Course for ${parentCategory.name}`"
       class="font-weight-bold px-1 mt-1"
       color="primary"
       density="comfortable"
@@ -22,7 +23,7 @@
     <v-card class="modal-content" min-width="600">
       <FocusLock :disabled="isFocusLockDisabled" @keydown.esc="() => cancel(false)">
         <v-card-title class="py-0">
-          <ModalHeader text="Create Course" />
+          <ModalHeader :text="`Create Course for ${parentCategory.name}`" />
         </v-card-title>
         <v-card-text class="modal-body">
           <div>
