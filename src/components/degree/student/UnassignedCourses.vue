@@ -159,7 +159,7 @@
               </td>
             </tr>
             <tr v-if="isEditing(course)" :key="`tr-${index}-edit`">
-              <td class="pb-3 pl-4 pt-1" colspan="7">
+              <td class="pb-3 px-12" colspan="7">
                 <EditCourse
                   :after-cancel="afterCancel"
                   :after-save="afterSave"
@@ -380,6 +380,11 @@ table {
   table-layout: fixed;
   width: 100%;
 }
+tbody:before {
+  content: '';
+  display: block;
+  height: 10px;
+}
 .changed-units-icon {
   margin-right: 0.3em;
 }
@@ -447,7 +452,7 @@ table {
   width: 40px !important;
 }
 .tr-course {
-  height: 42px;
+  height: 40px;
 }
 .tr-while-dragging td {
   background-color: rgb(var(--v-theme-tertiary));

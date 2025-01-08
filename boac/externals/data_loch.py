@@ -220,8 +220,8 @@ def get_sis_section(term_id, sis_section_id):
               ORDER BY sc.meeting_days, sc.meeting_start_time, sc.meeting_end_time, sc.instructor_name
         """
     params = {
-        'term_id': term_id,
-        'sis_section_id': sis_section_id,
+        'term_id': str(term_id),
+        'sis_section_id': str(sis_section_id),
     }
     return safe_execute_rds(sql, **params)
 

@@ -32,6 +32,7 @@ from boac.externals.data_loch import get_basic_student_data, get_sid_by_uid
 from boac.lib.http import tolerant_jsonify
 from boac.lib.util import get as get_param, is_int, to_bool_or_none, to_int_or_none
 from boac.merged import calnet
+from boac.merged.sis_sections import get_sis_section
 from boac.models.degree_progress_category import DegreeProgressCategory
 from boac.models.degree_progress_course import DegreeProgressCourse
 from boac.models.degree_progress_course_unit_requirement import DegreeProgressCourseUnitRequirement
@@ -105,6 +106,7 @@ def copy_course():
 
         # Create a new course instance and a new 'Course Requirement'.
         course = courses[0]
+        sis_section = get_sis_section(sis_section_id=section_id, term_id=term_id)
         course = DegreeProgressCourse.create(
             accent_color=course.accent_color,
             degree_check_id=degree_check_id,
@@ -116,7 +118,7 @@ def copy_course():
             sid=sid,
             term_id=term_id,
             unit_requirement_ids=[u.unit_requirement_id for u in course.unit_requirements],
-            units=course.units,
+            units=sis_section['units'] if sis_section else course.units,
         )
         if parent_category:
             _create_placeholder_category_and_assign(
