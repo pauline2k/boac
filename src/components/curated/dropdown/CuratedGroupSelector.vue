@@ -38,7 +38,7 @@
                 width="2"
               />
               <div v-if="!isConfirming" class="ml-1">
-                {{ isSaving ? 'Adding' : 'Add' }} <span class="sr-only">selected students</span> to {{ domainLabel(true) }}
+                {{ isSaving ? 'Adding' : 'Add' }} <span class="sr-only">{{ pluralize('selected student', size(sids)) }}</span> to {{ domainLabel(true) }}
               </div>
               <v-icon v-if="!isSaving && !isConfirming" :icon="mdiMenuDown" />
               <div v-if="isConfirming" class="align-center d-flex">
@@ -243,7 +243,8 @@ const onSubmit = () => {
   const groupDescription = groupCount > 1 ? pluralize(domainLabel(false), groupCount) : domainLabel(false)
   const groupIds = map(selectedCuratedGroups.value, 'id')
   const groupNames = oxfordJoin(map(selectedCuratedGroups.value, 'name'))
-  alertScreenReader(`Adding students to ${groupDescription}`)
+  const studentCount = pluralize('student', size(sids.value))
+  alertScreenReader(`Adding ${studentCount} to ${groupDescription}`)
   addStudentsToCuratedGroups(groupIds, sids.value).then(() => {
     isSaving.value = false
     isConfirming.value = true
@@ -254,7 +255,7 @@ const onSubmit = () => {
         isSelectAllChecked.value = indeterminate.value = false
         selectedCuratedGroups.value = []
         contextStore.broadcast('curated-group-deselect-all', props.domain)
-        alertScreenReader(`${pluralize('student', size(sids.value))} added to ${groupDescription} ${groupNames}.`)
+        alertScreenReader(`${studentCount} added to ${groupDescription} ${groupNames}.`)
         sids.value = []
         putFocusNextTick(checkboxId)
       },

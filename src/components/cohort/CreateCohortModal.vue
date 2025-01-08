@@ -109,7 +109,7 @@ watch(showModalProxy, isOpen => {
 })
 
 const cancelModal = () => {
-  alertScreenReader('Canceled')
+  alertScreenReader('Canceled save cohort')
   props.cancel()
   reset()
   putFocusNextTick('save-cohort-button')

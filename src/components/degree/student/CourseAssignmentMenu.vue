@@ -145,9 +145,9 @@ const onSelect = (category, ignore) => {
     refreshDegreeTemplate(degreeStore.templateId).then(courseAssigned => {
       degreeStore.setDisableButtons(false)
       if (category) {
-        alertScreenReader(`${category.name} assigned to ${props.course.name}`)
+        alertScreenReader(`${props.course.name} assigned to "${category.name}"`)
       } else {
-        alertScreenReader(`Moved to ${ignore ? props.junkDrawerName : 'Unassigned'}`)
+        alertScreenReader(`${props.course.name} moved to ${ignore ? props.junkDrawerName : 'Unassigned Courses'}`)
       }
       props.afterCourseAssignment(courseAssigned)
     })

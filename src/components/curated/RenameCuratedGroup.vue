@@ -1,15 +1,16 @@
 <template>
   <v-card class="w-100" flat>
-    <div class="align-start d-flex flex-wrap pt-1">
+    <div class="align-center d-flex flex-wrap">
       <v-text-field
         id="rename-curated-group-input"
         v-model="name"
         :aria-invalid="!name"
         :aria-label="`${describeCuratedGroupDomain(domain, true)} name`"
-        class="v-input-details-override mb-1 mr-3"
+        class="v-input-details-override mr-3 mt-1"
+        counter="255"
         density="comfortable"
         :disabled="isSaving"
-        label="Curated Group Name"
+        :label="`${describeCuratedGroupDomain(domain.value, true)} Name`"
         :maxlength="maxlength"
         persistent-counter
         required
@@ -36,7 +37,7 @@
         <ProgressButton
           id="rename-curated-group-confirm"
           :action="rename"
-          aria-label="Rename Curated Group"
+          :aria-label="`Rename ${describeCuratedGroupDomain(domain.value, false)}`"
           :disabled="isValidName !== true || isSaving"
           :in-progress="isSaving"
           size="large"
@@ -44,7 +45,7 @@
         />
         <v-btn
           id="rename-curated-group-cancel"
-          aria-label="Cancel Rename Curated Group"
+          :aria-label="`Cancel Rename ${describeCuratedGroupDomain(domain.value, false)}`"
           class="ml-1"
           :disabled="isSaving"
           size="large"
@@ -89,13 +90,14 @@ const rename = () => {
   if (validateCohortName({name: name.value}) !== true) {
     putFocusNextTick('rename-curated-group-input')
   } else {
+    alertScreenReader(`Renaming ${describeCuratedGroupDomain(domain.value)}`)
     isSaving.value = true
     renameCuratedGroup(curatedGroupId.value, name.value).then(curatedGroup => {
       curatedStore.setCuratedGroupName(curatedGroup.name)
       setPageTitle(curatedGroupName.value)
       exitRenameMode()
       isSaving.value = false
-      alertScreenReader(`Renamed ${describeCuratedGroupDomain(domain.value, false)}`)
+      alertScreenReader(`${describeCuratedGroupDomain(domain.value, true)} renamed to ${curatedGroup.name}`)
       putFocusNextTick('rename-curated-group-button"')
     })
   }

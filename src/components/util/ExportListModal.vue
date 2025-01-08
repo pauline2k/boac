@@ -19,7 +19,7 @@
         <v-card-text id="export-list-body" class="modal-body">
           <div
             id="csv-column-options"
-            aria-label="Select columns to export"
+            aria-label="Select columns to export."
             class="d-flex flex-column flex-wrap card-height csv-column-options pb-5 px-1"
             role="group"
           >

@@ -290,7 +290,7 @@ const addSids = () => {
       })
     } else {
       if (error.value) {
-        alertScreenReader(`Error: ${error.value}`)
+        alertScreenReader(`Error: ${error.value}`, false, 'assertive')
       } else if (warning.value) {
         alertScreenReader(`Warning: ${warning.value}`)
       }

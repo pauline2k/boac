@@ -140,7 +140,7 @@
         <v-btn
           id="unsaved-filter-reset"
           aria-label="Discard Cohort Filter"
-          class="text-uppercase"
+          class="text-uppercase ml-2"
           color="primary"
           text="Cancel"
           variant="text"
@@ -161,7 +161,7 @@
             @click="onClickEditButton"
           />
         </div>
-        <div v-if="!isUX('boolean')" class="mb-1">|</div>
+        <div v-if="!isUX('boolean')" class="mb-1 mx-1">|</div>
         <div>
           <v-btn
             :id="`remove-added-filter-${position}`"
@@ -407,7 +407,6 @@ watch(selectedFilter, () => {
   if (filter.value) {
     const type = get(filter.value, 'type.ux')
     showAdd.value = type === 'boolean'
-    alertScreenReader(`${filter.value.name} selected`)
     switch (type) {
     case 'dropdown':
       putFocusNextTick(`filter-select-secondary-${props.position}`)
@@ -428,7 +427,6 @@ watch(selectedOption, () => {
     showAdd.value = !!selectedOption.value
     if (selectedOption.value) {
       putFocusNextTick('unsaved-filter-add')
-      alertScreenReader(`${selectedOption.value.name} selected`)
     }
   }
 })
@@ -472,7 +470,7 @@ const onClickAddButton = () => {
     alertScreenReader(`Added ${filter.value.name} filter with value ${getDropdownSelectedLabel()}`)
     break
   case 'boolean':
-    alertScreenReader(`Added ${filter.value.name}`)
+    alertScreenReader(`Added ${filter.value.name} filter`)
     filter.value.value = true
     break
   case 'range':
@@ -491,10 +489,10 @@ const onClickAddButton = () => {
 
 const onClickCancelEdit = () => {
   errorPerRangeInput.value = undefined
-  alertScreenReader('Canceled')
+  alertScreenReader('Canceled edit cohort filter')
   isModifyingFilter.value = false
   cohortStore.setEditMode(null)
-  putFocusNextTick('filter-select-primary-new')
+  putFocusNextTick(`edit-added-filter-${props.position}`)
 }
 
 const onClickEditButton = () => {
@@ -513,11 +511,11 @@ const onClickEditButton = () => {
   }
   isModifyingFilter.value = true
   cohortStore.setEditMode(`edit-${props.position}`)
-  alertScreenReader(`Begin edit of ${filter.value.name} filter`)
 }
 
 const onClickUpdateButton = () => {
   if (!disableUpdateButton.value && !isUpdatingExistingFilter.value) {
+    alertScreenReader('Updating cohort filter')
     isUpdatingExistingFilter.value = true
     if (isUX('range')) {
       updateRangeFilter()
@@ -528,6 +526,7 @@ const onClickUpdateButton = () => {
       isModifyingFilter.value = false
       cohortStore.setEditMode(null)
       alertScreenReader(`${filter.value.name} filter updated`)
+      putFocusNextTick(`edit-added-filter-${props.position}`)
       isUpdatingExistingFilter.value = false
     })
   }

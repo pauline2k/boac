@@ -69,7 +69,7 @@
         <v-btn
           v-if="cohortId && isOwnedByCurrentUser"
           id="rename-cohort-button"
-          aria-label="Edit Cohort Name"
+          aria-label="Rename Cohort"
           class="font-size-15 px-1"
           color="anchor"
           text="Rename"
@@ -134,7 +134,7 @@
           :disabled="isModifiedSinceLastSearch"
           to="/cohort/history"
         >
-          <span class="sr-only">Cohort </span>History
+          <span class="sr-only">Cohort</span>&nbsp;History
         </router-link>
       </div>
       <div v-if="isCohortHistoryPage" class="d-flex align-self-center mr-4">
@@ -237,32 +237,31 @@ watch(showExportStudentsModal, () => {
 
 const beginRename = () => {
   cohortStore.setEditMode('rename')
-  alertScreenReader(`Renaming cohort '${name.value}'`)
   putFocusNextTick('rename-cohort-input')
 }
 
 const cancelDeleteModal = () => {
   showDeleteModal.value = false
-  alertScreenReader(`Cancel deletion of cohort ${cohortName.value}`)
+  alertScreenReader('Canceled delete cohort')
   putFocusNextTick('delete-cohort-button')
 }
 
 const cancelExportModal = () => {
   showExportAdmitsModal.value = showExportStudentsModal.value = false
-  alertScreenReader(`Cancel export of cohort ${cohortName.value}`)
+  alertScreenReader('Canceled export cohort')
   putFocusNextTick('export-student-list-button')
 }
 
 const cohortDelete = () => {
-  alertScreenReader(`Deleting cohort '${name.value}'`)
+  alertScreenReader(`Deleting cohort "${cohortName.value}"`)
   deleteCohort(cohortId.value).then(
     () => {
       showDeleteModal.value = false
-      alertScreenReader(`Deleted cohort '${name.value}'`)
+      alertScreenReader(`Deleted cohort "${cohortName.value}"`)
       router.push({path: '/'})
     },
     error => {
-      alertScreenReader(`Failed to delete cohort '${name.value}'`)
+      alertScreenReader(`Failed to delete cohort "${cohortName.value}"`)
       handleError(error)
     }
   )
@@ -281,15 +280,16 @@ const downloadCsvPerFilters = csvColumnsSelected => {
 
 const exportStudents = csvColumnsSelected => {
   isDownloadingCSV.value = true
-  alertScreenReader(`Exporting cohort ${cohortName.value}`)
+  alertScreenReader(`Exporting cohort "${cohortName.value}"`)
   return downloadCsvPerFilters(csvColumnsSelected).then(
     () => {
       showExportAdmitsModal.value = showExportStudentsModal.value = isDownloadingCSV.value = false
-      alertScreenReader(`Downloading cohort ${cohortName.value}`)
+      alertScreenReader(`Downloading cohort "${cohortName.value}"`)
       putFocusNextTick('export-student-list-button')
     },
     error => {
-      alertScreenReader(`Failed to export cohort ${cohortName.value}`)
+      alertScreenReader(`Failed to export cohort "${cohortName.value}"`)
+      putFocusNextTick('export-student-list-button')
       handleError(error)
     }
   )

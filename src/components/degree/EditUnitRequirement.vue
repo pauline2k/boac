@@ -1,6 +1,6 @@
 <template>
   <form id="unit-requirement-form" @submit.prevent="create">
-    <div>
+    <div class="pt-1">
       <label
         id="label-of-name-input"
         for="unit-requirement-name-input"
@@ -11,6 +11,7 @@
       <v-text-field
         id="unit-requirement-name-input"
         v-model="name"
+        aria-describedby="unit-requirement-name-input-messages"
         :aria-invalid="!name"
         aria-required="true"
         class="unit-requirement-name"
@@ -18,30 +19,31 @@
         maxlength="255"
         required
         @keydown.enter="unitRequirement ? update : create"
+        @update:model-value="() => nameErrorMessage = null"
       />
-      <div class="pl-2">
-        <span class="text-surface-variant font-size-12">255 character limit <span v-if="name.length">({{ 255 - name.length }} left)</span></span>
+      <div id="unit-requirement-name-input-messages" class="d-flex pl-1">
+        <v-expand-transition>
+          <div
+            v-show="nameErrorMessage"
+            aria-live="assertive"
+            class="text-error font-size-12"
+            role="alert"
+          >
+            {{ nameErrorMessage }}
+          </div>
+        </v-expand-transition>
+        <span class="ml-auto pr-1 text-surface-variant font-size-12">255 character limit <span v-if="name.length">({{ 255 - name.length }} left)</span></span>
         <span
           v-if="name.length === 255"
-          aria-live="polite"
+          aria-live="assertive"
           class="sr-only"
           role="alert"
         >
           Fulfillment requirement name cannot exceed 255 characters.
         </span>
       </div>
-      <v-expand-transition>
-        <div
-          v-if="nameErrorMessage"
-          aria-live="polite"
-          class="text-error font-size-12"
-          role="alert"
-        >
-          {{ nameErrorMessage }}
-        </div>
-      </v-expand-transition>
     </div>
-    <div class="mt-1">
+    <div class="pt-1">
       <UnitsInput
         :disable="isSaving"
         :error-message="unitsErrorMessage"
@@ -49,7 +51,8 @@
         label="Minimum Units (required)"
         :max="100"
         :on-submit="unitRequirement ? update : create"
-        :set-units-lower="units => minUnits = units"
+        required
+        :set-units-lower="setUnitsLower"
         :units-lower="minUnits"
       />
     </div>
@@ -57,7 +60,7 @@
       <v-btn
         v-if="!unitRequirement"
         id="create-unit-requirement-btn"
-        class="mt-2 mr-2"
+        class="mt-2"
         color="primary"
         :disabled="disableSaveButton"
         text="Create Unit Requirement"
@@ -66,7 +69,7 @@
       <v-btn
         v-if="unitRequirement"
         id="update-unit-requirement-btn"
-        class="mt-2 mr-2"
+        class="mt-2"
         color="primary"
         :disabled="disableSaveButton"
         text="Save Unit Requirement"
@@ -75,7 +78,7 @@
       <v-btn
         id="cancel-create-unit-requirement-btn"
         :aria-label="unitRequirement ? 'Cancel Edit Unit Requirement' : 'Cancel Create Unit Requirement'"
-        class="mt-2"
+        class="ml-2 mt-2"
         color="primary"
         text="Cancel"
         variant="outlined"
@@ -111,36 +114,21 @@ const degreeStore = useDegreeStore()
 
 const isSaving = ref(false)
 const name = ref(get(props.unitRequirement, 'name') || '')
+const nameErrorMessage = ref(undefined)
 const minUnits = ref(get(props.unitRequirement, 'minUnits'))
 const otherUnitRequirements = ref(
   props.unitRequirement ?
     _filter(degreeStore.unitRequirements, u => u.id !== get(props.unitRequirement, 'id')) :
     degreeStore.unitRequirements
 )
+const unitsErrorMessage = ref(undefined)
 
 onMounted(() => {
-  alertScreenReader(props.unitRequirement ? `Edit "${name.value}" unit requirement` : 'Create unit requirement')
   putFocusNextTick('unit-requirement-name-input')
 })
 
 const disableSaveButton = computed(() => {
   return isSaving.value || !name.value || !!unitsErrorMessage.value || !!nameErrorMessage.value
-})
-
-const unitsErrorMessage = computed(() => {
-  return isEmpty(trim(minUnits.value)) ? 'Required' : validateUnitRange(minUnits.value, undefined, 100).message
-})
-
-const nameErrorMessage = computed(() => {
-  let message = undefined
-  if (name.value) {
-    const lowerCase = name.value.toLowerCase()
-    const existingNames = map(otherUnitRequirements.value, u => u.name.toLowerCase())
-    if (existingNames.findIndex(existingName => lowerCase === existingName) > -1) {
-      message = 'Name cannot match the name of an existing Unit Requirement.'
-    }
-  }
-  return message
 })
 
 const cancel = () => {
@@ -150,9 +138,7 @@ const cancel = () => {
 }
 
 const create = () => {
-  if (degreeStore.disableSaveButton) {
-    putFocusRequiredField()
-  } else {
+  if (validate()) {
     alertScreenReader('Saving')
     isSaving.value = true
     addUnitRequirement(degreeStore.templateId, name.value, minUnits.value).then(() => {
@@ -165,22 +151,43 @@ const create = () => {
 }
 const putFocusRequiredField = () => {
   putFocusNextTick(name.value ? 'unit-requirement-min-units-input' : 'unit-requirement-name-input')
-  alertScreenReader(`${name.value ? 'Units value' : 'Name'} required.`)
+}
+
+const setUnitsLower = units => {
+  minUnits.value = units
+  unitsErrorMessage.value = null
 }
 
 const update = () => {
-  if (degreeStore.disableSaveButton) {
-    putFocusRequiredField()
-  } else {
+  if (validate()) {
     alertScreenReader('Saving')
     isSaving.value = true
     updateUnitRequirement(props.unitRequirement.id, name.value, minUnits.value).then(() => {
       refreshDegreeTemplate(degreeStore.templateId).then(() => {
         isSaving.value = false
-        alertScreenReader(`Updated ${name.value} unit requirement.`)
+        alertScreenReader(`Updated "${name.value}" unit requirement.`)
         props.onExit()
       })
     })
+  }
+}
+
+const validate = () => {
+  const requirementName = trim(name.value)
+  if (requirementName) {
+    const lowerCase = requirementName.toLowerCase()
+    const existingNames = map(otherUnitRequirements.value, u => u.name.toLowerCase())
+    if (existingNames.findIndex(existingName => lowerCase === existingName) > -1) {
+      nameErrorMessage.value = 'Name cannot match the name of an existing Unit Requirement.'
+    }
+  } else {
+    nameErrorMessage.value = 'Name is required'
+  }
+  unitsErrorMessage.value = isEmpty(trim(minUnits.value)) ? 'Minimum Units is required' : validateUnitRange(minUnits.value, undefined, 100).message
+  if (disableSaveButton.value) {
+    putFocusRequiredField()
+  } else {
+    return true
   }
 }
 </script>

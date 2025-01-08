@@ -4,6 +4,7 @@
       :id="`column-${position}-courses-of-category-${parentCategory.id}`"
       class="mb-0 w-100"
     >
+      <caption class="sr-only">{{ parentCategory.name }} Courses</caption>
       <thead class="border-b-md">
         <tr class="sortable-table-header text-no-wrap">
           <th v-if="hasAssignedCourses && canEdit" class="px-0 th-assign">
@@ -268,6 +269,7 @@
           </tr>
           <tr v-if="isEditing(bundle)" :key="`tr-${index}-edit`">
             <td
+              :id="`column-${position}-${bundle.key}-edit`"
               :class="{'pb-3 pl-4 pt-1': bundle.course || !degreeStore.sid}"
               :colspan="degreeStore.sid ? 6 : 4"
             >
@@ -515,8 +517,8 @@ const edit = (bundle, position) => {
   hideNote(bundle, position, false)
   hoverCourseId.value = null
   degreeStore.setDisableButtons(true)
-  alertScreenReader(`Edit "${bundle.name}" ${bundle.type}`)
   bundleForEdit.value = bundle
+  putFocusNextTick(`column-${position}-${bundle.key}-edit`, 'input,textarea,button')
 }
 
 const getAccentColor = bundle => bundle.course ? bundle.course.accentColor : bundle.category.accentColor

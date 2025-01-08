@@ -6,7 +6,8 @@
         v-model="name"
         :aria-invalid="!name"
         aria-label="Cohort name"
-        class="v-input-details-override mb-1 mr-3"
+        class="v-input-details-override mr-3 mt-1"
+        counter="255"
         density="comfortable"
         :disabled="isSaving"
         label="Cohort Name"
@@ -81,7 +82,7 @@ onMounted(() => {
 
 const cancel = () => {
   cohortStore.setEditMode(null)
-  alertScreenReader(`Cancel renaming of cohort '${name.value}'`)
+  alertScreenReader('Canceled rename cohort')
   putFocusNextTick('rename-cohort-button')
 }
 
@@ -97,7 +98,7 @@ const submit = () => {
       alertScreenReader(`Cohort renamed to '${name.value}'`)
       setPageTitle(name.value)
       cohortStore.setEditMode(null)
-      putFocusNextTick('cohort-name')
+      putFocusNextTick('rename-cohort-button')
     })
   }
 }

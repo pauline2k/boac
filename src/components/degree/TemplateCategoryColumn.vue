@@ -2,7 +2,7 @@
   <div :id="`category-column-${position}`">
     <div v-if="!degreeStore.sid" class="align-center d-flex flex-wrap justify-space-between">
       <v-chip
-        class="font-size-13 text-no-wrap mr-1 px-2 text-uppercase column-label"
+        class="font-size-13 text-no-wrap mb-1 mr-1 px-2 text-uppercase column-label"
         color="grey"
         density="compact"
         label
@@ -14,7 +14,7 @@
         v-if="currentUser.canEditDegreeProgress"
         :id="`column-${position}-create-btn`"
         :append-icon="mdiPlus"
-        class="ml-auto text-body-2"
+        class="mb-1 ml-auto text-body-2"
         color="primary"
         density="comfortable"
         :disabled="degreeStore.disableButtons"
@@ -116,9 +116,9 @@
 import Category from '@/components/degree/Category'
 import CoursesTable from '@/components/degree/CoursesTable'
 import EditCategory from '@/components/degree/EditCategory'
-import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
 import {getItemsForCoursesTable} from '@/lib/degree-progress'
 import {mdiPlus} from '@mdi/js'
+import {putFocusNextTick} from '@/lib/utils'
 import {useContextStore} from '@/stores/context'
 import {useDegreeStore} from '@/stores/degree-edit-session/index'
 import {ref} from 'vue'
@@ -140,7 +140,6 @@ const currentUser = contextStore.currentUser
 const isAddingCategory = ref(false)
 
 const add = () => {
-  alertScreenReader('Create requirement')
   isAddingCategory.value = true
   degreeStore.setDisableButtons(true)
 }
@@ -148,7 +147,6 @@ const add = () => {
 const edit = category => {
   categoryForEdit.value = category
   degreeStore.setDisableButtons(true)
-  alertScreenReader(`Edit "${category.name}" ${category.categoryType}`)
   putFocusNextTick(`column-${props.position}-name-input`)
 }
 

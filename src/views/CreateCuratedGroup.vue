@@ -3,12 +3,10 @@
     <h1 id="page-header">
       Create {{ domain === 'admitted_students' ? 'CE3' : 'Curated' }} Group
     </h1>
-    <div id="page-description">
-      Type or paste a list of Student Identification (SID) numbers below. Example: 9999999990, 9999999991
-    </div>
     <CuratedGroupBulkAdd
       :bulk-add-sids="bulkAddSids"
       :domain="domain"
+      heading-id="page-header"
       :is-saving="isSaving"
     />
     <CreateCuratedGroupModal
@@ -51,7 +49,7 @@ const cancel = () => {
 const create = name => {
   isSaving.value = true
   createCuratedGroup(domain, name, sids.value).then(group => {
-    alertScreenReader(`Curated group '${name}' created. It has ${sids.value.length} students.`)
+    alertScreenReader(`${describeCuratedGroupDomain(domain)} "${name}" created. It has ${sids.value.length} students.`)
     router.push(`/curated/${group.id}`).then(() => {
       showCreateModal.value = false
       isSaving.value = false

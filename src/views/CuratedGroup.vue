@@ -77,16 +77,13 @@
     </div>
     <div v-if="!contextStore.loading && mode === 'bulkAdd'" class="pt-2">
       <h2 id="page-section-header" class="page-section-header-sub my-2">
-        Add {{ domain === 'admitted_students' ? 'Admits' : 'Students' }}
+        Add {{ domain === 'admitted_students' ? 'Admits' : 'Students' }} to {{ describeCuratedGroupDomain(domain, true) }}
       </h2>
-      <div id="page-description" class="w-75">
-        <div>Type or paste a list of {{ domain === 'admitted_students' ? 'CS ID' : 'Student Identification (SID)' }} numbers numbers below.</div>
-        <div class="text-medium-emphasis">Example: 9999999990, 9999999991</div>
-      </div>
       <CuratedGroupBulkAdd
         :bulk-add-sids="bulkAddSids"
         :curated-group-id="curatedGroupId"
         :domain="domain"
+        heading-id="page-section-header"
         :is-saving="isAddingStudents"
       />
     </div>
@@ -103,7 +100,7 @@ import SortBy from '@/components/student/SortBy'
 import StudentRow from '@/components/student/StudentRow'
 import TermSelector from '@/components/student/TermSelector'
 import {addStudentsToCuratedGroups, removeFromCuratedGroups} from '@/api/curated'
-import {alertScreenReader, putFocusNextTick, scrollTo, setPageTitle, toInt} from '@/lib/utils'
+import {alertScreenReader, pluralize, putFocusNextTick, scrollTo, setPageTitle, toInt} from '@/lib/utils'
 import {describeCuratedGroupDomain, translateSortByOption} from '@/berkeley'
 import {capitalize, get, size} from 'lodash'
 import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue'
@@ -178,7 +175,7 @@ onUnmounted(() => {
 const bulkAddSids = sids => {
   if (size(sids)) {
     isAddingStudents.value = true
-    alertScreenReader(`Adding ${sids.length} students`)
+    alertScreenReader(`Adding ${pluralize('student', sids.length)} to ${describeCuratedGroupDomain(domain.value)}`)
     contextStore.updateCurrentUserPreference('sortBy', 'last_name')
     addStudentsToCuratedGroups([curatedGroupId.value], sids, true).then(() => {
       goToCuratedGroup(curatedGroupId.value, 1).then(() => {
@@ -189,7 +186,7 @@ const bulkAddSids = sids => {
     })
   } else {
     curatedStore.resetMode()
-    alertScreenReader('Canceled bulk add of students')
+    alertScreenReader(`Canceled add students to ${describeCuratedGroupDomain(domain.value)}`)
     putFocusNextTick('curated-group-name')
   }
 }

@@ -56,19 +56,20 @@
           :cell-props="data => {
             const column = data.column.key
             const bgColor = data.index % 2 === 0 ? 'bg-surface-light' : ''
-            const padding = column === 'name' ? 'pl-4 py-2' : 'pl-0'
+            const padding = column === 'name' ? 'pl-4 py-2' : 'pl-0 pr-2'
             const wrap = column === 'name' ? 'overflow-wrap-break-word' : ''
             return {
               id: `td-degree-check-${data.item.id}-column-${column}`,
               class: `${bgColor} font-size-16 ${padding} ${wrap}`
             }
           }"
+          class="no-scrollbar"
           density="comfortable"
           disable-sort
           :headers="[
             {key: 'name', headerProps: {class: 'pl-3 manage-degree-checks-column-header text-medium-emphasis'}, width: '60%'},
-            {key: 'createdAt', headerProps: {class: 'manage-degree-checks-column-header text-medium-emphasis w-15'}, width: '10%'},
-            {key: 'actions', headerProps: {class: 'manage-degree-checks-column-header text-medium-emphasis'}}
+            {key: 'createdAt', headerProps: {class: 'manage-degree-checks-column-header text-medium-emphasis'}, width: '125px'},
+            {key: 'actions', headerProps: {class: 'pr-1 manage-degree-checks-column-header text-medium-emphasis'}, width: '40%'}
           ]"
           :header-props="{class: 'pl-0 text-no-wrap'}"
           hide-default-footer
@@ -83,6 +84,9 @@
           </template>
           <template #header.createdAt>
             Created
+          </template>
+          <template #header.actions>
+            <span class="sr-only">Actions</span>
           </template>
           <template #item.name="{item}">
             <div v-if="item.id === get(templateForEdit, 'id')" class="pt-2">
@@ -150,18 +154,18 @@
               <v-btn
                 id="rename-cancel-btn"
                 aria-label="Cancel Rename Degree Template"
-                class="rename-btn ml-2"
+                class="ml-2"
                 :disabled="isRenaming"
                 variant="text"
                 text="Cancel"
                 @click="cancelEdit"
               />
             </div>
-            <div v-if="item.id !== get(templateForEdit, 'id')" class="align-center d-flex justify-end text-no-wrap">
+            <div v-if="item.id !== get(templateForEdit, 'id')" class="align-center d-flex flex-wrap justify-end">
               <v-btn
                 :id="`degree-check-${item.id}-print-link`"
                 :disabled="isBusy"
-                class="font-size-15 pr-1 print-degree-check-btn"
+                class="font-size-14 degree-check-btn"
                 color="primary"
                 size="x-sm"
                 target="_blank"
@@ -171,11 +175,11 @@
                 Print
                 <span class="sr-only">{{ item.name }} (will open new browser tab)</span>
               </v-btn>
-              <div v-if="currentUser.canEditDegreeProgress">
+              <div v-if="currentUser.canEditDegreeProgress" class="d-flex align-center">
                 <span class="text-disabled" role="separator">|</span>
                 <v-btn
                   :id="`degree-check-${item.id}-rename-btn`"
-                  class="font-size-14 px-1"
+                  class="font-size-14 degree-check-btn"
                   color="primary"
                   :disabled="isBusy"
                   size="x-sm"
@@ -185,34 +189,36 @@
                   Rename<span class="sr-only"> {{ item.name }}</span>
                 </v-btn>
               </div>
-              <div v-if="currentUser.canEditDegreeProgress">
-                <span class="text-disabled" role="separator">|</span>
-                <v-btn
-                  :id="`degree-check-${item.id}-copy-btn`"
-                  class="font-size-14 px-1"
-                  color="primary"
-                  :disabled="isBusy"
-                  size="x-sm"
-                  variant="text"
-                  @click="openCreateCloneModal(item)"
-                >
-                  Copy<span class="sr-only"> {{ item.name }}</span>
-                </v-btn>
-              </div>
-              <div v-if="currentUser.canEditDegreeProgress">
-                <span class="text-disabled" role="separator">|</span>
-                <v-btn
-                  :id="`degree-check-${item.id}-delete-btn`"
-                  class="font-size-14 pl-1"
-                  color="primary"
-                  :disabled="isBusy"
-                  size="x-sm"
-                  variant="text"
-                  @click="showDeleteModal(item)"
-                  @keydown.enter.prevent="showDeleteModal(item)"
-                >
-                  Delete<span class="sr-only"> {{ item.name }}</span>
-                </v-btn>
+              <div v-if="currentUser.canEditDegreeProgress" class="d-flex flex-wrap flex-sm-nowrap justify-end">
+                <div class="align-center d-flex">
+                  <span class="text-disabled" role="separator">|</span>
+                  <v-btn
+                    :id="`degree-check-${item.id}-copy-btn`"
+                    class="font-size-14 degree-check-btn"
+                    color="primary"
+                    :disabled="isBusy"
+                    size="x-sm"
+                    variant="text"
+                    @click="openCreateCloneModal(item)"
+                  >
+                    Copy<span class="sr-only"> {{ item.name }}</span>
+                  </v-btn>
+                </div>
+                <div class="align-center d-flex">
+                  <span class="text-disabled" role="separator">|</span>
+                  <v-btn
+                    :id="`degree-check-${item.id}-delete-btn`"
+                    class="font-size-14 degree-check-btn"
+                    color="primary"
+                    :disabled="isBusy"
+                    size="x-sm"
+                    variant="text"
+                    @click="showDeleteModal(item)"
+                    @keydown.enter.prevent="showDeleteModal(item)"
+                  >
+                    Delete<span class="sr-only"> {{ item.name }}</span>
+                  </v-btn>
+                </div>
               </div>
             </div>
           </template>
@@ -311,7 +317,7 @@ const deleteCanceled = () => {
 const deleteConfirmed = () => {
   deleteDegreeTemplate(templateForDelete.value.id).then(getDegreeTemplates).then(data => {
     degreeTemplates.value = data
-    alertScreenReader(`${templateForDelete.value.name} deleted.`)
+    alertScreenReader(`Deleted "${templateForDelete.value.name}".`)
     putFocusNextTick('page-header')
     deleteModalBody.value = templateForDelete.value = null
     isBusy.value = isDeleting.value = false
@@ -319,7 +325,6 @@ const deleteConfirmed = () => {
 }
 
 const edit = template => {
-  alertScreenReader(`Rename ${template.name}`)
   templateForEdit.value = clone(template)
   isBusy.value = true
   putFocusNextTick('rename-template-input')
@@ -332,14 +337,14 @@ const isNameAvailable = (name, ignoreTemplateId=null) => {
 }
 
 const openCreateCloneModal = template => {
-  alertScreenReader('Create a copy.')
   templateToClone.value = template
   isBusy.value = true
 }
 
 const save = () => {
-  isRenaming.value = true
   const name = templateForEdit.value.name.trim()
+  isRenaming.value = true
+  alertScreenReader('Renaming template')
   updateDegreeTemplate(templateForEdit.value.id, name).then(() => {
     const templateId = templateForEdit.value.id
     templateForEdit.value = null
@@ -348,14 +353,13 @@ const save = () => {
       isBusy.value = false
       isRenaming.value = false
       putFocusNextTick(`degree-check-${templateId}-rename-btn`)
-      alertScreenReader(`Saved changes to template ${name}`)
+      alertScreenReader(`Saved changes to template "${name}"`)
     })
   })
 }
 
 const showDeleteModal = template => {
   deleteModalBody.value = `Are you sure you want to delete <b>"${template.name}"</b>?`
-  alertScreenReader('Please confirm delete.')
   templateForDelete.value = template
   isBusy.value = isDeleting.value = true
 }
@@ -374,10 +378,7 @@ const showDeleteModal = template => {
 </style>
 
 <style scoped>
-.print-degree-check-btn {
-  padding-top: 2px;
-}
-.rename-btn {
-  height: 36px;
+.degree-check-btn {
+  padding: 1px 2px;
 }
 </style>

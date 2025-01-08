@@ -1,6 +1,5 @@
 import {defineStore, StoreDefinition} from 'pinia'
 import {CurrentUser, useContextStore} from '@/stores/context'
-import {alertScreenReader} from '@/lib/utils'
 
 export const useSearchStore: StoreDefinition = defineStore('search', {
   state: () => ({
@@ -55,22 +54,10 @@ export const useSearchStore: StoreDefinition = defineStore('search', {
     resetAutocompleteInput() {this.autocompleteInputResetKey++},
     setAuthor(value: string | null) {this.author = value},
     setFromDate(value: string | null) {this.fromDate = value},
-    setIncludeAdmits(value: boolean) {
-      this.includeAdmits = value
-      alertScreenReader(`Search ${value ? 'will' : 'will not'} include admits.`)
-    },
-    setIncludeCourses(value: boolean) {
-      this.includeCourses = value
-      alertScreenReader(`Search ${value ? 'will' : 'will not'} include courses.`)
-    },
-    setIncludeNotes(value: boolean) {
-      this.includeNotes = value
-      alertScreenReader(`Search will include ${value ? 'notes and' : 'neither notes nor'} appointments.`)
-    },
-    setIncludeStudents(value: boolean) {
-      this.includeStudents = value
-      alertScreenReader(`Search ${value ? 'will' : 'will not'} include students.`)
-    },
+    setIncludeAdmits(value: boolean) {this.includeAdmits = value},
+    setIncludeCourses(value: boolean) {this.includeCourses = value},
+    setIncludeNotes(value: boolean) {this.includeNotes = value},
+    setIncludeStudents(value: boolean) {this.includeStudents = value},
     setIsFocusOnSearch(value: boolean) {this.isFocusOnSearch = value},
     setIsSearching(value: boolean) {this.isSearching = value},
     setPostedBy(value: string) {this.postedBy = value},

@@ -114,7 +114,7 @@ const removeCohort = cohort => {
     recipients.value.curatedGroups,
     recipients.value.sids
   ).then(() => {
-    alertScreenReader(`Removed cohort '${cohort.name}'`)
+    alertScreenReader(`Removed cohort "${cohort.name}"`)
   })
 }
 
@@ -126,7 +126,7 @@ const removeCuratedGroup = curatedGroup => {
     recipients.value.curatedGroups,
     recipients.value.sids
   ).then(() => {
-    alertScreenReader(`Removed ${capitalize(describeCuratedGroupDomain(curatedGroup.domain))} '${curatedGroup.name}'`)
+    alertScreenReader(`Removed ${capitalize(describeCuratedGroupDomain(curatedGroup.domain))} "${curatedGroup.name}"`)
   })
 }
 
@@ -136,7 +136,7 @@ const addCohort = cohort => {
     recipients.value.curatedGroups,
     recipients.value.sids
   ).then(() => {
-    alertScreenReader(`Added cohort '${cohort.name}'`)
+    alertScreenReader(`Added cohort "${cohort.name}"`)
   })
 }
 
@@ -146,7 +146,7 @@ const addCuratedGroup = curatedGroup => {
     recipients.value.curatedGroups.concat([curatedGroup]),
     recipients.value.sids
   ).then(() => {
-    alertScreenReader(`Added ${describeCuratedGroupDomain(curatedGroup.domain)} '${curatedGroup.name}'`)
+    alertScreenReader(`Added ${describeCuratedGroupDomain(curatedGroup.domain)} "${curatedGroup.name}"`)
   })
 }
 </script>

@@ -10,13 +10,13 @@
           :aria-expanded="showUnitsUpperInput"
           :aria-controls="`upper-${inputId}-container`"
           :aria-label="showUnitsUpperInput ? 'Hide Units Range' : 'Show Units Range'"
-          class="align-self-center font-size-12 px-0 text-primary"
+          class="align-self-center font-size-12 px-1 text-primary"
           density="compact"
           flat
           size="small"
           :text="showUnitsUpperInput ? 'hide range' : 'show range'"
           variant="text"
-          width="80"
+          width="5.5rem"
           @click="toggle"
         />]
       </div>
@@ -26,13 +26,15 @@
         <v-text-field
           :id="inputId"
           v-model="unitsLowerModel"
-          :aria-invalid="!isValidUnits(unitsLower, max)"
+          :aria-describedby="`${inputId}-messages`"
+          :aria-invalid="(required && !unitsLower) || !isValidUnits(unitsLower, max)"
           :aria-label="`Course Units${showUnitsUpperInput ? ', Start of Range' : ''}`"
           density="compact"
           :disabled="disable"
           hide-details
           maxlength="4"
           min-width="70"
+          :required="required"
           @keydown.enter="onSubmit"
           @keyup.esc="onEscape"
           @update:model-value="setUnitsLower"
@@ -45,6 +47,7 @@
         <v-text-field
           :id="`upper-${inputId}`"
           v-model="unitsUpperModel"
+          :aria-describedby="`${inputId}-messages`"
           :aria-invalid="!isValidUnits(unitsUpper, MAX_UNITS_ALLOWED)"
           aria-label="Course Units, End of Range"
           density="compact"
@@ -58,7 +61,13 @@
       </div>
     </div>
     <v-expand-transition>
-      <div v-if="!!errorMessage" class="text-error font-size-12">
+      <div
+        v-show="!!errorMessage"
+        :id="`${inputId}-messages`"
+        aria-live="assertive"
+        class="text-error font-size-12 pl-1"
+        role="alert"
+      >
         {{ errorMessage }}
       </div>
     </v-expand-transition>

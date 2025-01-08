@@ -1,5 +1,4 @@
-import {alertScreenReader} from '@/lib/utils'
-import {deleteNote, removeAttachment, updateNote} from '@/api/notes'
+import {deleteNote, updateNote} from '@/api/notes'
 import {getDistinctSids} from '@/api/student'
 import {isString, map, trim} from 'lodash'
 import {NoteEditSessionModel, NoteRecipients} from '@/stores/note-edit-session/index'
@@ -131,19 +130,4 @@ export function updateAdvisingNote(): Promise<any> {
       model.topics
     ).then(resolve)
   })
-}
-
-export function removeAttachmentByIndex(index: number) {
-  const noteStore = useNoteStore()
-  const mode: string | undefined = noteStore.mode
-  const model: NoteEditSessionModel = noteStore.model
-  if (model.attachments && index < model.attachments.length) {
-    const attachmentId: number = model.attachments[index].id
-    noteStore.removeAttachmentByIndex(index)
-    if (isAutoSaveMode(mode)) {
-      removeAttachment(model.id, attachmentId).then(() => {
-        alertScreenReader('Attachment removed', false, 'assertive')
-      })
-    }
-  }
 }

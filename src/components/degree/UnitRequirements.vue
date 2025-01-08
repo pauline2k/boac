@@ -2,7 +2,7 @@
   <div v-if="render">
     <div class="align-center d-flex flex-row justify-space-between">
       <h3
-        class="mr-2 text-grey text-no-wrap unit-requirements-header"
+        class="mr-2 text-medium-emphasis text-no-wrap unit-requirements-header"
         :class="{'font-size-14': printable, 'font-size-20': !printable}"
       >
         Unit Requirements
@@ -29,6 +29,7 @@
         No unit requirements created
       </div>
       <table v-if="size(items)" id="unit-requirements-table" class="unit-requirements-table">
+        <caption class="sr-only">Unit Requirements</caption>
         <thead class="border-b-sm">
           <tr>
             <th
@@ -77,6 +78,7 @@
                 <button
                   v-if="item.type === 'unitRequirement'"
                   :id="`unit-requirement-${item.id}-toggle`"
+                  :aria-expanded="item.isExpanded"
                   class="align-start d-flex text-left text-primary unit-requirement-toggle"
                   @click.prevent="toggleExpanded(item)"
                 >

@@ -83,7 +83,7 @@ const topicOptions = ref([])
 watch(selected, value => {
   if (selected.value) {
     noteStore.addTopic(value)
-    alertScreenReader(`Topic ${selected.value} added.`)
+    alertScreenReader(`Added "${selected.value}" to topics.`)
     selected.value = null
   }
   putFocusNextTick('add-topic-select-list')
@@ -103,7 +103,7 @@ const init = () => {
 
 const remove = topic => {
   noteStore.removeTopic(topic)
-  alertScreenReader(`Removed topic ${topic}.`)
+  alertScreenReader(`Removed "${topic}" from topics.`)
   putFocusNextTick('add-topic-select-list')
 }
 

@@ -93,7 +93,7 @@
               />
             </div>
             <div v-if="!department.isFetching" class="ml-14">
-              <div class="font-size-14 font-weight-bold text-grey" :class="{'mb-3': department.users.length}">
+              <div class="font-size-14 font-weight-bold text-medium-emphasis" :class="{'mb-3': department.users.length}">
                 {{ department.users.length || 'Zero' }} out of
                 <span v-if="department.code === 'ZZZZZ'">{{ department.memberCount }}</span>
                 <span v-if="department.code !== 'ZZZZZ'">
@@ -193,7 +193,7 @@ const onClickExpansionPanel = (department, isOpen) => {
       })
     }
   } else {
-    alertScreenReader(`Hiding users of ${department.name} department`)
+    alertScreenReader(`Hiding ${mode.value}s of ${department.name} department`)
   }
 }
 </script>

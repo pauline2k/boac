@@ -57,7 +57,7 @@
 <script setup>
 import CreateCohortModal from '@/components/cohort/CreateCohortModal'
 import ProgressButton from '@/components/util/ProgressButton'
-import {alertScreenReader, putFocusNextTick, setPageTitle} from '@/lib/utils'
+import {alertScreenReader, pluralize, putFocusNextTick, setPageTitle} from '@/lib/utils'
 import {applyFilters, loadCohort, resetFiltersToLastApply} from '@/stores/cohort-edit-session/utils'
 import {createCohort, saveCohort} from '@/api/cohort'
 import {get} from 'lodash'
@@ -73,9 +73,10 @@ const showCreateModal = ref(false)
 const router = useRouter()
 
 const apply = () => {
+  const resultType = cohort.domain === 'admitted_students' ? 'admit' : 'student'
   context.broadcast('cohort-apply-filters')
   currentAction.value = 'search'
-  alertScreenReader('Searching for students')
+  alertScreenReader(`Searching for ${resultType}s matching your filter criteria.`)
   const orderBy = get(
     context.currentUser.preferences,
     cohort.domain === 'admitted_students' ? 'admitSortBy' : 'sortBy'
@@ -84,7 +85,7 @@ const apply = () => {
   applyFilters(orderBy, termId).then(() => {
     cohort.setModifiedSinceLastSearch(false)
     currentAction.value = null
-    alertScreenReader(`Results include ${cohort.totalStudentCount} student${cohort.totalStudentCount === 1 ? '' : 's'}`)
+    alertScreenReader(`Search returned ${pluralize(resultType, cohort.totalStudentCount)}`)
     putFocusNextTick('save-cohort-button')
   })
 }
@@ -96,7 +97,7 @@ const cancelCreateModal = () => {
 const create = name => {
   showCreateModal.value = false
   currentAction.value = 'save'
-  alertScreenReader('Creating cohort')
+  alertScreenReader(`Creating cohort "${cohort.cohortName}"`)
   return createCohort(cohort.domain, name, cohort.filters).then(async data => {
     if (data) {
       cohort.updateSession(data, cohort.filters, cohort.students, cohort.totalStudentCount)
@@ -134,11 +135,11 @@ const resetToSaved = () => {
 
 const save = () => {
   if (cohort.cohortId) {
-    alertScreenReader(`Saving changes to cohort ${cohort.cohortName}`)
+    alertScreenReader('Saving')
     currentAction.value = 'save'
     saveCohort(cohort.cohortId, cohort.cohortName, cohort.filters).then(() => {
       cohort.setModifiedSinceLastSearch(null)
-      savedCohortCallback(`Cohort "${cohort.cohortName}" saved`)
+      savedCohortCallback(`Saved changes to cohort "${cohort.cohortName}"`)
     })
   } else {
     showCreateModal.value = true

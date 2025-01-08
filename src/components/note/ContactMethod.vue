@@ -39,7 +39,6 @@
 </template>
 
 <script setup>
-import {alertScreenReader} from '@/lib/utils'
 import {useContextStore} from '@/stores/context'
 import {useNoteStore} from '@/stores/note-edit-session'
 
@@ -47,7 +46,6 @@ const contactOptions = useContextStore().config.noteContactTypes
 const noteStore = useNoteStore()
 
 const onChangeContactType = value => {
-  alertScreenReader(`'${value}' selected`)
   noteStore.setContactType(value)
 }
 </script>

@@ -1,5 +1,9 @@
 <template>
   <div>
+    <div id="page-description">
+      <div>Type or paste a list of {{ domain === 'admitted_students' ? 'CS ID' : 'Student Identification (SID)' }} numbers below.</div>
+      <div class="text-medium-emphasis">Example: 9999999990, 9999999991</div>
+    </div>
     <div class="mt-3 w-100">
       <v-alert
         v-if="showWarning"
@@ -29,22 +33,20 @@
           <li v-for="sid in sidsNotFound" :key="sid">{{ sid }}</li>
         </ul>
       </v-alert>
-      <div>
-        <v-textarea
-          id="curated-group-bulk-add-sids"
-          v-model="textarea"
-          aria-describedby="page-description"
-          aria-label="Student S I D numbers"
-          :disabled="isValidating || isSaving"
-          label="Enter SIDs here"
-          variant="outlined"
-        />
-      </div>
+      <v-textarea
+        id="curated-group-bulk-add-sids"
+        v-model="textarea"
+        :aria-describedby="`${headingId} page-description`"
+        aria-label="Student S I D numbers"
+        :disabled="isValidating || isSaving"
+        label="Enter SIDs here"
+        variant="outlined"
+      />
       <div class="d-flex float-right">
         <ProgressButton
           id="btn-curated-group-bulk-add-sids"
           :action="submit"
-          :aria-label="`Add Students to ${domain === 'admitted_students' ? 'CE3' : 'Curated'} Group`"
+          :aria-label="`Add Students to ${describeCuratedGroupDomain(domain)}`"
           :disabled="!trim(textarea) || isValidating || isSaving"
           :in-progress="isValidating || isSaving"
           :text="isValidating || isSaving ? 'Adding' : (curatedGroupId ? 'Add' : 'Next')"
@@ -52,7 +54,7 @@
         <v-btn
           v-if="curatedGroupId"
           id="btn-cancel-bulk-add-sids"
-          :aria-label="`Cancel Add Students to ${domain === 'admitted_students' ? 'CE3' : 'Curated'} Group`"
+          :aria-label="`Cancel Add Students to ${describeCuratedGroupDomain(domain)}`"
           class="ml-2"
           color="primary"
           :disabled="isValidating || isSaving"
@@ -68,6 +70,7 @@
 <script setup>
 import ProgressButton from '@/components/util/ProgressButton'
 import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
+import {describeCuratedGroupDomain} from '@/berkeley'
 import {each, partition, split, trim, uniq} from 'lodash'
 import {onMounted, ref} from 'vue'
 import {validateSids} from '@/api/student'
@@ -85,6 +88,10 @@ const props = defineProps({
   domain: {
     default: undefined,
     required: false,
+    type: String
+  },
+  headingId: {
+    required: true,
     type: String
   },
   isSaving: {

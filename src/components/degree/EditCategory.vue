@@ -183,8 +183,8 @@
 import ProgressButton from '@/components/util/ProgressButton.vue'
 import SelectUnitFulfillment from '@/components/degree/SelectUnitFulfillment'
 import UnitsInput from '@/components/degree/UnitsInput'
-import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
-import {each, every, filter, get, includes, isEmpty, map, reject, some, unionBy} from 'lodash'
+import {alertScreenReader, oxfordJoin, pluralize, putFocusNextTick} from '@/lib/utils'
+import {each, every, filter, get, includes, isEmpty, map, reject, size, some, unionBy} from 'lodash'
 import {computed, onMounted, ref, watch} from 'vue'
 import {createDegreeCategory, updateCategory} from '@/api/degree'
 import {findCategoryById, flattenCategories, getItemsForCoursesTable, isCampusRequirement, MAX_UNITS_ALLOWED, validateUnitRange} from '@/lib/degree-progress'
@@ -227,7 +227,6 @@ const unitsLower = ref(get(props.existingCategory, 'unitsLower'))
 const unitsUpper = ref(get(props.existingCategory, 'unitsUpper'))
 
 watch(selectedCategoryType, option => {
-  alertScreenReader(option ? `${selectedCategoryType.value} selected` : 'Unselected')
   if (option) {
     if (selectedCategoryType.value === 'Campus Requirements') {
       name.value = 'Campus Requirements'
@@ -294,7 +293,6 @@ const isCampusRequirements = category => {
 }
 
 const onChangeParentCategory = option => {
-  alertScreenReader(option ? `${selectedParentCategory.value.name} selected` : 'Unselected')
   const initialUnitRequirements = get(props.existingCategory, 'unitRequirements', [])
   const parentUnitRequirements = get(selectedParentCategory.value, 'unitRequirements')
 
@@ -302,11 +300,13 @@ const onChangeParentCategory = option => {
     selectedUnitRequirements.value = unionBy(parentUnitRequirements, initialUnitRequirements, 'id')
     putFocusNextTick(`column-${props.position}-create-requirement-btn`)
   } else {
+    let removed = []
     each(parentUnitRequirements, unitRequirement => {
       const indexOf = selectedUnitRequirements.value.findIndex(u => u.id === unitRequirement.id)
       selectedUnitRequirements.value.splice(indexOf, 1)
-      alertScreenReader(`Removed "${unitRequirement.name}" unit requirement.`)
+      removed.append(`"${unitRequirement.name}"`)
     })
+    alertScreenReader(`Removed ${pluralize('unit requirement', size(removed))}: ${oxfordJoin(removed)}.`)
   }
 }
 

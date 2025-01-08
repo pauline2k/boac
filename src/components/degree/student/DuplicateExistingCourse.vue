@@ -14,16 +14,14 @@
           <option
             id="add-course-select-option-null"
             :value="null"
-            @click="onSelect"
           >
-            Choose...
+            Choose a course to duplicate...
           </option>
           <option
             v-for="option in options"
             :id="`add-course-select-option-${option.id}`"
             :key="option.id"
             :value="option"
-            @click="onSelect"
           >
             {{ option.name }}
           </option>
@@ -33,7 +31,7 @@
         <ProgressButton
           id="add-course-save-btn"
           :action="onClickSave"
-          aria-labe="Save Duplicated Course"
+          aria-label="Save Duplicate Course"
           color="primary"
           :disabled="isSaving || !selected"
           :in-progress="isSaving"
@@ -41,7 +39,7 @@
         />
         <v-btn
           id="add-course-cancel-btn"
-          aria-labe="Cancel Duplicate Course"
+          aria-label="Cancel Duplicate Course"
           class="ml-2"
           :disabled="isSaving"
           variant="text"
@@ -95,6 +93,7 @@ const options = computed(() => {
 const cancel = () => {
   isMenuOpen.value = isSaving.value = false
   degreeStore.setDisableButtons(false)
+  selected.value = null
   alertScreenReader('Canceled')
   putFocusNextTick('duplicate-existing-course')
 }
@@ -107,14 +106,10 @@ const onClickSave = () => {
       isMenuOpen.value = isSaving.value = false
       selected.value = null
       degreeStore.setDisableButtons(false)
-      alertScreenReader('Course duplicated and added to Unassigned.')
-      putFocusNextTick(`assign-course-${course.id}-menu-container`, {cssSelector: 'button'})
+      alertScreenReader(`${course.name} duplicated and added to Unassigned Courses.`)
+      putFocusNextTick('duplicate-existing-course')
     })
   })
-}
-
-const onSelect = () => {
-  alertScreenReader(selected.value ? `${selected.value.name} selected` : 'Selection cleared.')
 }
 
 const openMenu = () => {
