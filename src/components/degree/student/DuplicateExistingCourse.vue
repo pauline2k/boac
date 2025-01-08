@@ -4,7 +4,7 @@
       <label class="font-size-16 font-weight-medium text-surface-variant" for="add-course-select">
         Duplicate Course
       </label>
-      <div class="my-2">
+      <div class="my-2 w-75">
         <select
           id="add-course-select"
           v-model="selected"
@@ -16,7 +16,7 @@
             :value="null"
             @click="onSelect"
           >
-            Choose...
+            Choose a course to duplicate...
           </option>
           <option
             v-for="option in options"
@@ -33,7 +33,8 @@
         <ProgressButton
           id="add-course-save-btn"
           :action="onClickSave"
-          aria-labe="Save Duplicated Course"
+          aria-label="Save Duplicate Course"
+          class="mr-1"
           color="primary"
           :disabled="isSaving || !selected"
           :in-progress="isSaving"
@@ -41,8 +42,7 @@
         />
         <v-btn
           id="add-course-cancel-btn"
-          aria-labe="Cancel Duplicate Course"
-          class="ml-2"
+          aria-label="Cancel Duplicate Course"
           :disabled="isSaving"
           variant="text"
           @click="cancel"
