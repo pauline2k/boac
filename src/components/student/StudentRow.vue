@@ -8,7 +8,7 @@
   >
     <v-col
       class="pb-0 pl-0"
-      lg="5"
+      lg="4"
       md="7"
       sm="8"
     >
@@ -146,7 +146,7 @@
         <div class="text-no-wrap text-medium-emphasis">Units Completed</div>
       </div>
     </v-col>
-    <v-col class="ml-10 ml-md-auto pl-2 pl-md-4 pl-lg-0 ml-lg-0 pb-0 pr-0" lg="3" md="10">
+    <v-col class="ml-10 ml-md-auto pl-2 pl-md-4 pl-lg-0 ml-lg-0 pb-0 pr-0" lg="4" md="10">
       <StudentRowCourseActivity
         :row-index="rowIndex"
         :student="student"
