@@ -134,7 +134,7 @@
           <div>
             Undergraduate Degree Checks <span class="sr-only">of {{ student.name }} (will open new browser tab)</span>
           </div>
-          <v-icon class="ml-1" :icon="mdiOpenInNew" size="18" />
+          <v-icon class="ml-1" :icon="mdiOpenInNew" size="14" />
         </div>
       </v-btn>
     </div>

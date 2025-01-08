@@ -1,6 +1,12 @@
 <template>
   <div aria-labelledby="student-name-header student-name-header-sr" class="d-flex flex-wrap mr-4 pb-2 pt-4" role="region">
-    <div class="d-flex me-auto">
+    <div class="d-flex flex-row-reverse me-auto">
+      <StudentProfileHeaderBio
+        :compact="compact"
+        :link-to-student-profile="linkToStudentProfile"
+        :student="student"
+        :suppress-grad-programs="suppressGradPrograms"
+      />
       <div class="text-center" :class="{'column-with-avatar-compact': compact, 'column-with-avatar': !compact}">
         <StudentAvatar :size="compact ? 'medium' : 'large'" :student="student" />
         <ManageStudent
@@ -10,12 +16,6 @@
           :student="student"
         />
       </div>
-      <StudentProfileHeaderBio
-        :compact="compact"
-        :link-to-student-profile="linkToStudentProfile"
-        :student="student"
-        :suppress-grad-programs="suppressGradPrograms"
-      />
     </div>
     <div class="ml-3 mr-12" :class="{'pl-6 pt-3': $vuetify.display.mdAndDown}">
       <StudentProfileHeaderAcademics
