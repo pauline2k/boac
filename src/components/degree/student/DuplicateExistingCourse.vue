@@ -4,17 +4,14 @@
       <label class="font-size-16 font-weight-medium text-surface-variant" for="add-course-select">
         Duplicate Course
       </label>
-      <div class="my-2">
+      <div class="my-2 w-75">
         <select
           id="add-course-select"
           v-model="selected"
           class="select-menu w-100"
           :disabled="isSaving || !options.length"
         >
-          <option
-            id="add-course-select-option-null"
-            :value="null"
-          >
+          <option id="add-course-select-option-null" :value="null">
             Choose a course to duplicate...
           </option>
           <option
@@ -32,6 +29,7 @@
           id="add-course-save-btn"
           :action="onClickSave"
           aria-label="Save Duplicate Course"
+          class="mr-1"
           color="primary"
           :disabled="isSaving || !selected"
           :in-progress="isSaving"
@@ -40,7 +38,6 @@
         <v-btn
           id="add-course-cancel-btn"
           aria-label="Cancel Duplicate Course"
-          class="ml-2"
           :disabled="isSaving"
           variant="text"
           @click="cancel"
