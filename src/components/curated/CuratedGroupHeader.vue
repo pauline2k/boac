@@ -38,7 +38,7 @@
             variant="text"
             @click="enterBulkAddMode"
           >
-            Add {{ domain === 'admitted_students' ? 'Admits' : 'Students' }}<span class="sr-only">to Curated Group</span>
+            Add {{ domain === 'admitted_students' ? 'Admits' : 'Students' }}<span class="sr-only">to {{ domainLabel(false) }}</span>
           </v-btn>
         </div>
         <div
@@ -51,7 +51,7 @@
         <div v-if="ownerId === currentUser.id">
           <v-btn
             id="rename-curated-group-button"
-            aria-label="Edit Curated Group Name"
+            :aria-label="`Rename ${domainLabel(false)}`"
             class="font-size-15 px-1"
             color="anchor"
             text="Rename"
@@ -63,7 +63,7 @@
         <div v-if="ownerId === currentUser.id">
           <v-btn
             id="delete-curated-group-button"
-            aria-label="Delete Curated Group"
+            :aria-label="`Delete ${domainLabel(false)}`"
             class="font-size-15 px-1"
             color="anchor"
             text="Delete"
@@ -75,7 +75,7 @@
             :button-label-confirm="isDeleting ? 'Deleting' : 'Delete'"
             :function-confirm="deleteGroup"
             :function-cancel="cancelDeleteModal"
-            modal-header="Delete Curated Group"
+            :modal-header="`Delete ${domainLabel(false)}`"
           >
             Are you sure you want to delete "<strong>{{ curatedGroupName }}</strong>"?
           </AreYouSureModal>
@@ -155,7 +155,7 @@
         </span>
       </div>
       <div v-if="ownerId !== currentUser.id">
-        Used as a filter in {{ referencingCohorts.length === 1 ? 'a cohort' : 'cohorts' }} owned by the owner of this curated group.
+        Used as a filter in {{ referencingCohorts.length === 1 ? 'a cohort' : 'cohorts' }} owned by the owner of this {{ domainLabel(true) }}.
       </div>
     </div>
   </div>
@@ -216,13 +216,13 @@ onMounted(() => {
 
 const cancelDeleteModal = () => {
   isDeleteModalOpen.value = false
-  alertScreenReader('Canceled delete')
+  alertScreenReader(`Canceled delete ${domainLabel(false)}`)
   putFocusNextTick('delete-curated-group-button')
 }
 
 const cancelExportModal = () => {
   showExportAdmitsModal.value = showExportStudentsModal.value = false
-  alertScreenReader(`Canceled export of ${curatedGroupName.value} ${domainLabel(false)}`)
+  alertScreenReader(`Canceled export ${domainLabel(false)}`)
   putFocusNextTick('export-student-list-button')
 }
 
@@ -243,22 +243,24 @@ const enterRenameMode = () => {
 
 const exportGroup = csvColumnsSelected => {
   showExportAdmitsModal.value = showExportStudentsModal.value = exportEnabled.value = false
-  alertScreenReader(`Exporting ${curatedGroupName.value} ${domainLabel(false)}`)
+  alertScreenReader(`Exporting ${domainLabel(false)} ${curatedGroupName.value}`)
   return downloadCuratedGroupCsv(curatedGroupId.value, curatedGroupName.value, csvColumnsSelected).then(() => {
     exportEnabled.value = true
-    alertScreenReader('Export is done.')
+    alertScreenReader(`Downloading ${domainLabel(false)} ${curatedGroupName.value}`)
   })
 }
 
 const deleteGroup = () => {
+  alertScreenReader(`Deleting ${domainLabel(false)} "${curatedGroupName.value}"`)
   isDeleting.value = true
   deleteCuratedGroup(domain.value, curatedGroupId.value).then(() => {
     isDeleteModalOpen.value = false
-    alertScreenReader(`Deleted ${domainLabel(false)}`)
+    alertScreenReader(`Deleted ${domainLabel(false)} "${curatedGroupName.value}"`)
     router.push({path: '/'}).then(() => {
       isDeleting.value = false
     })
   }).catch(error => {
+    alertScreenReader(`Failed to delete ${domainLabel(false)} "${curatedGroupName.value}"`)
     error.value = error
     isDeleting.value = false
   })

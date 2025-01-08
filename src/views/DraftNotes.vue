@@ -52,7 +52,7 @@
                 class="font-size-16"
                 :class="{'demo-mode-blur': currentUser.inDemoMode}"
               >
-                <span :class="{'text-grey': !trim(item.subject)}">
+                <span :class="{'text-medium-emphasis': !trim(item.subject)}">
                   {{ trim(item.subject) || config.draftNoteSubjectPlaceholder }}
                 </span>
               </span>

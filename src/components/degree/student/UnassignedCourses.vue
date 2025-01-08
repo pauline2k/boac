@@ -8,6 +8,7 @@
         :id="`${key}-courses-table`"
         class="mb-1 w-100 table-layout"
       >
+        <caption class="sr-only">{{ capitalize(key) }} Courses</caption>
         <thead class="border-b-sm">
           <tr class="text-no-wrap">
             <th v-if="currentUser.canEditDegreeProgress" class="th-assign">
@@ -113,8 +114,11 @@
                 <a
                   v-if="course.note && !isNoteVisible(course)"
                   :id="`course-${course.id}-note`"
+                  :aria-description="`Show note for ${course.name}`"
+                  :aria-expanded="false"
                   :class="{'text-decoration-none text-white': degreeStore.draggingCourseId === course.id}"
                   href
+                  role="button"
                   @click.prevent="showNote(course)"
                   v-html="course.note"
                 />
@@ -174,23 +178,26 @@
               class="border-b-md border-e-md border-s-md"
             >
               <td colspan="5" class="px-4">
-                <div
-                  :id="`${course.id}-note`"
-                  aria-live="polite"
-                  class="font-size-14"
-                >
-                  <span class="sr-only">Note: </span>
-                  {{ course.note }}
-                </div>
-                <div class="font-size-12 pb-2 text-no-wrap">
-                  [<v-btn
-                    :id="`course-${course.id}-hide-note-btn`"
-                    class="px-0 py-1 text-primary"
-                    size="sm"
-                    text="Hide note"
-                    variant="text"
-                    @click="hideNote(course)"
-                  />]
+                <div class="d-flex flex-column-reverse">
+                  <div class="font-size-12 py-2 text-no-wrap">
+                    [<v-btn
+                      :id="`course-${course.id}-hide-note-btn`"
+                      :aria-expanded="true"
+                      class="pa-1 text-primary"
+                      size="sm"
+                      text="Hide note"
+                      variant="text"
+                      @click="hideNote(course)"
+                    />]
+                  </div>
+                  <div
+                    :id="`${course.id}-note`"
+                    aria-live="polite"
+                    class="font-size-14"
+                  >
+                    <span class="sr-only">Note: </span>
+                    {{ course.note }}
+                  </div>
                 </div>
               </td>
             </tr>
@@ -215,6 +222,7 @@ import AreYouSureModal from '@/components/util/AreYouSureModal'
 import CourseAssignmentMenu from '@/components/degree/student/CourseAssignmentMenu'
 import EditCourse from '@/components/degree/student/EditCourse'
 import {alertScreenReader, oxfordJoin, pluralize, putFocusNextTick} from '@/lib/utils'
+import {capitalize, get, includes, isNil, map, remove, size} from 'lodash'
 import {deleteCourse} from '@/stores/degree-edit-session/utils'
 import {isAlertGrade} from '@/berkeley'
 import {
@@ -229,7 +237,6 @@ import {unitsWereEdited} from '@/lib/degree-progress'
 import {useContextStore} from '@/stores/context'
 import {useDegreeStore} from '@/stores/degree-edit-session/index'
 import {ref} from 'vue'
-import {get, includes, isNil, map, remove, size} from 'lodash'
 
 const contextStore = useContextStore()
 const degreeStore = useDegreeStore()
@@ -273,17 +280,9 @@ const afterCourseAssignment = (index, key) => {
 
 const afterSave = course => {
   courseForEdit.value = null
-  alertScreenReader(`Updated ${key} course ${course.name}`)
+  alertScreenReader(`${key} course ${course.name} saved.`)
   degreeStore.setDisableButtons(false)
   putFocusNextTick(`edit-${key}-course-${course.id}-btn`)
-}
-
-const edit = course => {
-  hideNote(course, false)
-  degreeStore.setDisableButtons(true)
-  alertScreenReader(`Edit ${key} ${course.name}`)
-  courseForEdit.value = course
-  putFocusNextTick('name-input')
 }
 
 const canDrag = () => {
@@ -299,8 +298,9 @@ const deleteCanceled = () => {
 }
 
 const deleteConfirmed = () => {
+  alertScreenReader(`Deleting ${courseForDelete.value.name}`)
   deleteCourse(courseForDelete.value.id).then(() => {
-    alertScreenReader(`${courseForDelete.value.name} deleted.`)
+    alertScreenReader(`Deleted ${courseForDelete.value.name}.`)
     isDeleting.value = false
     courseForDelete.value = null
     degreeStore.setDisableButtons(false)
@@ -308,10 +308,18 @@ const deleteConfirmed = () => {
   })
 }
 
+const edit = course => {
+  hideNote(course, false)
+  degreeStore.setDisableButtons(true)
+  courseForEdit.value = course
+  putFocusNextTick(course.manuallyCreatedBy ? 'course-name-input' : 'course-units-input')
+}
+
 const hideNote = (course, srAlert=true) => {
   notesVisible.value = remove(notesVisible.value, id => course.id !== id)
   if (srAlert) {
-    alertScreenReader('Note hidden')
+    alertScreenReader('Collapsed')
+    putFocusNextTick(`course-${course.id}-note`)
   }
 }
 
@@ -325,7 +333,6 @@ const onDelete = course => {
   degreeStore.setDisableButtons(true)
   courseForDelete.value = course
   isDeleting.value = true
-  alertScreenReader(`Delete ${course.name}`)
 }
 
 const onDrag = (event, stage, course) => {
@@ -369,7 +376,8 @@ const onMouse = (stage, course) => {
 
 const showNote = course => {
   notesVisible.value.push(course.id)
-  alertScreenReader(`Showing note of ${course.name}`)
+  alertScreenReader('Expanded')
+  putFocusNextTick(`course-${course.id}-hide-note-btn`)
 }
 </script>
 

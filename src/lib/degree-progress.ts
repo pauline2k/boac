@@ -1,4 +1,4 @@
-import {concat, each, filter, find, get, includes, isEmpty, isNil, map, startsWith} from 'lodash'
+import {concat, each, filter, find, get, includes, isEmpty, isNaN, isNil, map, startsWith} from 'lodash'
 import {DegreeProgressCourses} from '@/stores/degree-edit-session'
 import {useDegreeStore} from '@/stores/degree-edit-session'
 
@@ -66,7 +66,7 @@ export function isCampusRequirement(courseRequirement: any): boolean {
   return startsWith(courseRequirement.categoryType, 'Campus Requirement')
 }
 
-export function isValidUnits(value, maxAllowed): boolean {
+export function isValidUnits(value, maxAllowed: number): boolean {
   return !isNaN(value) && value > 0 && value <= maxAllowed
 }
 
@@ -75,18 +75,19 @@ export function unitsWereEdited(course: any): boolean {
 }
 export function validateUnitRange(unitsLower, unitsUpper, maxAllowed, showUnitsUpperInput?: boolean): any {
   const invalid = message => ({valid: false, message})
+  const message = `must be a number between 0 and ${maxAllowed}`
   if (isValidUnits(unitsLower, maxAllowed)) {
     if (isNil(unitsUpper)) {
       return {valid: true}
     } else {
       if (isValidUnits(unitsUpper, maxAllowed)) {
         const empty = isEmpty(unitsLower) && isEmpty(unitsUpper)
-        return empty || parseFloat(unitsLower) <= parseFloat(unitsUpper) ? {valid: true} : invalid('Invalid range')
+        return empty || parseFloat(unitsLower) <= parseFloat(unitsUpper) ? {valid: true} : invalid('Units upper range value must be greater than lower range value.')
       } else {
-        return invalid('Invalid upper range value')
+        return invalid(`Units upper range value ${message}.`)
       }
     }
   } else {
-    return invalid(showUnitsUpperInput ? 'Invalid lower range value.' : 'Invalid')
+    return invalid(showUnitsUpperInput ? `Units lower range value ${message}.` : `Units ${message}`)
   }
 }

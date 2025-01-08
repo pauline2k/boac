@@ -105,12 +105,11 @@
 import AccentColorSelect from '@/components/degree/student/AccentColorSelect'
 import ProgressButton from '@/components/util/ProgressButton'
 import UnitsInput from '@/components/degree/UnitsInput'
-import {alertScreenReader} from '@/lib/utils'
+import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
 import {
   isCampusRequirement as _isCampusRequirement,
   validateUnitRange
 } from '@/lib/degree-progress'
-import {putFocusNextTick} from '@/lib/utils'
 import {refreshDegreeTemplate} from '@/stores/degree-edit-session/utils'
 import {updateCourseRequirement} from '@/api/degree'
 import {computed, onMounted, ref} from 'vue'

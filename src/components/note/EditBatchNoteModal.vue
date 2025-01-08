@@ -332,7 +332,7 @@ const discardNote = () => {
     alertScreenReader('Canceled edit note')
     break
   default:
-    alertScreenReader('Canceled create note')
+    alertScreenReader('Note discarded.')
     break
   }
   exit(true)

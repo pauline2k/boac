@@ -43,7 +43,7 @@ import StudentClasses from '@/components/student/profile/StudentClasses'
 import StudentProfileGPA from '@/components/student/profile/StudentProfileGPA'
 import StudentProfileHeader from '@/components/student/profile/StudentProfileHeader'
 import StudentProfileUnits from '@/components/student/profile/StudentProfileUnits'
-import {alertScreenReader, decodeStudentUriAnchor, setPageTitle} from '@/lib/utils'
+import {alertScreenReader, decodeStudentUriAnchor, putFocusNextTick, setPageTitle} from '@/lib/utils'
 import {exitSession} from '@/stores/note-edit-session/utils'
 import {each, get, noop} from 'lodash'
 import {getStudentByUid} from '@/api/student'
@@ -97,14 +97,14 @@ onMounted(() => {
 
 onBeforeRouteLeave((to, from, next) => {
   if (noteStore.mode) {
-    alertScreenReader('Are you sure you want to discard unsaved changes?')
     cancelConfirmed = () => {
       exitSession(true)
       next()
     }
     cancelTheCancel = () => {
-      alertScreenReader('Please save changes before exiting the page.')
       showAreYouSureModal.value = false
+      alertScreenReader('Canceled. Save changes before leaving the page.')
+      putFocusNextTick('edit-note-subject')
       next(false)
     }
     showAreYouSureModal.value = true

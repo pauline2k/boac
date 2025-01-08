@@ -51,7 +51,7 @@
                 >
                   <v-icon :aria-hidden="true" :icon="mdiPrinter" />
                   Print
-                  <span class="sr-only"> (will open new browser tab)</span>
+                  <span class="sr-only">this page (will open new browser tab)</span>
                 </router-link>
               </div>
               <div class="pr-2">
@@ -194,7 +194,7 @@
           </v-col>
           <v-col class="justify-center d-flex flex-column py-1" cols="12" sm="6">
             <div class="d-flex align-center pt-1 pb-2">
-              <h3 class="font-size-20 font-weight-bold px-2 text-no-wrap">In-progress courses</h3>
+              <h3 class="font-size-20 font-weight-bold px-2 text-no-wrap">In-progress Courses</h3>
               <div v-if="degreeStore.courses.inProgress.length" class="text-no-wrap px-1">
                 [<v-btn
                   id="show-upper-units-input"
@@ -233,12 +233,30 @@
                   {headerProps: {class: 'data-table-column-header text-medium-emphasis float-right'}, key: 'units', title: 'Units'}
                 ]"
                 hide-default-footer
+                hide-default-header
                 :items="inProgressCourses"
                 primary-key="primaryKey"
                 :row-props="data => ({
                   id: `tr-in-progress-term-${data.item.termId}-section-${data.item.ccn}`
                 })"
               >
+                <template #thead="{columns}">
+                  <caption class="sr-only">In-progress Courses</caption>
+                  <thead>
+                    <tr>
+                      <th
+                        v-for="(col, index) in columns"
+                        :key="index"
+                        class="v-data-table__td v-data-table-column--align-start v-data-table__th"
+                        :class="col.headerProps.class"
+                        colspan="1"
+                        rowspan="1"
+                      >
+                        {{ col.title }}
+                      </th>
+                    </tr>
+                  </thead>
+                </template>
                 <template #item.displayName="{item}">
                   <div class="d-flex">
                     <div class="pr-1">{{ item.displayName }}</div>
@@ -327,14 +345,13 @@ const cancel = () => {
   noteBody.value = get(degreeStore.degreeNote, 'body')
   alertScreenReader('Canceled')
   degreeStore.setDisableButtons(false)
-  putFocusNextTick('create-degree-note-btn')
+  putFocusNextTick(noteBody.value ? 'edit-degree-note-btn' : 'create-degree-note-btn')
 }
 
 const editNote = () => {
   degreeStore.setDisableButtons(true)
   isEditingNote.value = true
   putFocusNextTick('degree-note-input')
-  alertScreenReader('Edit degree note')
 }
 
 const initNote = () => {
@@ -360,7 +377,7 @@ const saveNote = () => {
       initNote()
       degreeStore.setDisableButtons(false)
       alertScreenReader('Degree note saved')
-      putFocusNextTick('create-degree-note-btn')
+      putFocusNextTick(noteBody.value ? 'edit-degree-note-btn' : 'create-degree-note-btn')
     })
   })
 }
@@ -376,9 +393,6 @@ const saveNote = () => {
 <style scoped>
 .degree-note-body {
   white-space: pre-line;
-}
-:deep(.no-scrollbar .v-table__wrapper) {
-  overflow: hidden;
 }
 .toggle-label-width {
   width: 36px;

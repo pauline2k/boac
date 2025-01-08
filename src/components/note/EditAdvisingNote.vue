@@ -189,7 +189,6 @@ onMounted(() => {
     const onFinish = () => {
       noteStore.setMode('editNote')
       putFocusNextTick('edit-note-subject')
-      alertScreenReader('Edit note form is open.')
     }
     noteStore.resetModel()
     noteStore.setModel(note)
@@ -224,12 +223,12 @@ const cancelRequested = () => {
 
 const cancelConfirmed = () => {
   props.afterCancel()
-  alertScreenReader('Edit note form canceled.')
+  alertScreenReader('Note discarded.')
   exit(true)
 }
 
 const cancelTheCancel = () => {
-  alertScreenReader('Continue editing note.')
+  alertScreenReader('Canceled. Continue editing note.')
   showAreYouSureModal.value = false
   putFocusNextTick('edit-note-subject')
 }

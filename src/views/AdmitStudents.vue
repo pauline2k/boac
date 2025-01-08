@@ -151,7 +151,7 @@ const exportCohort = () => {
   const name = 'CE3 Admissions'
   isDownloadingCSV.value = true
   exportEnabled.value = false
-  alertScreenReader(`Exporting cohort ${name}`)
+  alertScreenReader(`Exporting cohort "${name}"`)
   downloadCsv(
     'admitted_students',
     name,

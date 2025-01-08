@@ -12,8 +12,8 @@
     </div>
   </div>
   <span
+    aria-live="assertive"
     class="cloud-background ma-0 pa-0 h-100 w-100"
-    aria-live="polite"
     role="alert"
     :style="{backgroundImage: `url(${cloudBackground})`, backgroundRepeat: 'repeat'}"
   >
@@ -23,7 +23,6 @@
 
 <script setup>
 import cloudBackground from '@/assets/404-cloud-background.jpg'
-import {alertScreenReader} from '@/lib/utils'
 import {ref} from 'vue'
 
 const showImage = ref(false)
@@ -31,7 +30,6 @@ const showImage = ref(false)
 setTimeout(
   () => {
     showImage.value = true
-    alertScreenReader('Page not found')
   },
   200
 )

@@ -18,14 +18,14 @@
       <div class="align-center d-flex justify-space-between w-100">
         <h3
           v-if="category.categoryType === 'Category'"
-          class="category-header text-grey"
+          class="category-header text-medium-emphasis"
           :class="{'font-size-14': printable, 'font-size-16': !printable}"
         >
           {{ category.name }}
         </h3>
         <h4
           v-if="category.categoryType === 'Subcategory'"
-          class="subcategory-header text-grey"
+          class="subcategory-header text-medium-emphasis"
           :class="{'font-size-12': printable, 'font-size-14': !printable}"
         >
           {{ category.name }}
@@ -132,7 +132,7 @@ const deleteCanceled = () => {
 }
 
 const deleteConfirmed = () => {
-  alertScreenReader('Deleting')
+  alertScreenReader(`Deleting ${props.category.categoryType}`)
   deleteCategory(props.category.id).then(() => {
     alertScreenReader(`Deleted "${props.category.name}" ${props.category.categoryType}.`)
     isDeleting.value = false
@@ -147,7 +147,6 @@ const deleteDegreeCategory = () => {
 }
 
 const edit = () => {
-  alertScreenReader(`Edit "${props.category.name}" ${props.category.categoryType}`)
   props.onClickEdit(props.category)
 }
 

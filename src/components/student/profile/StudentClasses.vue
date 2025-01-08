@@ -168,7 +168,7 @@ const expandCollapseAll = () => {
   each(enrollmentTermsByYear.value, year => {
     year.isOpen = expanded.value
   })
-  alertScreenReader(`All of the academic years have been ${expanded.value ? 'collapsed' : 'expanded'}`)
+  alertScreenReader(`All academic years ${expanded.value ? 'collapsed' : 'expanded'}`)
 }
 
 const getTerm = (termName, year) => find(year.terms, {'termName': termName}) || {termId: sisIdForTermName(termName), termName}

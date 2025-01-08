@@ -18,6 +18,7 @@
             color="primary"
             :icon="mdiAirplane"
             size="sm"
+            title="Dismiss"
             @click="dismissTheWarning"
           />
         </div>

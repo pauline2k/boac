@@ -80,7 +80,7 @@
               label="Students"
             >
               <template #label>
-                <span class="sr-only">Search for </span>Admitted Students
+                <span class="sr-only">Search includes </span>Admitted Students
               </template>
             </v-checkbox>
             <v-checkbox
@@ -90,7 +90,7 @@
               hide-details
             >
               <template #label>
-                <span class="sr-only">Search for </span>Students
+                <span class="sr-only">Search includes </span>Students
               </template>
             </v-checkbox>
             <v-checkbox
@@ -101,7 +101,7 @@
               hide-details
             >
               <template #label>
-                <span class="sr-only">Search for </span>Classes
+                <span class="sr-only">Search includes </span>Classes
               </template>
             </v-checkbox>
             <v-checkbox
@@ -115,7 +115,7 @@
               @change="onChangeIncludeNotes"
             >
               <template #label>
-                <span class="sr-only">Search for</span>
+                <span class="sr-only">Search includes</span>
                 Notes &amp; Appointments
               </template>
             </v-checkbox>

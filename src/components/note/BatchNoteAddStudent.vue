@@ -125,7 +125,7 @@ const addStudent = student => {
   noteStore.setIsRecalculating(true)
   addedStudents.value.push(student)
   setNoteRecipient(student.sid).then(() => {
-    alertScreenReader(`${student.label} added to batch note`)
+    alertScreenReader(`Added ${student.label} to batch note`)
     putFocusNextTick('create-note-add-student-input')
     resetAutocomplete()
   })
@@ -150,7 +150,7 @@ onMounted(() => {
   const sids = noteStore.recipients.sids
   if (sids.length) {
     getStudentsBySids(sids).then(students => {
-      each(students, student => addStudent(student))
+      addedStudents.value = students
     })
   }
 })

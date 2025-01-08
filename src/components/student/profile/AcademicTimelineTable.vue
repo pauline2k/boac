@@ -898,7 +898,7 @@ table {
 .column-pill {
   vertical-align: top;
   white-space: nowrap;
-  width: 115px;
+  width: 7.5rem;
 }
 .expanded-timeline-container {
   position: absolute;

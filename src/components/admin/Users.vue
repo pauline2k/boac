@@ -278,7 +278,7 @@
         </template>
 
         <template #item.uid="{ item }">
-          <span class="font-weight-bold text-grey">{{ item.uid }}</span>
+          <span class="font-weight-bold text-medium-emphasis">{{ item.uid }}</span>
         </template>
 
         <template #expanded-row="{ columns, item }">
@@ -334,7 +334,7 @@
               <div v-if="index !== item.departments.length - 1"></div>
             </div>
             <div v-if="item.canEditDegreeProgress || item.canReadDegreeProgress" class="text-medium-emphasis">
-              <span class="font-weight-bold text-grey">Degree Progress - </span>
+              <span class="font-weight-bold text-medium-emphasis">Degree Progress - </span>
               <span v-if="item.canEditDegreeProgress && item.canReadDegreeProgress" class="text-body"> read/write</span>
               <span v-if="!(item.canEditDegreeProgress && item.canReadDegreeProgress) && item.canReadDegreeProgress" class="text-body"> read</span>
               <span v-if="item.automateDegreeProgressPermission" class="text-body"> (automated)</span>
@@ -349,7 +349,7 @@
         </template>
 
         <template #item.lastLogin="{ item }">
-          <span :id="`user-last-login-${item.uid}`" class="font-weight-bold text-grey">
+          <span :id="`user-last-login-${item.uid}`" class="font-weight-bold text-medium-emphasis">
             <span v-if="item.lastLogin">{{ DateTime.fromISO(item.lastLogin).toFormat('DD') }}</span>
             <span v-if="!item.lastLogin">&mdash;</span>
           </span>

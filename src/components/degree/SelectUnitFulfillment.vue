@@ -99,7 +99,6 @@ const model = ref(null)
 
 const onChangeUnitRequirement = () => {
   props.onUnitRequirementsChange(props.selectedUnitRequirements.concat([model.value]))
-  alertScreenReader(`${model.value.name} selected`)
   model.value = null
 }
 
@@ -112,7 +111,7 @@ const removeUnitRequirement = (item, index) => {
   } else {
     putFocusNextTick(`column-${props.position}-unit-requirement-select`)
   }
-  alertScreenReader(`${item.name} removed`)
+  alertScreenReader(`"${item.name}" removed`)
 }
 </script>
 

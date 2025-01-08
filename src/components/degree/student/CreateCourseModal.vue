@@ -226,13 +226,13 @@ const onToggle = isOpen => {
 const openModal = () => {
   showModal.value = true
   degreeStore.setDisableButtons(true)
-  alertScreenReader('Create course dialog opened')
   putFocusNextTick('course-name-input')
 }
 
 const save = () => {
-  if (!degreeStore.disableSaveButton) {
+  if (!disableSaveButton.value) {
     isSaving.value = true
+    alertScreenReader('Saving')
     createCourse(
       accentColor.value,
       degreeStore.templateId,
@@ -246,7 +246,7 @@ const save = () => {
     ).then(course => {
       refreshDegreeTemplate(degreeStore.templateId).then(() => {
         closeModal()
-        alertScreenReader(`Course ${course.name} created`)
+        alertScreenReader(`${course.name} created`)
         putFocusNextTick(`assign-course-${course.id}-btn`)
       })
     })
