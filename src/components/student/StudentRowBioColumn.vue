@@ -126,8 +126,9 @@
       <v-btn
         :id="`degree-checks-of-${student.sid}`"
         color="primary"
-        size="sm"
         variant="text"
+        size="sm"
+        tag="a"
         @click="() => goToStudentDegreeChecksByUID(student.uid)"
       >
         <div class="align-center d-flex text-anchor">

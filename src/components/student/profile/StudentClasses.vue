@@ -31,6 +31,7 @@
           id="degree-checks-of-student"
           color="primary"
           variant="text"
+          tag="a"
           @click="() => goToStudentDegreeChecksByUID(student.uid)"
         >
           Undergraduate Degree Checks <span class="sr-only">of {{ student.name }} (will open new browser tab)</span>
