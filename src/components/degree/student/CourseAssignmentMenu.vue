@@ -19,9 +19,9 @@
           'text-primary': !degreeStore.disableButtons,
           'button-menu-active': isMenuOpen,
           'text-surface-variant': !course.accentColor,
-          'text-white': degreeStore.draggingCourseId === course.id
+          'text-white': degreeStore.draggingCourseId === course.id,
+          'text-grey': degreeStore.disableButtons || isSaving
         }"
-        :disabled="degreeStore.disableButtons"
         v-bind="menuProps"
       >
         <v-icon :icon="mdiDrag" />
