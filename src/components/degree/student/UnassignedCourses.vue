@@ -11,25 +11,13 @@
         <caption class="sr-only">{{ capitalize(key) }} Courses</caption>
         <thead class="border-b-sm">
           <tr class="text-no-wrap">
-            <th v-if="currentUser.canEditDegreeProgress" class="th-assign">
-              <span class="sr-only">Options to assign course</span>
-            </th>
-            <th class="th-course mr-1">
-              Course
-            </th>
-            <th class="th-grade ml-1">
-              Grade
-            </th>
-            <th class="pr-2 text-right th-units">
-              Units
-            </th>
-            <th v-if="!ignored" class="th-term">
-              Term
-            </th>
-            <th class="pl-0 th-note">
-              Note
-            </th>
-            <th v-if="currentUser.canEditDegreeProgress" class="th-actions" />
+            <th v-if="currentUser.canEditDegreeProgress" class="force-width-28"><span class="sr-only">Options to assign course</span></th>
+            <th class="font-size-11 th-course pr-1">Course</th>
+            <th class="font-size-11 force-width-24">Gr</th>
+            <th class="font-size-11 force-width-32 pr-1">Un</th>
+            <th v-if="!ignored" class="font-size-11 force-width-90">Term</th>
+            <th class="font-size-11 pl-0 force-width-50">Note</th>
+            <th v-if="currentUser.canEditDegreeProgress" class="force-width-20" />
           </tr>
         </thead>
         <tbody>
@@ -57,13 +45,16 @@
               @mouseenter="onMouse('enter', course)"
               @mouseleave="onMouse('leave', course)"
             >
-              <td v-if="currentUser.canEditDegreeProgress" class="td-assign">
-                <div v-if="degreeStore.draggingCourseId !== course.id" class="mx-1">
+              <td
+                v-if="currentUser.canEditDegreeProgress"
+                class="force-width-28 td-assign"
+              >
+                <div v-if="degreeStore.draggingCourseId !== course.id">
                   <CourseAssignmentMenu :after-course-assignment="() => afterCourseAssignment(index, key)" :course="course" />
                 </div>
               </td>
               <td class="overflow-wrap-break-word td-name">
-                <span :class="{'font-weight-500': isEditing(course), 'mr-2': course.isCopy}">
+                <span :class="{'font-weight-500': isEditing(course), 'mr-1': course.isCopy}">
                   {{ course.name }}
                 </span>
                 <v-icon
@@ -75,11 +66,17 @@
                   title="Duplicated"
                 />
               </td>
-              <td class="td-grade">
+              <td
+                class="td-grade text-no-wrap"
+                :class="{
+                  'force-width-24': isAlertGrade(course.grade),
+                  'force-width-50': isAlertGrade(course.grade)
+                }"
+              >
                 <span class="font-size-14">{{ course.grade || '&mdash;' }}</span>
                 <v-icon
                   v-if="isAlertGrade(course.grade)"
-                  class="mb-1 ml-1"
+                  class="mb-1"
                   color="warning"
                   :icon="mdiAlert"
                   size="20"
@@ -87,9 +84,11 @@
                 />
               </td>
               <td class="td-units">
+                <span class="font-size-14">{{ isNil(course.units) ? '&mdash;' : course.units }}</span>
+                <span v-if="unitsWereEdited(course)" class="sr-only"> (updated from {{ pluralize('unit', course.sis.units) }})</span>
                 <v-icon
                   v-if="course.unitRequirements.length"
-                  class="mb-1 mr-1 pl-0"
+                  class="pl-0"
                   color="accent-green"
                   :icon="mdiCheckCircleOutline"
                   size="18"
@@ -98,19 +97,23 @@
                 <v-icon
                   v-if="unitsWereEdited(course)"
                   :id="course.manuallyCreatedBy ? `${key}-course-${course.id}-manually-created-units-edited` : `${key}-course-${course.termId}-${course.sectionId}-units-edited`"
-                  class="changed-units-icon mb-1"
+                  class="changed-units-icon"
                   color="accent-green"
                   :icon="mdiInformation"
                   size="18"
                   :title="`Updated from ${pluralize('unit', course.sis.units)}`"
                 />
-                <span class="font-size-14">{{ isNil(course.units) ? '&mdash;' : course.units }}</span>
-                <span v-if="unitsWereEdited(course)" class="sr-only"> (updated from {{ pluralize('unit', course.sis.units) }})</span>
               </td>
               <td v-if="!ignored" class="font-size-14 td-term">
                 {{ course.termName }}
               </td>
-              <td class="td-note font-size-14" :class="{'truncate-with-ellipsis': course.note}">
+              <td
+                class="font-size-14 td-note"
+                :class="{
+                  'force-width-50': course.note && !isNoteVisible(course),
+                  'truncate-with-ellipsis': course.note
+                }"
+              >
                 <a
                   v-if="course.note && !isNoteVisible(course)"
                   :id="`course-${course.id}-note`"
@@ -126,44 +129,41 @@
               </td>
               <td
                 v-if="currentUser.canEditDegreeProgress"
-                class="pr-0 td-action-buttons"
+                class="align-start d-flex"
+                :class="{'px-1': !isNoteVisible(course)}"
               >
-                <div class="d-flex justify-content-end">
-                  <div v-if="course.manuallyCreatedBy">
-                    <v-btn
-                      v-if="degreeStore.draggingCourseId !== course.id"
-                      :id="`delete-${course.id}-btn`"
-                      :aria-label="`Delete ${course.name}`"
-                      class="mr-1 py-0"
-                      :class="{'bg-transparent text-primary': !degreeStore.disableButtons}"
-                      density="compact"
-                      :disabled="degreeStore.disableButtons"
-                      flat
-                      :icon="mdiTrashCan"
-                      size="small"
-                      @click="onDelete(course)"
-                    />
-                  </div>
-                  <div>
-                    <v-btn
-                      v-if="degreeStore.draggingCourseId !== course.id"
-                      :id="`edit-${key}-course-${course.id}-btn`"
-                      :aria-label="`Edit ${course.name}`"
-                      class="mr-1 py-0"
-                      :class="{'bg-transparent text-primary': !degreeStore.disableButtons}"
-                      density="compact"
-                      :disabled="degreeStore.disableButtons"
-                      flat
-                      :icon="mdiNoteEditOutline"
-                      size="small"
-                      @click="edit(course)"
-                    />
-                  </div>
+                <div class="float-right">
+                  <v-btn
+                    v-if="course.manuallyCreatedBy && degreeStore.draggingCourseId !== course.id"
+                    :id="`delete-${course.id}-btn`"
+                    :aria-label="`Delete ${course.name}`"
+                    class="py-0"
+                    :class="{'bg-transparent text-primary': !degreeStore.disableButtons}"
+                    density="compact"
+                    :disabled="degreeStore.disableButtons"
+                    flat
+                    :icon="mdiTrashCan"
+                    size="small"
+                    @click="onDelete(course)"
+                  />
+                  <v-btn
+                    v-if="degreeStore.draggingCourseId !== course.id"
+                    :id="`edit-${key}-course-${course.id}-btn`"
+                    :aria-label="`Edit ${course.name}`"
+                    class="mr-1 py-0"
+                    :color="degreeStore.disableButtons ? 'grey' : 'primary'"
+                    density="compact"
+                    flat
+                    :icon="mdiNoteEditOutline"
+                    size="small"
+                    variant="text"
+                    @click="degreeStore.disableButtons ? noop : edit(course)"
+                  />
                 </div>
               </td>
             </tr>
             <tr v-if="isEditing(course)" :key="`tr-${index}-edit`">
-              <td class="pb-3 px-12" colspan="7">
+              <td class="pb-3" :colspan="currentUser.canEditDegreeProgress ? (ignored ? 6 : 7) : (ignored ? 4 : 5)">
                 <EditCourse
                   :after-cancel="afterCancel"
                   :after-save="afterSave"
@@ -177,7 +177,7 @@
               :key="`tr-${index}-note`"
               class="border-b-md border-e-md border-s-md"
             >
-              <td colspan="5" class="px-4">
+              <td class="px-4" :colspan="currentUser.canEditDegreeProgress ? (ignored ? 6 : 7) : (ignored ? 4 : 5)">
                 <div class="d-flex flex-column-reverse">
                   <div class="font-size-12 py-2 text-no-wrap">
                     [<v-btn
@@ -222,7 +222,7 @@ import AreYouSureModal from '@/components/util/AreYouSureModal'
 import CourseAssignmentMenu from '@/components/degree/student/CourseAssignmentMenu'
 import EditCourse from '@/components/degree/student/EditCourse'
 import {alertScreenReader, oxfordJoin, pluralize, putFocusNextTick} from '@/lib/utils'
-import {capitalize, get, includes, isNil, map, remove, size} from 'lodash'
+import {capitalize, get, includes, isNil, map, noop, remove, size} from 'lodash'
 import {deleteCourse} from '@/stores/degree-edit-session/utils'
 import {isAlertGrade} from '@/berkeley'
 import {
@@ -393,19 +393,43 @@ tbody:before {
   display: block;
   height: 10px;
 }
+th {
+  height: 20px;
+  padding-bottom: 5px;
+}
 .changed-units-icon {
-  margin-right: 0.3em;
+  margin-left: 0.1em;
 }
 .table-layout {
   table-layout: fixed;
 }
-.td-action-buttons {
-  vertical-align: top;
+.force-width-20 {
+  max-width: 20px !important;
+  width: 20px !important;
+}
+.force-width-24 {
+  max-width: 24px !important;
+  width: 24px !important;
+}
+.force-width-28 {
+  max-width: 28px !important;
+  width: 28px !important;
+}
+.force-width-32 {
+  max-width: 32px !important;
+  width: 32px !important;
+}
+.force-width-50 {
+  min-width: 50px !important;
+  width: 50px !important;
+}
+.force-width-90 {
+  max-width: 90px !important;
+  width: 90px !important;
 }
 .td-assign {
   font-size: 14px;
   vertical-align: top;
-  width: 28px !important;
 }
 .td-grade {
   padding-top: 1px;
@@ -417,7 +441,6 @@ tbody:before {
   vertical-align: top;
 }
 .td-note {
-  max-width: 40px;
   padding-top: 3px;
   vertical-align: top;
 }
@@ -427,40 +450,15 @@ tbody:before {
 }
 .td-units {
   padding: 1px 8px 0 0;
-  text-align: right;
   vertical-align: top;
   white-space: nowrap;
-}
-.th-actions {
-  max-width: 40px !important;
-  width: 40px !important;
-}
-.th-assign {
-  max-width: 28px !important;
-  width: 28px !important;
 }
 .th-course {
   max-width: 100px !important;
   width: 100px !important;
 }
-.th-grade {
-  max-width: 46px !important;
-  width: 46px !important;
-}
-.th-note {
-  min-width: 50px !important;
-  width: 50px !important;
-}
-.th-term {
-  max-width: 90px !important;
-  width: 90px !important;
-}
-.th-units {
-  max-width: 40px !important;
-  width: 40px !important;
-}
-.tr-course {
-  height: 40px;
+.tr-course td {
+  height: 40px !important;
 }
 .tr-while-dragging td {
   background-color: rgb(var(--v-theme-tertiary));

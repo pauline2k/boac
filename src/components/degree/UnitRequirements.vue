@@ -3,7 +3,7 @@
     <div class="align-center d-flex flex-row justify-space-between">
       <h3
         id="unit-requirements-header"
-        class="font-size-18 mb-1 px-2 text-medium-emphasis text-no-wrap"
+        class="font-size-18 mb-1 text-medium-emphasis text-no-wrap"
         :class="{'font-size-14': printable, 'font-size-20': !printable}"
       >
         Unit Requirements

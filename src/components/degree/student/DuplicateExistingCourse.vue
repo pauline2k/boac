@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="isMenuOpen" class="pa-2">
+    <div v-if="isMenuOpen">
       <label class="font-size-16 font-weight-medium text-surface-variant" for="add-course-select">
         Duplicate Course
       </label>
@@ -51,7 +51,7 @@
       <v-btn
         v-if="currentUser.canEditDegreeProgress"
         id="duplicate-existing-course"
-        class="align-center d-flex flex-row-reverse font-size-16 text-no-wrap"
+        class="align-center d-flex flex-row-reverse font-size-16 pl-0 text-no-wrap"
         color="primary"
         :disabled="degreeStore.disableButtons || !options.length"
         variant="text"

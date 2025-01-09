@@ -32,259 +32,251 @@
         />
       </div>
     </div>
-    <div class="border-b-md pt-4 pl-6">
-      <v-container class="py-2 px-0" fluid>
-        <v-row>
-          <v-col cols="12" md="7">
-            <h2 id="degree-check-header" class="font-size-20 mb-1 page-section-header">{{ degreeStore.degreeName }}</h2>
-            <div class="text-surface-variant font-size-16 font-weight-500 pb-2">
-              {{ updatedAtDescription }}
+    <v-container class="ml-3 mr-6 pb-0" fluid>
+      <v-row no-gutters>
+        <v-col cols="12" md="7">
+          <h2 id="degree-check-header" class="font-size-20 page-section-header">{{ degreeStore.degreeName }}</h2>
+          <div class="text-surface-variant font-size-16 font-weight-500 pb-2">
+            {{ updatedAtDescription }}
+          </div>
+        </v-col>
+        <v-col class="pr-3" cols="12" md="5">
+          <div class="align-baseline d-flex flex-wrap justify-end">
+            <div class="pr-2">
+              <router-link
+                id="print-degree-plan"
+                target="_blank"
+                :to="`/degree/${degreeStore.templateId}/print?includeNote=${degreeStore.includeNotesWhenPrint}`"
+              >
+                <v-icon :aria-hidden="true" :icon="mdiPrinter" />
+                Print
+                <span class="sr-only">this page (will open new browser tab)</span>
+              </router-link>
             </div>
-          </v-col>
-          <v-col cols="12" md="5">
-            <div class="align-baseline d-flex flex-wrap justify-end">
-              <div class="pr-2">
-                <router-link
-                  id="print-degree-plan"
-                  target="_blank"
-                  :to="`/degree/${degreeStore.templateId}/print?includeNote=${degreeStore.includeNotesWhenPrint}`"
-                >
-                  <v-icon :aria-hidden="true" :icon="mdiPrinter" />
-                  Print
-                  <span class="sr-only">this page (will open new browser tab)</span>
-                </router-link>
-              </div>
-              <div class="pr-2">
-                |
-              </div>
-              <div class="pr-2">
-                <router-link
-                  id="view-degree-history"
-                  :to="`${studentRoutePath(student.uid, currentUser.inDemoMode)}/degree/history`"
-                >
-                  History
-                </router-link>
-              </div>
-              <div v-if="currentUser.canEditDegreeProgress" class="pr-2">
-                |
-              </div>
-              <div v-if="currentUser.canEditDegreeProgress" class="pr-2">
-                <router-link
-                  id="create-new-degree"
-                  :to="`${studentRoutePath(student.uid, currentUser.inDemoMode)}/degree/create`"
-                >
-                  Create New Degree
-                </router-link>
-              </div>
+            <div class="pr-2">
+              |
             </div>
-          </v-col>
-        </v-row>
-      </v-container>
-    </div>
-    <div class="border-b-md pl-6">
-      <v-container class="px-0" fluid>
-        <v-row align="start">
-          <v-col
-            aria-labelledby="degree-notes-header"
-            class="align-self-stretch border-e-sm pb-0 pt-1"
-            :class="{'border-b-sm': $vuetify.display.xs}"
-            cols="12"
-            role="region"
-            sm="6"
-          >
-            <h3 id="degree-notes-header" class="font-size-20 font-weight-bold text-no-wrap mr-3 px-2">Degree Notes</h3>
-            <div v-if="isEditingNote || noteBody" class="align-center d-flex flex-wrap justify-space-between">
-              <label for="degree-note-print-toggle" class="d-flex flex-grow-1 justify-end align-center pr-2">
-                <span class="font-size-14 font-weight-500 text-no-wrap text-surface-variant">
-                  Show notes when printed?
+            <div class="pr-2">
+              <router-link
+                id="view-degree-history"
+                :to="`${studentRoutePath(student.uid, currentUser.inDemoMode)}/degree/history`"
+              >
+                History
+              </router-link>
+            </div>
+            <div v-if="currentUser.canEditDegreeProgress" class="pr-2">
+              |
+            </div>
+            <div v-if="currentUser.canEditDegreeProgress" class="pr-2">
+              <router-link
+                id="create-new-degree"
+                :to="`${studentRoutePath(student.uid, currentUser.inDemoMode)}/degree/create`"
+              >
+                Create New Degree
+              </router-link>
+            </div>
+          </div>
+        </v-col>
+      </v-row>
+      <v-row align="start" class="mt-0 pb-3">
+        <v-col
+          aria-labelledby="degree-notes-header"
+          class="align-self-stretch"
+          :class="{'border-e-sm': $vuetify.display.mdAndUp}"
+          role="region"
+        >
+          <div class="align-center d-flex flex-wrap justify-space-between">
+            <h3 id="degree-notes-header" class="font-size-20 mr-3 pr-2 text-medium-emphasis text-no-wrap">Degree Notes</h3>
+            <label v-if="isEditingNote || noteBody" for="degree-note-print-toggle" class="align-center d-flex flex-grow-1 justify-end pr-2">
+              <span class="font-size-14 font-weight-500 text-no-wrap text-surface-variant">
+                Show notes when printed?
+              </span>
+              <span
+                class="align-center d-flex pl-2"
+                :class="{'text-success': degreeStore.includeNotesWhenPrint, 'text-error': !degreeStore.includeNotesWhenPrint}"
+              >
+                <span class="font-size-14 font-weight-bold toggle-label-width">
+                  {{ degreeStore.includeNotesWhenPrint ? 'Yes' : 'No' }}
                 </span>
-                <div
-                  class="align-center d-flex pl-2"
-                  :class="{'text-success': degreeStore.includeNotesWhenPrint, 'text-error': !degreeStore.includeNotesWhenPrint}"
-                >
-                  <div class="font-size-14 font-weight-bold toggle-label-width">
-                    {{ degreeStore.includeNotesWhenPrint ? 'Yes' : 'No' }}
-                  </div>
-                  <v-switch
-                    id="degree-note-print-toggle"
-                    v-model="notesWhenPrintModel"
-                    class="ml-2"
-                    color="success"
-                    density="compact"
-                    hide-details
-                  />
-                </div>
-              </label>
-            </div>
+                <v-switch
+                  id="degree-note-print-toggle"
+                  v-model="notesWhenPrintModel"
+                  class="ml-2"
+                  color="success"
+                  density="compact"
+                  hide-details
+                />
+              </span>
+            </label>
+          </div>
+          <v-btn
+            v-if="currentUser.canEditDegreeProgress && !isEditingNote && !noteBody"
+            id="create-degree-note-btn"
+            class="font-size-16 pl-0"
+            color="primary"
+            :disabled="degreeStore.disableButtons"
+            slim
+            text="Create degree note"
+            variant="text"
+            @click="editNote"
+          />
+          <div v-if="noteBody && !isEditingNote && (noteUpdatedAt || noteUpdatedBy)" class="font-size-14 pr-2 pb-1">
+            <span
+              v-if="noteUpdatedBy"
+              id="degree-note-updated-by"
+              class="text-surface-variant font-weight-normal"
+            >
+              {{ noteUpdatedBy }}
+            </span>
+            <span v-if="noteUpdatedAt" class="text-surface-variant">
+              {{ noteUpdatedBy ? ' edited this note' : 'Last edited' }}
+              <span v-if="isToday(noteUpdatedAt)" id="degree-note-updated-at"> today.</span>
+              <span v-if="!isToday(noteUpdatedAt)">
+                on <span id="degree-note-updated-at">{{ noteUpdatedAt.toFormat('MMM d, YYYY') }}.</span>
+              </span>
+            </span>
+          </div>
+          <div v-if="noteBody && !isEditingNote">
+            <div
+              id="degree-note-body"
+              v-linkified
+              class="degree-note-body"
+              v-html="noteBody"
+            />
             <v-btn
-              v-if="currentUser.canEditDegreeProgress && !isEditingNote && !noteBody"
-              id="create-degree-note-btn"
-              class="font-size-16 mt-2"
+              v-if="currentUser.canEditDegreeProgress"
+              id="edit-degree-note-btn"
+              class="font-weight-medium pl-0 mb-1 mt-2"
               color="primary"
               :disabled="degreeStore.disableButtons"
-              slim
-              text="Create degree note"
+              text="Edit degree note"
               variant="text"
               @click="editNote"
             />
-            <div v-if="noteBody && !isEditingNote && (noteUpdatedAt || noteUpdatedBy)" class="font-size-14 pr-2 pb-1">
-              <span
-                v-if="noteUpdatedBy"
-                id="degree-note-updated-by"
-                class="text-surface-variant font-weight-normal"
-              >
-                {{ noteUpdatedBy }}
-              </span>
-              <span v-if="noteUpdatedAt" class="text-surface-variant">
-                {{ noteUpdatedBy ? ' edited this note' : 'Last edited' }}
-                <span v-if="isToday(noteUpdatedAt)" id="degree-note-updated-at"> today.</span>
-                <span v-if="!isToday(noteUpdatedAt)">
-                  on <span id="degree-note-updated-at">{{ noteUpdatedAt.toFormat('MMM d, YYYY') }}.</span>
-                </span>
-              </span>
-            </div>
-            <div v-if="noteBody && !isEditingNote">
-              <div
-                id="degree-note-body"
-                v-linkified
-                class="degree-note-body"
-                v-html="noteBody"
+          </div>
+          <div v-if="isEditingNote">
+            <v-textarea
+              id="degree-note-input"
+              v-model.trim="noteBody"
+              aria-labelledby="degree-notes-header"
+              auto-grow
+              density="compact"
+              :disabled="isSaving"
+              hide-details
+              rows="3"
+              variant="outlined"
+            />
+            <div class="align-center d-flex my-2">
+              <ProgressButton
+                id="save-degree-note-btn"
+                :action="saveNote"
+                aria-label="Save Degree Note"
+                color="primary"
+                :disabled="noteBody === get(degreeStore.degreeNote, 'body') || isSaving"
+                :in-progress="isSaving"
+                :text="isSaving ? 'Saving...' : 'Save'"
               />
               <v-btn
-                v-if="currentUser.canEditDegreeProgress"
-                id="edit-degree-note-btn"
-                class="font-weight-medium pl-0 mb-1 mt-2"
-                color="primary"
-                :disabled="degreeStore.disableButtons"
-                text="Edit degree note"
-                variant="text"
-                @click="editNote"
-              />
-            </div>
-            <div v-if="isEditingNote">
-              <v-textarea
-                id="degree-note-input"
-                v-model.trim="noteBody"
-                aria-labelledby="degree-notes-header"
-                auto-grow
-                density="compact"
+                id="cancel-degree-note-btn"
+                aria-label="Cancel Save Degree Note"
+                class="ml-1"
                 :disabled="isSaving"
-                hide-details
-                rows="3"
-                variant="outlined"
+                text="Cancel"
+                variant="text"
+                @click="cancel"
               />
-              <div class="align-center d-flex my-2">
-                <ProgressButton
-                  id="save-degree-note-btn"
-                  :action="saveNote"
-                  aria-label="Save Degree Note"
-                  color="primary"
-                  :disabled="noteBody === get(degreeStore.degreeNote, 'body') || isSaving"
-                  :in-progress="isSaving"
-                  :text="isSaving ? 'Saving...' : 'Save'"
-                />
-                <v-btn
-                  id="cancel-degree-note-btn"
-                  aria-label="Cancel Save Degree Note"
-                  class="ml-1"
-                  :disabled="isSaving"
-                  text="Cancel"
-                  variant="text"
-                  @click="cancel"
-                />
-              </div>
             </div>
-          </v-col>
-          <v-col
-            aria-labelledby="in-progress-courses-header"
-            class="justify-center d-flex flex-column py-1"
-            cols="12"
-            role="region"
-            sm="6"
-          >
-            <div class="d-flex align-center pb-2">
-              <h3 id="in-progress-courses-header" class="font-size-18 text-medium-emphasis px-2 text-no-wrap">In-progress Courses</h3>
-              <div v-if="degreeStore.courses.inProgress.length" class="text-no-wrap px-1">
-                [<v-btn
-                  id="show-upper-units-input"
-                  aria-controls="in-progress-courses"
-                  :aria-expanded="showInProgressCourses"
-                  :aria-label="`${showInProgressCourses ? 'Hide' : 'Show'} in-progress courses`"
-                  class="px-0 text-primary"
-                  density="compact"
-                  flat
-                  size="small"
-                  style="min-width: 36px !important;"
-                  :text="showInProgressCourses ? 'hide' : 'show'"
-                  variant="text"
-                  @click="() => showInProgressCourses = !showInProgressCourses"
-                />]
-              </div>
-            </div>
-            <v-expand-transition v-if="degreeStore.courses.inProgress.length">
-              <v-data-table
-                v-show="showInProgressCourses"
-                id="in-progress-courses"
-                borderless
-                :cell-props="data => {
-                  const float = data.column.key === 'units' ? 'float-right' : null
-                  return {
-                    class: `${float} vertical-top`,
-                    id: `in-progress-term-${data.item.termId}-section-${data.item.ccn}-column-${data.column.key}`,
-                    style: $vuetify.display.mdAndUp ? 'max-width: 200px;' : ''
-                  }
-                }"
-                class="no-scrollbar mb-0 w-100"
+          </div>
+        </v-col>
+        <v-col
+          aria-labelledby="in-progress-courses-header"
+          class="d-flex flex-column justify-center"
+          cols="12"
+          role="region"
+          sm="6"
+        >
+          <div class="align-center d-flex">
+            <h3 id="in-progress-courses-header" class="font-size-18 text-medium-emphasis text-no-wrap">In-progress Courses</h3>
+            <div v-if="degreeStore.courses.inProgress.length" class="text-no-wrap px-1">
+              [<v-btn
+                id="show-upper-units-input"
+                aria-controls="in-progress-courses"
+                :aria-expanded="showInProgressCourses"
+                :aria-label="`${showInProgressCourses ? 'Hide' : 'Show'} in-progress courses`"
+                class="px-0 text-primary"
                 density="compact"
-                disable-sort
-                :headers="[
-                  {headerProps: {class: 'data-table-column-header text-medium-emphasis'}, key: 'displayName', title: 'Course'},
-                  {headerProps: {class: 'data-table-column-header text-medium-emphasis float-right'}, key: 'units', title: 'Units'}
-                ]"
-                hide-default-footer
-                hide-default-header
-                :items="inProgressCourses"
-                primary-key="primaryKey"
-                :row-props="data => ({
-                  id: `tr-in-progress-term-${data.item.termId}-section-${data.item.ccn}`
-                })"
-              >
-                <template #thead="{columns}">
-                  <caption class="sr-only">In-progress Courses</caption>
-                  <thead>
-                    <tr>
-                      <th
-                        v-for="(col, index) in columns"
-                        :key="index"
-                        class="v-data-table__td v-data-table-column--align-start v-data-table__th"
-                        :class="col.headerProps.class"
-                        colspan="1"
-                        rowspan="1"
-                      >
-                        {{ col.title }}
-                      </th>
-                    </tr>
-                  </thead>
-                </template>
-                <template #item.displayName="{item}">
-                  <div class="d-flex">
-                    <div class="pr-1">{{ item.displayName }}</div>
-                    <div
-                      v-if="item.enrollmentStatus === 'W'"
-                      :id="`in-progress-course-${item.termId}-${item.ccn}-waitlisted`"
-                      class="font-size-14 font-weight-bold text-error text-uppercase"
+                flat
+                size="small"
+                style="min-width: 36px !important;"
+                :text="showInProgressCourses ? 'hide' : 'show'"
+                variant="text"
+                @click="() => showInProgressCourses = !showInProgressCourses"
+              />]
+            </div>
+          </div>
+          <v-expand-transition v-if="degreeStore.courses.inProgress.length">
+            <v-data-table
+              v-show="showInProgressCourses"
+              id="in-progress-courses"
+              borderless
+              :cell-props="data => {
+                const float = data.column.key === 'units' ? 'float-right' : null
+                return {
+                  class: `${float} vertical-top`,
+                  id: `in-progress-term-${data.item.termId}-section-${data.item.ccn}-column-${data.column.key}`,
+                  style: $vuetify.display.mdAndUp ? 'max-width: 200px;' : ''
+                }
+              }"
+              class="no-scrollbar mb-0 w-100"
+              density="compact"
+              disable-sort
+              :headers="[
+                {headerProps: {class: 'data-table-column-header text-medium-emphasis'}, key: 'displayName', title: 'Course'},
+                {headerProps: {class: 'data-table-column-header text-medium-emphasis float-right'}, key: 'units', title: 'Units'}
+              ]"
+              hide-default-footer
+              hide-default-header
+              :items="inProgressCourses"
+              primary-key="primaryKey"
+              :row-props="data => ({
+                id: `tr-in-progress-term-${data.item.termId}-section-${data.item.ccn}`
+              })"
+            >
+              <template #thead="{columns}">
+                <caption class="sr-only">In-progress Courses</caption>
+                <thead>
+                  <tr>
+                    <th
+                      v-for="(col, index) in columns"
+                      :key="index"
+                      class="v-data-table__td v-data-table-column--align-start v-data-table__th"
+                      :class="col.headerProps.class"
+                      colspan="1"
+                      rowspan="1"
                     >
-                      (W<span class="sr-only">aitlisted</span>)
-                    </div>
+                      {{ col.title }}
+                    </th>
+                  </tr>
+                </thead>
+              </template>
+              <template #item.displayName="{item}">
+                <div class="d-flex">
+                  <div class="pr-1">{{ item.displayName }}</div>
+                  <div
+                    v-if="item.enrollmentStatus === 'W'"
+                    :id="`in-progress-course-${item.termId}-${item.ccn}-waitlisted`"
+                    class="font-size-14 font-weight-bold text-error text-uppercase"
+                  >
+                    (W<span class="sr-only">aitlisted</span>)
                   </div>
-                </template>
-              </v-data-table>
-            </v-expand-transition>
-            <span v-if="!degreeStore.courses.inProgress.length" class="text-medium-emphasis font-italic pl-2">None</span>
-          </v-col>
-        </v-row>
-      </v-container>
-    </div>
+                </div>
+              </template>
+            </v-data-table>
+          </v-expand-transition>
+          <span v-if="!degreeStore.courses.inProgress.length" class="text-medium-emphasis font-italic pl-2">None</span>
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
