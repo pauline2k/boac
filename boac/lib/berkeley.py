@@ -29,10 +29,14 @@ import re
 """A utility module collecting logic specific to the Berkeley campus."""
 
 ACADEMIC_STANDING_DESCRIPTIONS = {
+    'DIQ': 'Disqualification',
     'DIS': 'Dismissed',
     'GST': 'Good Standing',
+    'NOT': 'Notice',
     'PRO': 'Probation',
+    'SSP': 'Subject to Academic Suspension',
     'SUB': 'Subject to Dismissal',
+    'SUS': 'Academic Suspension',
 }
 
 COE_ETHNICITIES_PER_CODE = {
