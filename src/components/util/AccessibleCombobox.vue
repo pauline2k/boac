@@ -23,12 +23,13 @@
       :menu-icon="null"
       :menu-props="mergedMenuProps"
       :min-width="minWidth"
+      :no-filter="isAutocomplete"
       persistent-clear
       :placeholder="placeholder || label"
       return-object
       :type="inputType"
       variant="outlined"
-      @blur="() => isEmpty(query) ? onClear() : noop()"
+      @blur.stop.prevent="onBlur"
       @keydown.enter.stop.prevent="onSubmit"
       @update:focused="onFocusInput"
       @update:menu="onToggleMenu"
@@ -69,11 +70,11 @@
           @click="() => onSelectItem(item)"
           @focus="e => onFocusListItem(e, index)"
         >
-          {{ item.props.title }}
+          <span v-html="highlightQuery(item.props.title)" />
         </v-list-item>
       </template>
       <template v-if="isAutocomplete" #selection="{item}">
-        {{ item.props.title }}
+        <span v-html="highlightQuery(item.props.title)" />
       </template>
     </component>
   </div>
@@ -81,10 +82,10 @@
 </template>
 
 <script setup>
-import {get, filter, includes, isEmpty, noop} from 'lodash'
+import {get, filter, includes, isEmpty} from 'lodash'
 import {mdiCloseCircle} from '@mdi/js'
 import {nextTick, onMounted, ref} from 'vue'
-import {alertScreenReader, pluralize, putFocusNextTick} from '@/lib/utils'
+import {alertScreenReader, escapeForRegExp, pluralize, putFocusNextTick} from '@/lib/utils'
 
 const props = defineProps({
   ariaDescription: {
@@ -262,6 +263,27 @@ const getInputElement = () => {
   return document.getElementById(`${props.idPrefix}-input`)
 }
 
+const highlightQuery = suggestion => {
+  if (suggestion) {
+    const regex = new RegExp(escapeForRegExp(query.value), 'i')
+    const match = suggestion.match(regex)
+    if (!match) {
+      return suggestion
+    }
+    const matchedText = suggestion.substring(match.index, match.index + match[0].toString().length)
+    return suggestion.replace(regex, `<strong>${matchedText}</strong>`)
+  }
+}
+
+const onBlur = () => {
+  const input = getInputElement()
+  input.removeAttribute('aria-activedescendant')
+  focusedListItemIndex.value = null
+  if (isEmpty(query.value)) {
+    props.onClear()
+  }
+}
+
 const onClearInput = () => {
   model.value = null
   props.onClear()
@@ -269,17 +291,32 @@ const onClearInput = () => {
   putFocusNextTick(`${props.idPrefix}-input`)
 }
 
-const onUpdateSearch = q => {
-  query.value = q
-  props.filterResults(q)
-  clearInterval(resultsSummaryInterval.value)
-  resultsSummaryInterval.value = setInterval(setResultsSummary, 1000)
+const onFocusInput = isFocused => {
+  if (isFocused) {
+    const input = getInputElement()
+    input.removeAttribute('aria-activedescendant')
+    focusedListItemIndex.value = null
+    // Passing open-on-focus via menuProps (https://vuetifyjs.com/en/api/v-menu/#props-open-on-focus)
+    // doesn't seem to have an effect, thus this workaround.
+    if (props.openOnFocus && !container.value.menu) {
+      container.value.menu = true
+    }
+  }
+  props.onUpdateFocused(isFocused)
 }
 
 const onFocusListItem = (event, index) => {
   const input = getInputElement()
   input.setAttribute('aria-activedescendant', event.target.id)
   focusedListItemIndex.value = index
+}
+
+const onSelectItem = item => {
+  model.value = get(item.raw, 'value', item.raw)
+  if (props.isAutocomplete) {
+    container.value.search = ''
+  }
+  nextTick(props.whenItemSelected)
 }
 
 const onToggleMenu = isOpen => {
@@ -301,21 +338,11 @@ const onToggleMenu = isOpen => {
   })
 }
 
-const onFocusInput = isFocused => {
-  // Passing open-on-focus via menuProps (https://vuetifyjs.com/en/api/v-menu/#props-open-on-focus)
-  // doesn't seem to have an effect, thus this workaround.
-  if (props.openOnFocus && isFocused && !container.value.menu) {
-    container.value.menu = true
-  }
-  props.onUpdateFocused(isFocused)
-}
-
-const onSelectItem = item => {
-  model.value = get(item.raw, 'value', item.raw)
-  if (props.isAutocomplete) {
-    container.value.search = ''
-  }
-  nextTick(props.whenItemSelected)
+const onUpdateSearch = q => {
+  query.value = q
+  props.filterResults(q)
+  clearInterval(resultsSummaryInterval.value)
+  resultsSummaryInterval.value = setInterval(setResultsSummary, 1000)
 }
 
 const setResultsSummary = () => {
