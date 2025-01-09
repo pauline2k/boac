@@ -1,71 +1,76 @@
 <template>
-  <date-picker
-    v-model.date="model"
-    :disabled="disabled"
-    :input-debounce="500"
-    :max-date="maxDate"
-    :min-date="minDate"
-    :popover="{placement: 'top', visibility: 'focus'}"
-    :step="1"
-    @did-move="makeCalendarAccessible"
-    @dayclick="() => putFocusNextTick(`${idPrefix}-clear-btn`)"
-    @daykeydown="(day, e) => onKeyDownDay(e)"
-    @popover-did-hide="() => isPopoverVisible = false"
-    @popover-did-show="onPopoverShown"
-    @transition-start="() => onTransitionStart"
-  >
-    <template #default="{ inputValue, inputEvents }">
-      <div
-        class="align-start custom-text-field d-flex"
-        :class="{ 'error--text': !isValid(inputValue), disabled: disabled }"
-        :aria-invalid="!isValid(inputValue)"
-      >
-        <input
-          :id="inputId"
-          type="text"
-          :aria-controls="`${idPrefix}-popover`"
-          :aria-describedby="ariaDescribedby"
-          :aria-expanded="isPopoverVisible"
-          aria-haspopup="dialog"
-          :aria-required="required"
-          autocomplete="off"
-          class="accessible-date-input"
-          :disabled="disabled"
-          maxlength="10"
-          placeholder="MM/DD/YYYY"
-          :value="inputValue"
-          @input="onInput($event, inputEvents)"
-          @keyup="onInputKeyup($event, inputEvents)"
-          @mouseleave="inputEvents.mouseleave"
-          @mousemove="inputEvents.mousemove"
-          @focus="() => onUpdateFocus(true, inputEvents)"
-          @blur="() => onUpdateFocus(false, inputEvents)"
-          @keydown="inputEvents.keydown"
-          @paste="inputEvents.paste"
-          @select="inputEvents.select"
-          @change="inputEvents.change"
-          @focusin="inputEvents.focusin"
-          @focusout="inputEvents.focusout"
-        />
-        <div class="pr-1 pt-1">
-          <button
-            v-if="inputValue && !disabled"
-            :id="`${idPrefix}-clear-btn`"
-            :aria-label="`Clear ${ariaLabel}`"
-            class="clear-button clear-icon"
-            @click.stop.prevent="onClickClear($event, inputEvents)"
-          >
-            <v-icon :icon="mdiCloseCircle" />
-          </button>
+  <div class="accessible-date-picker d-flex position-relative">
+    <date-picker
+      v-model.date="model"
+      :disabled="disabled"
+      :input-debounce="500"
+      :max-date="maxDate"
+      :min-date="minDate"
+      :popover="{placement: 'top', visibility: 'focus'}"
+      :step="1"
+      @did-move="makeCalendarAccessible"
+      @dayclick="() => putFocusNextTick(`${idPrefix}-clear-btn`)"
+      @daykeydown="(day, e) => onKeyDownDay(e)"
+      @popover-did-hide="() => isPopoverVisible = false"
+      @popover-did-show="onPopoverShown"
+      @transition-start="() => onTransitionStart"
+    >
+      <template #default="{ inputValue, inputEvents }">
+        <div
+          class="custom-text-field w-100"
+          :class="{ 'error--text': !isValid(inputValue), disabled: disabled }"
+          :aria-invalid="!isValid(inputValue)"
+        >
+          <input
+            :id="inputId"
+            type="text"
+            :aria-controls="`${idPrefix}-popover`"
+            :aria-describedby="ariaDescribedby"
+            :aria-expanded="isPopoverVisible"
+            aria-haspopup="dialog"
+            :aria-required="required"
+            autocomplete="off"
+            :disabled="disabled"
+            maxlength="10"
+            placeholder="MM/DD/YYYY"
+            :value="inputValue"
+            @input="onInput($event, inputEvents)"
+            @keyup="onInputKeyup($event, inputEvents)"
+            @mouseleave="inputEvents.mouseleave"
+            @mousemove="inputEvents.mousemove"
+            @focus="() => onUpdateFocus(true, inputEvents)"
+            @blur="() => onUpdateFocus(false, inputEvents)"
+            @keydown="inputEvents.keydown"
+            @paste="inputEvents.paste"
+            @select="inputEvents.select"
+            @change="inputEvents.change"
+            @focusin="inputEvents.focusin"
+            @focusout="inputEvents.focusout"
+          />
         </div>
-      </div>
-    </template>
-  </date-picker>
+      </template>
+    </date-picker>
+    <button
+      v-if="model"
+      :id="`${idPrefix}-clear-btn`"
+      :aria-label="`Clear ${ariaLabel}`"
+      class="clear-button clear-icon"
+      :disabled="disabled"
+      @click.stop.prevent="onClickClear($event, dateInputEvents)"
+    >
+      <v-icon
+        color="secondary"
+        height="20"
+        :icon="mdiCloseCircle"
+        width="20"
+      ></v-icon>
+    </button>
+  </div>
 </template>
 
 <script setup>
-import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
 import {DateTime} from 'luxon'
+import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
 import {each} from 'lodash'
 import {mdiCloseCircle} from '@mdi/js'
 import {nextTick, onBeforeUnmount, onMounted, ref} from 'vue'
@@ -126,6 +131,7 @@ const model = defineModel({
   },
   type: Date
 })
+const dateInputEvents = ref(undefined)
 const inputId = `${props.idPrefix}-input`
 const isPopoverVisible = ref(false)
 const popover = ref()
@@ -304,62 +310,69 @@ const onUpdateFocus = (hasFocus, inputEvents) => {
     target: el,
     type: hasFocus ? 'focusin' : 'focusout'
   }
+  dateInputEvents.value = inputEvents
   hasFocus ? inputEvents.focusin(event) : inputEvents.focusout(event)
 }
 </script>
 
 <style scoped>
-.accessible-date-input {
-  width: 100px;
+.accessible-date-picker {
+  width: 150px;
 }
-.custom-text-field {
-  position: relative;
-  border: 1px solid #ccc; /* Border color similar to v-text-field */
-  border-radius: 4px;
-  padding: 0 12px;
-  background-color: white;
-  transition: border-color 0.3s;
-}
-.custom-text-field input {
-  flex: 1;
-  border: none;
-  outline: none;
-  padding: 8px 0;
-  font-size: 16px;
-  background-color: transparent;
-}
-
-.custom-text-field input::placeholder {
-  color: #aaa;
-}
-
-.custom-text-field .clear-button {
+.clear-button {
   background: transparent;
   border: none;
+  border-radius: 100%;
   cursor: pointer;
   padding: 4px;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: var(--v-disabled-opacity);
+  }
 }
-.custom-text-field .clear-icon {
-  width: 20px;
-  height: 20px;
-  color: #999; /* Icon color */
+.custom-text-field {
+  --v-field-border-opacity: 0.38;
+  --v-field-border-width: 1px;
+  --v-field-border-color: var(--v-theme-primary);
+  align-items: center;
+  background-color: white;
+  border: var(--v-field-border-width) solid rgba(var(--v-field-border-color), var(--v-field-border-opacity));
+  border-radius: 4px;
+  display: flex;
+  height: 40px;
+  padding: .375rem .75rem;
+  transition: border-color 0.3s;
+  &:focus-within {
+    --v-field-border-opacity: 1;
+    --v-field-border-width: 1.875px;
+    border-color: rgb(var(--v-theme-on-surface));
+    outline: 0;
+  }
+  &:hover:not(.disabled) {
+    --v-field-border-opacity: var(--v-high-emphasis-opacity);
+  }
+}
+.custom-text-field input {
+  background-color: transparent;
+  border: none;
+  flex: 1;
+  font-size: 16px;
+  line-height: 1.5;
+  outline: none;
+  padding: 8px 0;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: var(--v-disabled-opacity);
+  }
+}
+.custom-text-field input::placeholder {
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }
 .custom-text-field.error--text {
-  border-color: red;
-}
-.custom-text-field.disabled {
-  background-color: #f5f5f5;
-  cursor: not-allowed;
-}
-.custom-text-field.disabled input {
-  background-color: #f5f5f5;
-  cursor: not-allowed;
-}
-.custom-text-field:hover {
-  border-color: #aaa;
-}
-.custom-text-field:focus-within {
-  border-color: #1976d2; /* Primary color on focus */
+  border-color: rgb(var(--v-theme-error));
 }
 </style>
 
