@@ -9,69 +9,71 @@
           suppress-grad-programs
         />
       </div>
-      <StudentDegreeCheckHeader :student="student" />
-      <v-container class="pt-2 pr-0" fluid>
-        <v-row>
-          <v-col>
-            <v-row>
-              <v-col>
-                <UnitRequirements class="unit-requirements" />
-              </v-col>
-              <v-col>
-                <div
-                  id="drop-zone-ignored-courses"
-                  class="drop-zone"
-                  :class="isDroppable('ignored') ? 'drop-zone-on' : 'drop-zone-off'"
-                  @dragend="onDrag($event, 'end', 'ignored')"
-                  @dragenter="onDrag($event,'enter', 'ignored')"
-                  @dragleave="onDrag($event, 'leave', 'ignored')"
-                  @dragexit="onDrag($event,'exit', 'ignored')"
-                  @dragover="onDrag($event,'over', 'ignored')"
-                  @dragstart="onDrag($event,'start', 'ignored')"
-                  @drop="dropToUnassign($event, 'ignored')"
-                >
-                  <h3 id="ignored-header" class="font-size-18 text-medium-emphasis pb-0 text-no-wrap" tabindex="-1">Other Coursework</h3>
-                  <UnassignedCourses :ignored="true" />
-                </div>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col class="pr-0">
-            <div
-              id="drop-zone-unassigned-courses"
-              class="drop-zone"
-              :class="isDroppable('unassigned') ? 'drop-zone-on' : 'drop-zone-off'"
-              @dragend="onDrag($event, 'end', 'unassigned')"
-              @dragenter="onDrag($event,'enter', 'unassigned')"
-              @dragleave="onDrag($event, 'leave', 'unassigned')"
-              @dragexit="onDrag($event,'exit', 'unassigned')"
-              @dragover="onDrag($event,'over', 'unassigned')"
-              @dragstart="onDrag($event,'start', 'unassigned')"
-              @drop="dropToUnassign($event, 'unassigned')"
-            >
-              <h3 id="unassigned-header" class="font-size-18 text-medium-emphasis pb-0 text-no-wrap" tabindex="-1">Unassigned Courses</h3>
-              <div v-if="currentUser.canEditDegreeProgress" class="pb-2 pr-2">
-                <DuplicateExistingCourse />
-              </div>
-              <UnassignedCourses />
-            </div>
-          </v-col>
-        </v-row>
-      </v-container>
-      <div class="mt-3">
-        <h3 class="sr-only">Categories</h3>
+      <div aria-labelledby="degree-check-header" role="region">
+        <StudentDegreeCheckHeader :student="student" />
         <v-container fluid>
           <v-row>
-            <v-col
-              v-for="position in [1, 2, 3]"
-              :id="`student-degree-check-column-${position}`"
-              :key="position"
-              class="degree-check-column"
-            >
-              <TemplateCategoryColumn :position="position" />
+            <v-col>
+              <UnitRequirements class="unit-requirements" />
+            </v-col>
+            <v-col>
+              <div
+                id="drop-zone-ignored-courses"
+                aria-labelledby="ignored-courses-header"
+                class="drop-zone"
+                :class="isDroppable('ignored') ? 'drop-zone-on' : 'drop-zone-off'"
+                role="region"
+                @dragend="onDrag($event, 'end', 'ignored')"
+                @dragenter="onDrag($event,'enter', 'ignored')"
+                @dragleave="onDrag($event, 'leave', 'ignored')"
+                @dragexit="onDrag($event,'exit', 'ignored')"
+                @dragover="onDrag($event,'over', 'ignored')"
+                @dragstart="onDrag($event,'start', 'ignored')"
+                @drop="dropToUnassign($event, 'ignored')"
+              >
+                <h3 id="ignored-courses-header" class="font-size-18 text-medium-emphasis text-no-wrap" tabindex="-1">Other Coursework</h3>
+                <UnassignedCourses class="mt-2 pb-1" :ignored="true" />
+              </div>
+            </v-col>
+            <v-col>
+              <div
+                id="drop-zone-unassigned-courses"
+                aria-labelledby="unassigned-courses-header"
+                class="drop-zone"
+                :class="isDroppable('unassigned') ? 'drop-zone-on' : 'drop-zone-off'"
+                role="region"
+                @dragend="onDrag($event, 'end', 'unassigned')"
+                @dragenter="onDrag($event,'enter', 'unassigned')"
+                @dragleave="onDrag($event, 'leave', 'unassigned')"
+                @dragexit="onDrag($event,'exit', 'unassigned')"
+                @dragover="onDrag($event,'over', 'unassigned')"
+                @dragstart="onDrag($event,'start', 'unassigned')"
+                @drop="dropToUnassign($event, 'unassigned')"
+              >
+                <h3 id="unassigned-courses-header" class="font-size-18 pb-0 text-medium-emphasis text-no-wrap" tabindex="-1">Unassigned Courses</h3>
+                <div v-if="currentUser.canEditDegreeProgress" class="pb-2">
+                  <DuplicateExistingCourse />
+                </div>
+                <UnassignedCourses />
+              </div>
             </v-col>
           </v-row>
         </v-container>
+        <div class="mt-3">
+          <h3 class="sr-only">Categories</h3>
+          <v-container fluid>
+            <v-row>
+              <v-col
+                v-for="position in [1, 2, 3]"
+                :id="`student-degree-check-column-${position}`"
+                :key="position"
+                class="degree-check-column"
+              >
+                <TemplateCategoryColumn :position="position" />
+              </v-col>
+            </v-row>
+          </v-container>
+        </div>
       </div>
     </div>
     <div v-if="contextStore.config.isVueAppDebugMode">

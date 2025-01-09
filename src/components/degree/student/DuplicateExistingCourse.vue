@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="isMenuOpen" class="my-2">
+    <div v-if="isMenuOpen">
       <label class="font-size-16 font-weight-medium text-surface-variant" for="add-course-select">
         Duplicate Course
       </label>
