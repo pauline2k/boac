@@ -22,6 +22,7 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 "AS IS". REGENTS HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES,
 ENHANCEMENTS, OR MODIFICATIONS.
 """
+from itertools import groupby
 
 from boac import db
 from boac.externals import data_loch
@@ -93,14 +94,17 @@ def academic_division_options():
 @stow('cohort_filter_options_academic_standing')
 def academic_standing_options(min_term_id=0):
     option_groups = {}
-    for term_id in (r['term_id'] for r in data_loch.get_academic_standing_terms(min_term_id)):
+    for term_id, rows in groupby(data_loch.get_academic_standing_terms(min_term_id), lambda r: r['term_id']):
         group = term_name_for_sis_id(term_id)
         option_groups[group] = []
-        for value, standing in ACADEMIC_STANDING_DESCRIPTIONS.items():
-            option_groups[group].append({
-                'name': standing,
-                'value': f'{term_id}:{value}',
-            })
+        for row in rows:
+            value = row['status']
+            standing = ACADEMIC_STANDING_DESCRIPTIONS.get(value)
+            if standing:
+                option_groups[group].append({
+                    'name': standing,
+                    'value': f'{term_id}:{value}',
+                })
     return option_groups
 
 

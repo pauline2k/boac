@@ -407,10 +407,10 @@ def get_academic_standing(sids):
 
 
 def get_academic_standing_terms(min_term_id=0):
-    return safe_execute_rds(f"""SELECT DISTINCT term_id
+    return safe_execute_rds(f"""SELECT DISTINCT term_id, acad_standing_status as status
         FROM {student_schema()}.academic_standing
         WHERE term_id >= '{min_term_id}'
-        ORDER BY term_id DESC""")
+        ORDER BY term_id DESC, acad_standing_status""")
 
 
 def get_term_gpas(sids):
