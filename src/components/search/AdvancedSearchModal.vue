@@ -566,6 +566,8 @@ const suggestAdvisors = debounce(query => {
       suggestedAdvisors.value = map(results, result => ({title: result.label, value: result}))
       isFetchingAdvisors.value = false
     })
+  } else {
+    suggestedStudents.value = []
   }
 }, 500)
 
@@ -578,6 +580,8 @@ const suggestStudents = debounce(query => {
       suggestedStudents.value = map(results, result => ({title: result.label, value: result}))
       isFetchingStudents.value = false
     })
+  } else {
+    suggestedStudents.value = []
   }
 }, 500)
 
