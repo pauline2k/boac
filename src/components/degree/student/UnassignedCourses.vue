@@ -10,12 +10,12 @@
       >
         <thead class="border-b-sm">
           <tr class="text-no-wrap">
-            <th v-if="currentUser.canEditDegreeProgress" class="force-width-28"><span class="sr-only">Options to assign course</span></th>
-            <th class="font-size-11 th-course pr-1">Course</th>
-            <th class="font-size-11 force-width-24">Gr</th>
-            <th class="font-size-11 force-width-32 pr-1">Un</th>
-            <th v-if="!ignored" class="font-size-11 force-width-90">Term</th>
-            <th class="font-size-11 pl-0 force-width-50">Note</th>
+            <th v-if="currentUser.canEditDegreeProgress" class="force-width-18"><span class="sr-only">Options to assign course</span></th>
+            <th class="font-size-11 force-width-80 pr-1">Course</th>
+            <th class="font-size-11 force-width-24 truncate-with-ellipsis" title="Grade">Grade</th>
+            <th class="font-size-11 force-width-24 text-right truncate-with-ellipsis" title="Units">Units</th>
+            <th v-if="!ignored" class="font-size-11 force-width-42">Term</th>
+            <th class="font-size-11 force-width-50">Note</th>
             <th v-if="currentUser.canEditDegreeProgress" class="force-width-20" />
           </tr>
         </thead>
@@ -46,7 +46,7 @@
             >
               <td
                 v-if="currentUser.canEditDegreeProgress"
-                class="force-width-28 td-assign"
+                class="force-width-18 td-assign"
               >
                 <div v-if="degreeStore.draggingCourseId !== course.id">
                   <CourseAssignmentMenu :after-course-assignment="() => afterCourseAssignment(index, key)" :course="course" />
@@ -82,7 +82,7 @@
                   title="Non-passing grade"
                 />
               </td>
-              <td class="td-units">
+              <td class="td-units text-right">
                 <span class="font-size-14">{{ isNil(course.units) ? '&mdash;' : course.units }}</span>
                 <span v-if="unitsWereEdited(course)" class="sr-only"> (updated from {{ pluralize('unit', course.sis.units) }})</span>
                 <v-icon
@@ -103,7 +103,7 @@
                   :title="`Updated from ${pluralize('unit', course.sis.units)}`"
                 />
               </td>
-              <td v-if="!ignored" class="font-size-14 td-term">
+              <td v-if="!ignored" class="font-size-14 force-width-42 td-term">
                 {{ course.termName }}
               </td>
               <td
@@ -398,30 +398,6 @@ th {
 .table-layout {
   table-layout: fixed;
 }
-.force-width-20 {
-  max-width: 20px !important;
-  width: 20px !important;
-}
-.force-width-24 {
-  max-width: 24px !important;
-  width: 24px !important;
-}
-.force-width-28 {
-  max-width: 28px !important;
-  width: 28px !important;
-}
-.force-width-32 {
-  max-width: 32px !important;
-  width: 32px !important;
-}
-.force-width-50 {
-  min-width: 50px !important;
-  width: 50px !important;
-}
-.force-width-90 {
-  max-width: 90px !important;
-  width: 90px !important;
-}
 .td-assign {
   font-size: 14px;
   vertical-align: top;
@@ -447,10 +423,6 @@ th {
   padding: 1px 8px 0 0;
   vertical-align: top;
   white-space: nowrap;
-}
-.th-course {
-  max-width: 100px !important;
-  width: 100px !important;
 }
 .tr-course td {
   height: 40px !important;
