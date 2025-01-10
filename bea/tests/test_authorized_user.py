@@ -28,8 +28,6 @@ from bea.pages.homepage import Homepage
 from bea.test_utils import boa_utils
 from bea.test_utils import utils
 import pytest
-from selenium.webdriver.support import expected_conditions as ec
-from selenium.webdriver.support.wait import WebDriverWait as Wait
 
 
 @pytest.mark.usefixtures('page_objects')
@@ -52,9 +50,7 @@ class TestAuthorizedUser:
         self.homepage.load_page()
         self.homepage.click_sign_in_button()
         self.calnet_page.log_in(self.auth_user.username, utils.get_admin_password())
-        Wait(self.driver, utils.get_short_timeout()).until(
-            ec.visibility_of_element_located(Homepage.NOT_AUTH_MSG),
-        )
+        self.calnet_page.when_visible(Homepage.NOT_AUTH_MSG, utils.get_short_timeout())
 
     def test_restored_user_login_ok(self):
         boa_utils.restore_user(self.auth_user)
@@ -67,9 +63,7 @@ class TestAuthorizedUser:
         self.homepage.load_page()
         self.homepage.click_sign_in_button()
         self.calnet_page.log_in(self.auth_user.username, utils.get_admin_password())
-        Wait(self.driver, utils.get_short_timeout()).until(
-            ec.visibility_of_element_located(Homepage.NOT_AUTH_MSG),
-        )
+        self.calnet_page.when_visible(Homepage.NOT_AUTH_MSG, utils.get_short_timeout())
 
     def test_auth_user_login_ok(self):
         boa_utils.create_admin_user(self.auth_user)
@@ -78,8 +72,5 @@ class TestAuthorizedUser:
 
     def test_expired_cookies_force_login(self):
         self.driver.delete_all_cookies()
-        self.search_form.enter_simple_search('foo')
-        self.search_form.hit_enter()
-        Wait(self.driver, utils.get_short_timeout()).until(
-            ec.visibility_of_element_located(Homepage.SIGN_IN_BUTTON),
-        )
+        self.search_form.enter_simple_search_and_hit_enter('foo')
+        self.homepage.when_visible(Homepage.SIGN_IN_BUTTON, utils.get_short_timeout())

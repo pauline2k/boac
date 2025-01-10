@@ -46,7 +46,7 @@ class SearchForm(Page):
 
     def enter_simple_search(self, string):
         app.logger.info(f"Searching for '{string}'")
-        self.remove_and_enter_chars(SearchForm.SEARCH_INPUT, string)
+        self.remove_and_send_chars(SearchForm.SEARCH_INPUT, string)
 
     def enter_simple_search_and_hit_enter(self, string):
         self.enter_simple_search(string)
@@ -61,7 +61,7 @@ class SearchForm(Page):
 
     # Search history
 
-    SEARCH_HISTORY_ITEM = (By.XPATH, '//div[contains(@id, "search-history-")]')
+    SEARCH_HISTORY_ITEM = (By.XPATH, '//div[contains(@id, "basic-search-option-")]')
 
     def visible_search_history(self):
         time.sleep(1)
@@ -89,7 +89,7 @@ class SearchForm(Page):
         string = string or ''
         app.logger.info(f'Searching for "{string}"')
         self.clear_input(self.ADV_SEARCH_STUDENT_INPUT)
-        self.remove_and_enter_chars(self.ADV_SEARCH_STUDENT_INPUT, string)
+        self.remove_and_send_chars(self.ADV_SEARCH_STUDENT_INPUT, string)
 
     def enter_adv_search_and_hit_enter(self, string=None):
         self.enter_adv_search(string)

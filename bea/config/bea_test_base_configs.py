@@ -475,7 +475,6 @@ class BEATestBaseConfigs(object):
         data_notes = nessie_timeline_utils.get_data_sci_notes(student)
         ei_notes = nessie_timeline_utils.get_e_and_i_notes(student)
         eop_notes = nessie_timeline_utils.get_eop_notes(student)
-        eop_notes = [n for n in eop_notes if not n.is_private]
         history_notes = nessie_timeline_utils.get_history_notes(student)
         sis_notes = nessie_timeline_utils.get_sis_notes(student)
         all_notes = asc_notes + boa_notes + data_notes + ei_notes + eop_notes + history_notes + sis_notes
