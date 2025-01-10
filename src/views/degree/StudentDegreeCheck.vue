@@ -32,7 +32,7 @@
                 @drop="dropToUnassign($event, 'ignored')"
               >
                 <h3 id="ignored-courses-header" class="font-size-18 text-medium-emphasis text-no-wrap" tabindex="-1">Other Coursework</h3>
-                <UnassignedCourses class="mt-2 pb-1" :ignored="true" />
+                <UnassignedCourses class="pb-1" :ignored="true" style="margin-top: 0.65em" />
               </div>
             </v-col>
             <v-col>
@@ -59,21 +59,18 @@
             </v-col>
           </v-row>
         </v-container>
-        <div class="mt-3">
-          <h3 class="sr-only">Categories</h3>
-          <v-container fluid>
-            <v-row>
-              <v-col
-                v-for="position in [1, 2, 3]"
-                :id="`student-degree-check-column-${position}`"
-                :key="position"
-                class="degree-check-column"
-              >
-                <TemplateCategoryColumn :position="position" />
-              </v-col>
-            </v-row>
-          </v-container>
-        </div>
+        <v-container fluid>
+          <v-row>
+            <v-col
+              v-for="position in [1, 2, 3]"
+              :id="`student-degree-check-column-${position}`"
+              :key="position"
+              class="degree-check-column"
+            >
+              <TemplateCategoryColumn :position="position" />
+            </v-col>
+          </v-row>
+        </v-container>
       </div>
     </div>
     <div v-if="contextStore.config.isVueAppDebugMode">
