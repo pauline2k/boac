@@ -628,7 +628,7 @@ def generate_note_search_query(note):
         phrases = re.split(r'(<\w+>|<\/\w+>)', string)
         for phrase in phrases:
             if len(phrase) > 24:
-                phrase = phrase.split(' ')[:4]
+                phrase = phrase.split()[:4]
                 search_string = ' '.join(phrase).strip()
     return search_string
 
@@ -639,7 +639,7 @@ def generate_appt_search_query(appt):
         phrases = re.split(r'(<\w+>|<\/\w+>)', appt.detail)
         for phrase in phrases:
             if len(phrase) > 24:
-                phrase = phrase.split(' ')[:4]
+                phrase = phrase.split()[:4]
                 search_string = ' '.join(phrase).strip()
     return search_string
 

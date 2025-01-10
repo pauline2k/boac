@@ -323,7 +323,7 @@ class TestDegreeCourseUnAssignedFromCourseReqt:
         self.degree_check_page.unassign_course(completed_course_0, course_reqt_1)
 
     def test_un_assigning_reverts_course_reqt_units(self):
-        if course_reqt_1.units and course_reqt_1.units != 0:
+        if course_reqt_1.units and course_reqt_1.units != '0':
             units = utils.formatted_units(float(course_reqt_1.units))
         else:
             units = '—'
