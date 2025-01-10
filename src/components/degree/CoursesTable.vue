@@ -7,31 +7,17 @@
       <caption class="sr-only">{{ parentCategory.name }} Courses</caption>
       <thead class="border-b-md">
         <tr class="sortable-table-header text-no-wrap">
-          <th v-if="hasAssignedCourses && canEdit" class="px-0 th-assign">
-            <span v-if="hasAssignedCourses" class="sr-only">Assign course</span>
-            <span v-if="!hasAssignedCourses" class="sr-only">Recommended?</span>
+          <th v-if="hasAssignedCourses && canEdit" class="force-width-18">
+            <span class="sr-only">{{ hasAssignedCourses ? 'Assign course' : 'Recommended?' }}</span>
           </th>
-          <th v-if="!isCampusRequirements" class="th-course">Course</th>
-          <th v-if="isCampusRequirements" class="w-40">Requirement</th>
-          <th v-if="degreeStore.sid && !isCampusRequirements" class="th-grade">
-            <span class="th-grade-inner-text">Grade</span>
-          </th>
-          <th v-if="!isCampusRequirements && items.length" class="pr-2 text-right th-units">
-            <span class="th-units-inner-text">Units</span>
-          </th>
-          <th v-if="degreeStore.sid && isCampusRequirements" class="pl-0 pr-2 text-center th-satisfied">Satisfied</th>
-          <th
-            v-if="degreeStore.sid"
-            class="pl-0"
-            :class="{
-              'th-note': hasNotes,
-              'th-note-when-all-notes-empty': !hasNotes
-            }"
-          >
-            Note
-          </th>
-          <th v-if="!degreeStore.sid && !isCampusRequirements && items.length" class="th-fulfillment px-0">Fulfillment</th>
-          <th v-if="canEdit && (degreeStore.sid || !isCampusRequirements)" class="th-actions px-0"><span class="sr-only">Actions</span></th>
+          <th v-if="!isCampusRequirements" class="font-size-11" :class="{'force-width-80': !isCampusRequirements}">Course</th>
+          <th v-if="isCampusRequirements" class="font-size-11 w-40">Requirement</th>
+          <th v-if="degreeStore.sid && !isCampusRequirements" class="font-size-11 force-width-24 truncate-with-ellipsis" title="Grade">Grade</th>
+          <th v-if="!isCampusRequirements && items.length" class="font-size-11 pr-2 text-right force-width-24 truncate-with-ellipsis" title="Units">Units</th>
+          <th v-if="degreeStore.sid && isCampusRequirements" class="font-size-11 force-width-42 pl-0 pr-2 text-center">Satisfied</th>
+          <th v-if="degreeStore.sid" class="font-size-11 pl-0" :class="{'th-note': hasNotes, 'th-note-when-all-notes-empty': !hasNotes}">Note</th>
+          <th v-if="!degreeStore.sid && !isCampusRequirements && items.length" class="font-size-11 th-fulfillment px-0">Fulfillment</th>
+          <th v-if="canEdit && (degreeStore.sid || !isCampusRequirements)" class="font-size-11 th-actions px-0"><span class="sr-only">Actions</span></th>
         </tr>
       </thead>
       <tbody>
@@ -60,7 +46,7 @@
             @mouseenter="onMouse('enter', bundle)"
             @mouseleave="onMouse('leave', bundle)"
           >
-            <td v-if="hasAssignedCourses && canEdit && !isCampusRequirements" class="td-assign">
+            <td v-if="hasAssignedCourses && canEdit && !isCampusRequirements" class="force-width-18 td-assign">
               <div
                 v-if="bundle.course && canEdit && (degreeStore.draggingCourseId !== bundle.course.id)"
                 :id="`assign-course-${bundle.course.id}-menu-container`"
@@ -73,7 +59,7 @@
               </div>
             </td>
             <td
-              class="overflow-wrap-break-word pl-0"
+              class="force-width-80 overflow-wrap-break-word pl-0"
               :class="{
                 'align-content-start': printable && getNote(bundle),
                 'font-italic text-surface-variant': !isSatisfied(bundle) && !getAccentColor(bundle),
@@ -113,7 +99,14 @@
                 />
               </span>
             </td>
-            <td v-if="degreeStore.sid && !isCampusRequirements" class="td-grade">
+            <td
+              v-if="degreeStore.sid && !isCampusRequirements"
+              class="td-grade"
+              :class="{
+                'force-width-24': isAlertGrade(getGrade(bundle)),
+                'force-width-50': isAlertGrade(getGrade(bundle))
+              }"
+            >
               <div class="d-flex align-center">
                 <span
                   :class="{
@@ -228,42 +221,37 @@
             </td>
             <td
               v-if="canEdit && (degreeStore.sid || !isCampusRequirements)"
-              class="td-actions"
               :class="{
                 'vertical-middle pb-1': degreeStore.sid,
+                'pr-2': isCampusRequirements,
                 'vertical-top': !isCampusRequirements
               }"
             >
-              <div class="d-flex justify-end text-no-wrap">
-                <div class="btn-container">
-                  <v-btn
-                    v-if="!degreeStore.draggingCourseId || degreeStore.draggingCourseId !== get(bundle.course, 'id')"
-                    :id="`column-${position}-edit-${bundle.key}-btn`"
-                    :aria-label="`Edit ${bundle.name}`"
-                    :class="{'bg-transparent text-primary': !degreeStore.disableButtons}"
-                    class="ml-1"
-                    density="compact"
-                    :disabled="degreeStore.disableButtons"
-                    flat
-                    :icon="mdiNoteEditOutline"
-                    size="small"
-                    @click="edit(bundle, position)"
-                  />
-                </div>
-                <div class="btn-container">
-                  <v-btn
-                    v-if="!degreeStore.sid || (bundle.course && (bundle.course.isCopy || bundle.course.manuallyCreatedBy)) && (degreeStore.draggingCourseId !== get(bundle.course, 'id'))"
-                    :id="`column-${position}-delete-${bundle.key}-btn`"
-                    :aria-label="`Delete ${bundle.name}`"
-                    :class="{'bg-transparent text-primary': !degreeStore.disableButtons}"
-                    density="compact"
-                    :disabled="degreeStore.disableButtons"
-                    flat
-                    :icon="mdiTrashCan"
-                    size="small"
-                    @click="() => onDelete(bundle)"
-                  />
-                </div>
+              <div class="pr-1 text-right">
+                <v-btn
+                  v-if="!degreeStore.sid || (bundle.course && (bundle.course.isCopy || bundle.course.manuallyCreatedBy)) && (degreeStore.draggingCourseId !== get(bundle.course, 'id'))"
+                  :id="`column-${position}-delete-${bundle.key}-btn`"
+                  :aria-label="`Delete ${bundle.name}`"
+                  :class="{'bg-transparent text-primary': !degreeStore.disableButtons}"
+                  density="compact"
+                  :disabled="degreeStore.disableButtons"
+                  flat
+                  :icon="mdiTrashCan"
+                  size="small"
+                  @click="() => onDelete(bundle)"
+                />
+                <v-btn
+                  v-if="!degreeStore.draggingCourseId || degreeStore.draggingCourseId !== get(bundle.course, 'id')"
+                  :id="`column-${position}-edit-${bundle.key}-btn`"
+                  :aria-label="`Edit ${bundle.name}`"
+                  :class="{'bg-transparent text-primary': !degreeStore.disableButtons}"
+                  density="compact"
+                  :disabled="degreeStore.disableButtons"
+                  flat
+                  :icon="mdiNoteEditOutline"
+                  size="small"
+                  @click="edit(bundle, position)"
+                />
               </div>
             </td>
           </tr>
@@ -271,7 +259,7 @@
             <td
               :id="`column-${position}-${bundle.key}-edit`"
               :class="{'pb-3 pl-4 pt-1': bundle.course || !degreeStore.sid}"
-              :colspan="degreeStore.sid ? 6 : 4"
+              :colspan="columnCount"
             >
               <div class="border-md ma-2 px-4 py-2">
                 <EditCourse
@@ -304,12 +292,14 @@
             :key="`tr-${index}-note`"
             class="border-b-md border-e-md border-s-md"
           >
-            <td colspan="5" class="pl-8 py-2">
-              <pre
-                :id="bundle.course ? `course-${bundle.course.id}-note` : `category-${bundle.category.id}-note`"
-                aria-live="polite"
-                class="font-size-14"
-              ><span class="sr-only">Note: </span><span v-html="getNote(bundle)" /></pre>
+            <td :colspan="columnCount" class="pl-6 py-1">
+              <div class="overflow-wrap-break-word">
+                <pre
+                  :id="bundle.course ? `course-${bundle.course.id}-note` : `category-${bundle.category.id}-note`"
+                  aria-live="polite"
+                  class="font-size-14"
+                ><span class="sr-only">Note: </span><span v-html="getNote(bundle)" /></pre>
+              </div>
               <div class="font-size-12 text-no-wrap">
                 [<v-btn
                   :id="`column-${position}-${bundle.key}-hide-note-btn`"
@@ -326,7 +316,7 @@
           </tr>
         </template>
         <tr v-if="!items.length">
-          <td class="pa-2" :class="{'pb-3': !degreeStore.sid}" colspan="5">
+          <td class="pa-2" :class="{'pb-3': !degreeStore.sid}" :colspan="columnCount">
             <span
               :id="emptyCategoryId"
               class="font-italic text-surface-variant"
@@ -342,7 +332,7 @@
       </tbody>
       <tfoot v-if="degreeStore.sid && canEdit && !isCampusRequirements">
         <tr>
-          <td class="pb-5" colspan="5">
+          <td class="pb-5" :colspan="columnCount">
             <CreateCourseModal :parent-category="parentCategory" />
           </td>
         </tr>
@@ -445,6 +435,21 @@ const categoryCourseBundles = computed(() => {
     })
   })
   return transformed
+})
+
+const columnCount = computed(() => {
+  // See the logic in the `thead.th` elements to understand the calculation below.
+  const hasItems = props.items.length
+  const sid = degreeStore.sid
+  let colspan = 1
+  colspan += hasAssignedCourses.value && canEdit ? 1 : 0
+  colspan += sid && !isCampusRequirements.value ? 1 : 0
+  colspan += !isCampusRequirements.value && hasItems ? 1 : 0
+  colspan += sid && isCampusRequirements.value ? 1 : 0
+  colspan += sid ? 1 : 0
+  colspan += !sid && !isCampusRequirements.value && hasItems ? 1 : 0
+  colspan += canEdit && (sid || !isCampusRequirements.value) ? 1 : 0
+  return colspan
 })
 
 const hasAssignedCourses = computed(() => {
@@ -673,22 +678,27 @@ const showNote = (bundle, position) => {
 </script>
 
 <style scoped>
+pre {
+  padding-right: 5px;
+  white-space: pre-wrap;
+}
 table {
   border-collapse: collapse;
   border-spacing: 0 0.05em;
   table-layout: fixed;
   width: 100%;
 }
-.btn-container {
-  margin: 0 1px;
-  min-width: 20px;
+tbody:before {
+  content: '';
+  display: block;
+  height: 10px;
+}
+th {
+  height: 20px;
+  padding-bottom: 5px;
 }
 .changed-units-icon {
   margin-right: 0.3em;
-}
-.td-actions {
-  vertical-align: top;
-  width: 36px;
 }
 .td-assign {
   font-size: 14px;
@@ -716,7 +726,7 @@ table {
   padding: 1px 4px 0 4px;
 }
 .td-note-when-all-notes-empty {
-  max-width: 20px;
+  max-width: 10px;
 }
 .td-note-printable {
   padding: 0 0.5em 0 0;
@@ -735,24 +745,9 @@ table {
 .th-actions {
   width: 36px !important;
 }
-.th-assign {
-  max-width: 28px !important;
-  width: 28px !important;
-}
-.th-course {
-  max-width: 50% !important;
-  width: 50% !important;
-}
 .th-fulfillment {
   max-width: 72px !important;
   width: 72px !important;
-}
-.th-grade {
-  max-width: 46px !important;
-  width: 46px !important;
-}
-.th-grade-inner-text {
-  margin-left: -32px;
 }
 .th-note {
   max-width: 25% !important;
@@ -760,19 +755,8 @@ table {
   width: 25% !important;
 }
 .th-note-when-all-notes-empty {
-  max-width: 15% !important;
-  padding-left: 4px !important;
-  width: 15% !important;
-}
-.th-satisfied {
-  width: 100px;
-}
-.th-units {
   max-width: 10px !important;
   width: 10px !important;
-}
-.th-units-inner-text {
-  margin-left: -32px;
 }
 .tr-while-dragging td {
   background-color: rgb(var(--v-theme-tertiary));

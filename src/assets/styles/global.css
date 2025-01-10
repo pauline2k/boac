@@ -190,6 +190,38 @@
 .font-weight-600 {
   font-weight: 600;
 }
+.force-width-18 {
+  max-width: 18px !important;
+  width: 18px !important;
+}
+.force-width-20 {
+  max-width: 20px !important;
+  width: 20px !important;
+}
+.force-width-24 {
+  max-width: 24px !important;
+  width: 24px !important;
+}
+.force-width-28 {
+  max-width: 28px !important;
+  width: 28px !important;
+}
+.force-width-42 {
+  min-width: 42px !important;
+  width: 42px !important;
+}
+.force-width-50 {
+  min-width: 50px !important;
+  width: 50px !important;
+}
+.force-width-80 {
+  max-width: 90px !important;
+  width: 90px !important;
+}
+.force-width-90 {
+  max-width: 90px !important;
+  width: 90px !important;
+}
 .img-blur {
   -webkit-filter: blur(15px) contrast(0.2);
   filter: blur(15px) contrast(0.2);
