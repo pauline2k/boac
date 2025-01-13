@@ -298,9 +298,3 @@ const sortRaw = (a, b) => {
   return result
 }
 </script>
-
-<style scoped>
-.height-unset {
-  height: unset !important;
-}
-</style>

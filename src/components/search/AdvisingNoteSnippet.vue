@@ -2,7 +2,7 @@
   <div
     :id="`advising-note-search-result-${note.id}`"
     :class="{'demo-mode-blur': currentUser.inDemoMode}"
-    class="advising-note-search-result"
+    class="pb-2"
   >
     <h3 class="advising-note-search-result-header">
       <router-link

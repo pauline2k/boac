@@ -1,29 +1,57 @@
 <template>
   <v-data-table-virtual
     :cell-props="data => ({
-      class: 'pl-0 vertical-top',
+      class: 'px-1 vertical-top',
       'data-label': data.column.title,
       id: `td-term-${data.item.termId}-section-${data.item.sectionId}-column-${data.column.key}`,
       style: $vuetify.display.mdAndUp ? 'max-width: 200px;' : ''
     })"
     class="responsive-data-table"
     density="compact"
-    :header-props="{class: 'pl-0'}"
-    :headers="[
-      {key: 'section', sortable: false, title: 'Section', width: '220px'},
-      {key: 'courseName', sortable: false, title: 'Course Name', width: '360px'},
-      {key: 'instructors', sortable: false, title: 'Instructor(s)'}
-    ]"
+    :headers="headers"
     :items="items"
     mobile-breakpoint="md"
+    must-sort
     no-sort-reset
     :row-props="data => ({
       id: `tr-term-${data.item.termId}-section-${data.item.sectionId}`
     })"
+    :sort-by="[sortBy]"
+    @update:sort-by="onUpdateSortBy"
   >
+    <template #headers="{columns, isSorted, toggleSort, getSortIcon}">
+      <tr>
+        <th
+          v-for="column in columns"
+          :key="column.key"
+          :aria-label="column.ariaLabel || column.title"
+          :aria-sort="isSorted(column) ? `${sortBy.order}ending` : null"
+          class="pl-0 pr-3"
+        >
+          <template v-if="column.sortable">
+            <v-btn
+              :id="`students-sort-by-${column.key}-btn`"
+              :append-icon="getSortIcon(column)"
+              :aria-label="`Sort by ${column.ariaLabel || column.title} ${isSorted(column) && sortBy.order === 'asc' ? 'descending' : 'ascending'}`"
+              class="align-start font-size-12 font-weight-bold height-unset min-width-unset pa-1 text-uppercase v-table-sort-btn-override"
+              :class="{'icon-visible': isSorted(column)}"
+              color="body"
+              density="compact"
+              variant="plain"
+              @click="() => toggleSort(column)"
+            >
+              <span class="text-left text-wrap">{{ column.title }}</span>
+            </v-btn>
+          </template>
+          <template v-else>
+            <div class="font-weight-bold line-height-normal pa-1">{{ column.title }}</div>
+          </template>
+        </th>
+      </tr>
+    </template>
     <template #item.section="{item}">
       <span class="sr-only">Section</span>
-      <router-link :to="`/course/${item.termId}/${item.sectionId}`">
+      <router-link class="font-weight-600" :to="`/course/${item.termId}/${item.sectionId}`">
         {{ item.courseName }} - {{ item.instructionFormat }} {{ item.sectionNum }}
       </router-link>
     </template>
@@ -43,8 +71,9 @@
 </template>
 
 <script setup>
+import {alertScreenReader} from '@/lib/utils'
+import {find, size} from 'lodash'
 import {onMounted, ref} from 'vue'
-import {size} from 'lodash'
 
 const props = defineProps({
   courses: {
@@ -53,11 +82,32 @@ const props = defineProps({
   }
 })
 
+const headers = ref([])
 const items = ref([])
+const sortBy = ref({})
 
 onMounted(() => {
-  items.value = [...props.courses].sort((c1, c2) => {
-    // If sorting by section name, attempt to compare by subject area.
+  headers.value = [
+    {key: 'section', sortable: true, sortRaw, title: 'Section', value: item => `${item.courseName} ${item.instructionFormat} ${item.sectionNum}`, width: '220px'},
+    {key: 'courseName', sortable: true, sortRaw, title: 'Course Name', width: '360px'},
+    {key: 'instructors', sortable: false, title: 'Instructor(s)'}
+  ]
+  sortBy.value = {key: 'section', order: 'asc'}
+  items.value = [...props.courses].sort(sortRaw)
+})
+
+const onUpdateSortBy = primarySortBy => {
+  const key = primarySortBy[0].key
+  const header = find(headers.value, {key: key})
+  sortBy.value = primarySortBy[0]
+  if (header) {
+    alertScreenReader(`Sorted by ${header.ariaLabel || header.title}, ${sortBy.value.order}ending`)
+  }
+}
+
+const sortRaw = (c1, c2) => {
+  if (sortBy.value.key === 'section') {
+    // Compare by subject area.
     let split1 = splitCourseName(c1)
     let split2 = splitCourseName(c2)
     if (split1[0] > split2[0]) {
@@ -90,8 +140,12 @@ onMounted(() => {
       return -1
     }
     return c1.sectionNum > c2.sectionNum ? 1 : -1
-  })
-})
+  } else if (sortBy.value.key === 'courseName') {
+    return c1.courseName.localeCompare(c2.courseName, undefined, {usage: 'sort', numeric: true})
+  } else {
+    return 0
+  }
+}
 
 const splitCourseName = course => {
   let split = course.courseName.split(' ')
