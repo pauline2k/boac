@@ -101,12 +101,14 @@
   width: 20px;
 }
 .checkbox-container {
+  align-items: center;
   background-color: rgb(var(--v-theme-sky-blue));
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 6px;
+  display: flex;
   height: 36px;
+  justify-content: center;
   margin-right: 8px;
-  padding-top: 7px;
   text-align: center;
   width: 36px;
 }
@@ -119,6 +121,8 @@
   width: 180px !important;
 }
 .cohort-sort-by-select {
+  max-width: 500px;
+  min-width: 300px;
   width: 100% !important;
 }
 .date-input-opacity-override .v-field__input {

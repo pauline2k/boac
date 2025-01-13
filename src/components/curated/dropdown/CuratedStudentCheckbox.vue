@@ -75,7 +75,6 @@ const toggle = checked => {
 }
 .checkbox-container {
   height: 28px;
-  padding-top: 4px;
   width: 28px;
 }
 </style>

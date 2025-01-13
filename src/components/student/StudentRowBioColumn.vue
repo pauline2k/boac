@@ -1,28 +1,26 @@
 <template>
   <div>
-    <div>
-      <router-link
-        v-if="student.uid"
-        :id="`link-to-student-${student.uid}`"
-        :to="studentRoutePath(student.uid, currentUser.inDemoMode)"
-      >
-        <h3
-          :id="`row-${rowIndex}-student-name`"
-          class="font-size-16"
-          :class="{'demo-mode-blur': currentUser.inDemoMode}"
-        >
-          {{ studentName }} <span class="sr-only">Profile page</span>
-        </h3>
-      </router-link>
-      <span
-        v-if="!student.uid"
-        :id="`student-${student.sid}-has-no-uid`"
-        class="font-size-16 font-weight-500"
+    <router-link
+      v-if="student.uid"
+      :id="`link-to-student-${student.uid}`"
+      :to="studentRoutePath(student.uid, currentUser.inDemoMode)"
+    >
+      <h3
+        :id="`row-${rowIndex}-student-name`"
+        class="font-size-16"
         :class="{'demo-mode-blur': currentUser.inDemoMode}"
       >
-        {{ studentName }}
-      </span>
-    </div>
+        {{ studentName }} <span class="sr-only">Profile page</span>
+      </h3>
+    </router-link>
+    <span
+      v-if="!student.uid"
+      :id="`student-${student.sid}-has-no-uid`"
+      class="font-size-16 font-weight-500"
+      :class="{'demo-mode-blur': currentUser.inDemoMode}"
+    >
+      {{ studentName }}
+    </span>
     <div
       :class="{'demo-mode-blur': currentUser.inDemoMode}"
       class="d-flex align-center font-weight-bold font-size-13"
@@ -122,22 +120,24 @@
         <span v-if="student.athleticsProfile.isActiveAsc === false"> (Inactive)</span>
       </div>
     </div>
-    <div v-if="currentUser.canReadDegreeProgress" class="font-size-13 font-weight-medium">
-      <v-btn
-        :id="`degree-checks-of-${student.sid}`"
-        color="primary"
-        size="sm"
-        variant="text"
-        @click="() => goToStudentDegreeChecksByUID(student.uid)"
-      >
-        <div class="align-center d-flex text-anchor">
-          <div>
-            Undergraduate Degree Checks <span class="sr-only">of {{ student.name }} (will open new browser tab)</span>
-          </div>
-          <v-icon class="ml-1" :icon="mdiOpenInNew" size="18" />
+    <v-btn
+      v-if="currentUser.canReadDegreeProgress"
+      :id="`degree-checks-of-${student.sid}`"
+      class="font-size-13 font-weight-medium letter-spacing-normal"
+      color="primary"
+      href
+      size="sm"
+      tag="a"
+      variant="text"
+      @click="() => goToStudentDegreeChecksByUID(student.uid)"
+    >
+      <div class="align-center d-flex text-anchor">
+        <div>
+          Undergraduate Degree Checks <span class="sr-only">of {{ student.name }} (will open new browser tab)</span>
         </div>
-      </v-btn>
-    </div>
+        <v-icon class="ml-1" :icon="mdiOpenInNew" size="14" />
+      </div>
+    </v-btn>
   </div>
 </template>
 
