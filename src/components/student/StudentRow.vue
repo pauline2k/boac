@@ -7,30 +7,29 @@
     @mouseleave="hover = false"
   >
     <v-col
-      class="pb-0 pl-0"
-      lg="4"
-      md="6"
-      sm="8"
+      class="pb-0 pl-0 student-profile-col"
+      cols="12"
+      lg="5"
     >
-      <div class="align-center d-flex">
-        <v-btn
-          v-if="listType === 'curatedGroupForOwner'"
-          :id="`row-${rowIndex}-remove-student-from-curated-group`"
-          variant="flat"
-          :icon="mdiCloseCircle"
-          @click="onClickRemoveStudent(student)"
-          @keyup.enter="onClickRemoveStudent(student)"
-        >
-          <v-icon
-            color="primary"
-            :icon="mdiCloseCircle"
-            size="22"
-          />
-          <span class="sr-only">Remove {{ student.firstName }} {{ student.lastName }} from curated group</span>
-        </v-btn>
-        <div class="d-flex flex-column flex-sm-row">
-          <div>
+      <v-container class="pa-0" fluid>
+        <v-row no-gutters>
+          <v-col class="student-avatar-col">
             <div class="align-center d-flex">
+              <v-btn
+                v-if="listType === 'curatedGroupForOwner'"
+                :id="`row-${rowIndex}-remove-student-from-curated-group`"
+                variant="flat"
+                :icon="mdiCloseCircle"
+                @click="onClickRemoveStudent(student)"
+                @keyup.enter="onClickRemoveStudent(student)"
+              >
+                <v-icon
+                  color="primary"
+                  :icon="mdiCloseCircle"
+                  size="22"
+                />
+                <span class="sr-only">Remove {{ student.firstName }} {{ student.lastName }} from curated group</span>
+              </v-btn>
               <CuratedStudentCheckbox
                 v-if="listType === 'cohort'"
                 class="mr-3"
@@ -51,21 +50,21 @@
               :sr-only="!hover"
               :student="student"
             />
-          </div>
-          <div class="pl-2">
+          </v-col>
+          <v-col class="pl-sm-2">
             <StudentRowBioColumn
               :row-index="rowIndex"
               :student="student"
               :sorted-by="sortedBy"
             />
-          </div>
-        </div>
-      </div>
+          </v-col>
+        </v-row>
+      </v-container>
     </v-col>
     <v-col
-      class="font-size-13 ml-10 ml-md-0 pb-2 pb-lg-0 pl-0 student-gpa-col"
-      md="2"
-      sm="4"
+      class="font-size-13 pl-10 pl-md-0 pb-lg-0 pb-2 student-gpa-col"
+      cols="4"
+      lg="1"
     >
       <div>
         <template v-if="isNil(student.cumulativeGPA)">
@@ -107,10 +106,9 @@
       </div>
     </v-col>
     <v-col
-      class="font-size-13 ml-10 ml-sm-0 pb-2 pb-lg-0 pl-0"
-      lg="2"
-      md="3"
-      sm="4"
+      class="font-size-13 pl-10 pl-lg-0 pr-0 pb-lg-0 pb-2 student-units-col"
+      cols="4"
+      lg="1"
     >
       <div class="d-flex flex-wrap align-baseline">
         <div :id="`row-${rowIndex}-student-enrolled-units`" class="mr-1 font-weight-bold ">{{ get(student.term, 'enrolledUnits', 0) }}</div>
@@ -145,7 +143,11 @@
         <div class="text-no-wrap text-medium-emphasis">Units Completed</div>
       </div>
     </v-col>
-    <v-col class="ml-10 ml-md-auto pl-2 pl-md-4 pl-lg-0 ml-lg-0 pb-0 pr-0" lg="4" md="10">
+    <v-col
+      class="pl-9 pl-xl-0 pb-0 pr-0"
+      cols="11"
+      lg="5"
+    >
       <StudentRowCourseActivity
         :row-index="rowIndex"
         :student="student"
@@ -215,10 +217,20 @@ const onClickRemoveStudent = student => {
   padding-left: 5px;
   text-align: left;
 }
+.student-avatar-col {
+  width: 150px;
+  max-width: 150px;
+}
 .student-gpa-col {
-  min-width: 155px;
+  min-width: 150px;
+}
+.student-profile-col {
+  max-width: 400px;
 }
 .student-row {
   border-bottom: 1px solid rgb(var(--v-theme-surface-light));
+}
+.student-units-col {
+  min-width: 125px;
 }
 </style>

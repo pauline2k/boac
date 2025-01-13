@@ -16,15 +16,15 @@
       </div>
     </v-expand-transition>
     <div v-if="size(cohortStore.students) && cohortStore.editMode !== 'apply'">
-      <div class="align-end d-flex justify-space-between w-100" :class="{'pt-2': cohortStore.isCompactView}">
+      <div class="align-start d-flex flex-wrap-reverse justify-space-between w-100" :class="{'pt-2': cohortStore.isCompactView}">
         <CuratedGroupSelector
-          class="mr-auto"
+          class="mr-auto mt-2"
           :context-description="cohortStore.domain === 'default' ? `Cohort ${cohortStore.cohortName || ''}` : `Admitted Students Cohort ${cohortStore.cohortName || ''}`"
           :domain="cohortStore.domain"
           :on-create-curated-group="resetFiltersToLastApply"
           :students="cohortStore.students"
         />
-        <div>
+        <div class="ml-auto">
           <TermSelector
             v-if="cohortStore.domain === 'default'"
             class="mb-1"
