@@ -3,7 +3,7 @@
     id="course-students"
     :cell-props="data => {
       return {
-        class: 'py-2 px-0 vertical-top',
+        class: 'px-1 py-2 vertical-top',
         'data-label': data.column.title,
         id: `td-student-${data.item.uid}-column-${data.column.key}`,
         style: $vuetify.display.mdAndUp ? 'max-width: 200px;' : ''
@@ -28,7 +28,7 @@
   >
     <template #headers="{columns}">
       <tr>
-        <th v-for="column in columns" :key="column.key" class="pb-2 pl-0 vertical-bottom">
+        <th v-for="column in columns" :key="column.key" class="px-1 pb-2 vertical-bottom">
           <span v-if="!['avatar', 'profile'].includes(column.key)" class="font-weight-bold">{{ column.title }}</span>
         </th>
       </tr>
@@ -42,7 +42,7 @@
           <StudentAvatar :key="item.sid" size="medium" :student="item" />
           <ManageStudent
             domain="default"
-            :label-class="`font-size-14 font-weight-bold ${featured === item.uid ? 'text-tertiary' : ''}`"
+            label-class="font-size-14 font-weight-bold"
             :sr-only="hoverUid !== item.uid"
             :student="item"
           />
@@ -50,94 +50,94 @@
       </div>
     </template>
     <template #item.profile="{index, item}">
-      <div>
-        <router-link
-          v-if="item.uid"
-          :id="`link-to-student-${item.uid}`"
-          :class="{'text-tertiary': featured === item.uid}"
-          :to="studentRoutePath(item.uid, currentUser.inDemoMode)"
-        >
-          <h3
+      <div class="d-flex flex-column">
+        <div class="mr-2">
+          <router-link
+            v-if="item.uid"
+            :id="`link-to-student-${item.uid}`"
+            :class="{'text-tertiary': featured === item.uid}"
+            :to="studentRoutePath(item.uid, currentUser.inDemoMode)"
+          >
+            <h3
+              :class="{'demo-mode-blur': currentUser.inDemoMode}"
+              class="ma-0 pa-0 student-name"
+            >
+              <span v-if="item.firstName" v-html="lastNameFirst(item)"></span>
+              <span v-if="!item.firstName" v-html="item.lastName"></span>
+            </h3>
+          </router-link>
+          <span
+            v-if="!item.uid"
+            :id="`student-${item.sid}-has-no-uid`"
+            class="font-size-16 ma-0 pa-0 "
             :class="{'demo-mode-blur': currentUser.inDemoMode}"
-            class="ma-0 pa-0 student-name"
           >
             <span v-if="item.firstName" v-html="lastNameFirst(item)"></span>
             <span v-if="!item.firstName" v-html="item.lastName"></span>
-          </h3>
-        </router-link>
-        <span
-          v-if="!item.uid"
-          :id="`student-${item.sid}-has-no-uid`"
-          class="font-size-16 ma-0 pa-0 "
+          </span>
+        </div>
+        <div
+          :id="`row-${index}-student-sid`"
           :class="{'demo-mode-blur': currentUser.inDemoMode}"
+          class="align-baseline d-flex mr-2 student-sid"
         >
-          <span v-if="item.firstName" v-html="lastNameFirst(item)"></span>
-          <span v-if="!item.firstName" v-html="item.lastName"></span>
-        </span>
-      </div>
-      <div
-        :id="`row-${index}-student-sid`"
-        :class="{'demo-mode-blur': currentUser.inDemoMode}"
-        class="align-center d-flex student-sid"
-      >
-        <div>
-          {{ item.sid }}
-        </div>
-        <div
-          v-if="get(item.enrollment, 'enrollmentStatus') === 'W'"
-          :id="`student-${item.uid}-waitlisted-for-${section.termId}-${section.sectionId}`"
-          class="font-weight-bold ml-1 text-error"
-        >
-          WAITLISTED
-        </div>
-        <div
-          v-if="item.academicCareerStatus === 'Inactive'"
-          :id="`student-${item.uid}-inactive-for-${section.termId}-${section.sectionId}`"
-          class="font-weight-bold ml-1 text-error"
-        >
-          INACTIVE
-        </div>
-        <div
-          v-if="item.academicCareerStatus === 'Completed'"
-          class="ml-1"
-        >
-          <v-icon :icon="mdiSchool" />
-          <v-tooltip activator="parent" location="bottom">
-            Graduated
-          </v-tooltip>
-        </div>
-      </div>
-      <div
-        v-if="displayAsAscInactive(item)"
-        :id="`student-${item.uid}-asc-inactive-for-${section.termId}-${section.sectionId}`"
-        class="font-weight-bold student-sid text-error"
-      >
-        ASC INACTIVE
-      </div>
-      <div
-        v-if="displayAsCoeInactive(item)"
-        :id="`student-${item.uid}-coe-inactive-for-${section.termId}-${section.sectionId}`"
-        class="font-weight-bold student-sid text-error"
-      >
-        CoE INACTIVE
-      </div>
-      <div v-if="item.academicCareerStatus !== 'Completed'">
-        <div :id="`student-${item.uid}-level`">
-          <span class="font-size-13 text-medium-emphasis">{{ item.level }}</span>
-        </div>
-        <div :id="`student-${item.uid}-majors`">
-          <div v-for="major in item.majors" :key="major" class="font-size-13 text-medium-emphasis">{{ major }}</div>
-        </div>
-      </div>
-      <div v-if="item.academicCareerStatus === 'Completed'">
-        <DegreesAwarded :student="item" />
-        <div :id="`student-${item.uid}-graduated-colleges`">
-          <div v-for="owner in degreePlanOwners(item)" :key="owner" class="font-size-13 text-medium-emphasis">
-            {{ owner }}
+          <div>
+            {{ item.sid }}
+          </div>
+          <div
+            v-if="get(item.enrollment, 'enrollmentStatus') === 'W'"
+            :id="`student-${item.uid}-waitlisted-for-${section.termId}-${section.sectionId}`"
+            class="font-weight-bold ml-1 text-error"
+          >
+            WAITLISTED
+          </div>
+          <div
+            v-if="item.academicCareerStatus === 'Inactive'"
+            :id="`student-${item.uid}-inactive-for-${section.termId}-${section.sectionId}`"
+            class="font-weight-bold ml-1 text-error"
+          >
+            INACTIVE
+          </div>
+          <div
+            v-if="item.academicCareerStatus === 'Completed'"
+            class="ml-1"
+          >
+            <v-icon :icon="mdiSchool" />
+            <v-tooltip activator="parent" location="bottom">
+              Graduated
+            </v-tooltip>
           </div>
         </div>
-      </div>
-      <div>
+        <div
+          v-if="displayAsAscInactive(item)"
+          :id="`student-${item.uid}-asc-inactive-for-${section.termId}-${section.sectionId}`"
+          class="font-weight-bold student-sid text-error"
+        >
+          ASC INACTIVE
+        </div>
+        <div
+          v-if="displayAsCoeInactive(item)"
+          :id="`student-${item.uid}-coe-inactive-for-${section.termId}-${section.sectionId}`"
+          class="font-weight-bold student-sid text-error"
+        >
+          CoE INACTIVE
+        </div>
+        <div v-if="item.academicCareerStatus !== 'Completed'">
+          <div :id="`student-${item.uid}-level`">
+            <span class="font-size-13 text-medium-emphasis">{{ item.level }}</span>
+          </div>
+          <div :id="`student-${item.uid}-majors`">
+            <div v-for="major in item.majors" :key="major" class="font-size-13 text-medium-emphasis">{{ major }}</div>
+          </div>
+        </div>
+        <div v-if="item.academicCareerStatus === 'Completed'">
+          <DegreesAwarded :student="item" />
+          <div :id="`student-${item.uid}-graduated-colleges`">
+            <div v-for="owner in degreePlanOwners(item)" :key="owner" class="font-size-13 text-medium-emphasis">
+              {{ owner }}
+            </div>
+          </div>
+        </div>
         <div v-if="item.athleticsProfile" :id="`student-${item.uid}-teams`" class="student-teams-container">
           <div v-for="membership in item.athleticsProfile.athletics" :key="membership.groupName" class="font-size-13 text-medium-emphasis">
             {{ membership.groupName }}
@@ -148,11 +148,11 @@
     </template>
 
     <template #item.courseSites="{item}">
-      <div class="border-info border-s-md flex-col font-size-14 h-100">
+      <div class="flex-col font-size-14 h-100">
         <div
           v-for="(canvasSite, index) in get(item.enrollment, 'canvasSites', [])"
           :key="index"
-          class="font-weight-bold pl-2"
+          class="font-weight-bold"
           :class="`height-when-canvas-site-count-${item.enrollment.canvasSites.length}`"
         >
           <div
@@ -164,14 +164,14 @@
             {{ canvasSite.courseCode }}
           </div>
         </div>
-        <div v-if="!size(get(item.enrollment, 'canvasSites'))" class="font-weight-bold pa-2">
+        <div v-if="!size(get(item.enrollment, 'canvasSites'))" class="font-italic text-medium-emphasis">
           No course site
         </div>
       </div>
     </template>
 
     <template #item.assignmentsSubmitted="{item}">
-      <div v-if="item.enrollment && item.enrollment.canvasSites.length" class="h-100 pl-2">
+      <div v-if="item.enrollment && item.enrollment.canvasSites.length" class="h-100">
         <div
           v-for="(canvasSite, index) in item.enrollment.canvasSites"
           :key="index"
@@ -218,7 +218,7 @@
     </template>
 
     <template #item.assignmentGrades="{item}">
-      <div v-if="item.enrollment" class="h-100 pl-2">
+      <div v-if="item.enrollment" class="h-100">
         <div
           v-for="(canvasSite, index) in item.enrollment.canvasSites"
           :key="index"
@@ -266,7 +266,7 @@
     </template>
 
     <template #item.bCourses="{item}">
-      <div v-if="item.enrollment" class="font-size-14 h-100 pl-2">
+      <div v-if="item.enrollment" class="font-size-14 h-100">
         <div
           v-for="(canvasSite, index) in item.enrollment.canvasSites"
           :key="canvasSite.canvasCourseId"
@@ -283,7 +283,7 @@
     </template>
 
     <template #item.midtermGrade="{item}">
-      <div v-if="item.enrollment" class="pl-1">
+      <div v-if="item.enrollment">
         <span v-if="item.enrollment.midtermGrade" v-accessible-grade="item.enrollment.midtermGrade" class="font-weight-bold font-size-14" />
         <v-icon
           v-if="isAlertGrade(item.enrollment.midtermGrade)"
@@ -293,11 +293,11 @@
         />
         <span v-if="!item.enrollment.midtermGrade"><span class="sr-only">No data</span>&mdash;</span>
       </div>
-      <div v-if="!item.enrollment" class="pl-1">&mdash;</div>
+      <div v-if="!item.enrollment">&mdash;</div>
     </template>
 
     <template #item.finalGrade="{item}">
-      <div v-if="item.enrollment" class="pl-1">
+      <div v-if="item.enrollment">
         <span v-if="item.enrollment.grade" v-accessible-grade="item.enrollment.grade" class="font-weight-bold font-size-14" />
         <v-icon
           v-if="isAlertGrade(item.enrollment.grade)"
@@ -309,7 +309,7 @@
           {{ item.enrollment.gradingBasis }}
         </span>
       </div>
-      <div v-if="!item.enrollment" class="pl-1">&mdash;</div>
+      <div v-if="!item.enrollment">&mdash;</div>
     </template>
   </v-data-table>
 </template>
@@ -354,18 +354,18 @@ onBeforeMount(() => {
 
 onMounted(() => {
   const h = [
-    {key: 'avatar', headerProps: {class: 'pb-2'}},
-    {key: 'profile', headerProps: {class: 'pb-2'}},
-    {key: 'courseSites', title: 'Course Site(s)', headerProps: {class: 'pb-2'}},
-    {key: 'assignmentsSubmitted', title: 'Assignments Submitted', headerProps: {class: 'pb-2'}},
-    {key: 'assignmentGrades', title: 'Assignment Grades', headerProps: {class: 'pb-2'}}
+    {key: 'avatar'},
+    {key: 'profile'},
+    {key: 'courseSites', title: 'Course Site(s)'},
+    {key: 'assignmentsSubmitted', title: 'Assignments Submitted'},
+    {key: 'assignmentGrades', title: 'Assignment Grades'}
   ]
   if (contextStore.config.currentEnrollmentTermId === parseInt(props.section.termId)) {
-    h.push({key: 'bCourses', title: 'bCourses Activity', headerProps: {class: 'pb-2'}})
+    h.push({key: 'bCourses', title: 'bCourses Activity'})
   }
   headers.value = h.concat([
-    {key: 'midtermGrade', title: 'Mid', headerProps: {class: 'pb-2'}},
-    {key: 'finalGrade', title: 'Final', headerProps: {class: 'pb-2'}}
+    {key: 'midtermGrade', title: 'Mid'},
+    {key: 'finalGrade', title: 'Final'}
   ])
   const rows = document.querySelectorAll('tr[id*=\'tr-student-\']')
   each(rows, row => row.addEventListener('focusin', () => onFocus(row)))

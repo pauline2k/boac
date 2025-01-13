@@ -48,7 +48,7 @@ import {computed, onMounted, onUnmounted} from 'vue'
 import {each, get, noop, trim} from 'lodash'
 import {getAllTopics} from '@/api/topics'
 import {labelForSearchInput} from '@/lib/search'
-import {putFocusNextTick, scrollToTop} from '@/lib/utils'
+import {putFocusNextTick} from '@/lib/utils'
 import {useContextStore} from '@/stores/context'
 import {useDegreeStore} from '@/stores/degree-edit-session/index'
 import {useRoute, useRouter} from 'vue-router'
@@ -124,7 +124,6 @@ const search = () => {
     } else {
       putFocusNextTick('basic-search-input')
     }
-    scrollToTop()
   }
 }
 </script>

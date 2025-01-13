@@ -178,7 +178,8 @@ export function sortComparator(a, b, nullFirst=true) {
       return aInt < bInt ? -1 : aInt > bInt ? 1 : 0
     } else {
       return a.toString().localeCompare(b.toString(), undefined, {
-        numeric: true
+        numeric: true,
+        usage: 'sort'
       })
     }
   }
