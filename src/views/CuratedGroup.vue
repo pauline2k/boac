@@ -5,73 +5,69 @@
       <AdmitDataWarning :updated-at="get(students, '[0].updatedAt')" />
     </div>
     <div v-if="mode !== 'bulkAdd'">
-      <div>
-        <div class="align-end d-flex justify-space-between my-2">
-          <div>
-            <Pagination
-              v-if="totalStudentCount > itemsPerPage"
-              :click-handler="goToPage"
-              :init-page-number="pageNumber"
-              :limit="10"
-              :per-page="itemsPerPage"
-              :total-rows="totalStudentCount"
+      <div class="align-start d-flex flex-wrap-reverse justify-space-between">
+        <div class="my-2">
+          <Pagination
+            v-if="totalStudentCount > itemsPerPage"
+            :click-handler="goToPage"
+            :init-page-number="pageNumber"
+            :limit="10"
+            :per-page="itemsPerPage"
+            :total-rows="totalStudentCount"
+          />
+        </div>
+        <div class="ml-auto my-2">
+          <TermSelector
+            v-if="totalStudentCount && domain === 'default'"
+            class="mb-1"
+            label-class="cohort-sort-by-label"
+            select-class="cohort-sort-by-select"
+          />
+          <SortBy
+            v-if="totalStudentCount > 1"
+            class="mb-1"
+            :domain="domain"
+            label-class="cohort-sort-by-label"
+            select-class="cohort-sort-by-select"
+          />
+        </div>
+      </div>
+      <div v-if="size(students)">
+        <div id="curated-cohort-students" class="scroll-margins">
+          <v-container v-if="domain === 'default'" class="pl-1" fluid>
+            <StudentRow
+              v-for="(student, index) in students"
+              :id="`student-${student.uid}`"
+              :key="student.sid"
+              class="border-b-sm border-t-sm pb-2 pt-3"
+              :class="{'list-group-item-info': anchor === `#${student.uid}`}"
+              :list-type="curatedStore.ownerId === currentUser.id ? 'curatedGroupForOwner' : 'curatedGroup'"
+              :remove-student="removeStudent"
+              :row-index="index"
+              :sorted-by="currentUser.preferences.sortBy"
+              :student="student"
+              :term-id="currentUser.preferences.termId"
             />
-          </div>
-          <div>
-            <TermSelector
-              v-if="totalStudentCount && domain === 'default'"
-              class="float-right mb-1"
-              label-class="cohort-sort-by-label"
-              select-class="cohort-sort-by-select"
-              style="width: 500px"
-            />
-            <SortBy
-              v-if="totalStudentCount > 1"
-              class="float-right mb-1"
-              :domain="domain"
-              label-class="cohort-sort-by-label"
-              select-class="cohort-sort-by-select"
-              style="width: 500px"
+          </v-container>
+          <div v-if="domain === 'admitted_students'">
+            <hr />
+            <AdmitStudentsTable
+              :include-curated-checkbox="false"
+              :remove-student="removeStudent"
+              :students="students"
             />
           </div>
         </div>
-        <div v-if="size(students)">
-          <div id="curated-cohort-students" class="scroll-margins">
-            <v-container v-if="domain === 'default'" fluid>
-              <StudentRow
-                v-for="(student, index) in students"
-                :id="`student-${student.uid}`"
-                :key="student.sid"
-                class="border-b-sm border-t-sm pb-2 pt-3"
-                :class="{'list-group-item-info': anchor === `#${student.uid}`}"
-                :list-type="curatedStore.ownerId === currentUser.id ? 'curatedGroupForOwner' : 'curatedGroup'"
-                :remove-student="removeStudent"
-                :row-index="index"
-                :sorted-by="currentUser.preferences.sortBy"
-                :student="student"
-                :term-id="currentUser.preferences.termId"
-              />
-            </v-container>
-            <div v-if="domain === 'admitted_students'">
-              <hr />
-              <AdmitStudentsTable
-                :include-curated-checkbox="false"
-                :remove-student="removeStudent"
-                :students="students"
-              />
-            </div>
-          </div>
-          <div v-if="totalStudentCount > itemsPerPage" class="pr-3 pt-7">
-            <Pagination
-              :click-handler="goToPage"
-              id-prefix="auxiliary-pagination"
-              :init-page-number="pageNumber"
-              :is-widget-at-bottom-of-page="true"
-              :limit="10"
-              :per-page="itemsPerPage"
-              :total-rows="totalStudentCount"
-            />
-          </div>
+        <div v-if="totalStudentCount > itemsPerPage" class="pr-3 pt-7">
+          <Pagination
+            :click-handler="goToPage"
+            id-prefix="auxiliary-pagination"
+            :init-page-number="pageNumber"
+            :is-widget-at-bottom-of-page="true"
+            :limit="10"
+            :per-page="itemsPerPage"
+            :total-rows="totalStudentCount"
+          />
         </div>
       </div>
     </div>
