@@ -121,7 +121,7 @@
       <v-row v-if="degreeStore.degreeNote && includeNote">
         <v-col class="pb-5 pt-3">
           <h3 id="degree-note" class="font-size-12 font-weight-bold">Degree Notes</h3>
-          <pre class="mt-2 border-0" v-html="degreeStore.degreeNote.body" />
+          <div class="degree-note mt-2 border-0" v-html="degreeStore.degreeNote.body" />
         </v-col>
       </v-row>
       <v-row no-gutters>
@@ -184,10 +184,10 @@ onMounted(() => {
     size: landscape;
   }
 }
-pre {
-  font-family: Verdana, "Open Sans", Roboto, Helvetica, Arial, sans-serif;
+.degree-note {
   font-size: 12px;
   margin: 0;
+  white-space: pre-line;
 }
 .section-border-major {
   border-bottom: 3px solid rgba(var(--v-border-color), var(--v-disabled-opacity));
