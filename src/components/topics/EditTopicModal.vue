@@ -67,7 +67,7 @@
 import FocusLock from 'vue-focus-lock'
 import ModalHeader from '@/components/util/ModalHeader'
 import ProgressButton from '@/components/util/ProgressButton'
-import {computed, ref, watch} from 'vue'
+import {computed, onMounted, ref, watch} from 'vue'
 import {createTopic} from '@/api/topics'
 import {find, trim} from 'lodash'
 import {putFocusNextTick} from '@/lib/utils'
@@ -111,14 +111,14 @@ watch(showEditTopicModal, () => {
   }
 })
 
+onMounted(() => {
+  topic.value = ''
+  showEditTopicModal.value = true
+})
+
 const cancel = () => {
   showEditTopicModal.value = false
   props.onCancel()
-}
-
-const init = () => {
-  topic.value = ''
-  showEditTopicModal.value = true
 }
 
 const save = () => {
@@ -130,8 +130,6 @@ const save = () => {
     showEditTopicModal.value = false
   })
 }
-
-init()
 </script>
 
 <style scoped>

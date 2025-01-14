@@ -57,7 +57,7 @@
 <script setup>
 import PillItem from '@/components/util/PillItem'
 import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
-import {computed, ref, watch} from 'vue'
+import {computed, onMounted, ref, watch} from 'vue'
 import {each, find, includes, size} from 'lodash'
 import {getTopicsForNotes} from '@/api/topics'
 import {useNoteStore} from '@/stores/note-edit-session/index'
@@ -89,7 +89,7 @@ watch(selected, value => {
   putFocusNextTick('add-topic-select-list')
 })
 
-const init = () => {
+onMounted(() => {
   if (!props.readOnly) {
     getTopicsForNotes(false).then(rows => {
       each(rows, row => {
@@ -99,13 +99,11 @@ const init = () => {
       })
     })
   }
-}
+})
 
 const remove = topic => {
   noteStore.removeTopic(topic)
   alertScreenReader(`Removed "${topic}" from topics.`)
   putFocusNextTick('add-topic-select-list')
 }
-
-init()
 </script>

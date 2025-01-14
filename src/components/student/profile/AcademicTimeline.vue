@@ -23,10 +23,10 @@
 <script setup>
 import AcademicTimelineHeader from '@/components/student/profile/AcademicTimelineHeader'
 import AcademicTimelineTable from '@/components/student/profile/AcademicTimelineTable'
+import {DateTime} from 'luxon'
 import {get, each, findIndex, keys, remove, size, find} from 'lodash'
 import {getNote} from '@/api/notes'
-import {DateTime} from 'luxon'
-import {onUnmounted, reactive, ref} from 'vue'
+import {onMounted, onUnmounted, ref} from 'vue'
 import {useContextStore} from '@/stores/context'
 
 const props = defineProps({
@@ -36,15 +36,17 @@ const props = defineProps({
   }
 })
 
+const contextStore = useContextStore()
+
 const countsPerType = ref({})
-const currentUser = reactive(useContextStore().currentUser)
+const currentUser = contextStore.currentUser
 const eventHandlers = ref(undefined)
 const filterTypes = ref(undefined)
 const isTimelineLoading = ref(true)
 const messages = ref(undefined)
 const selectedFilter = ref(undefined)
 
-const init = () => {
+onMounted(() => {
   messages.value = []
   filterTypes.value = {
     alert: {name: 'Alert', tab: 'Alerts', tabWidth: 65},
@@ -76,9 +78,9 @@ const init = () => {
     'notes-batch-published': onPublishBatchNotes
   }
   each(eventHandlers.value, (handler, eventType) => {
-    useContextStore().setEventHandler(eventType, handler)
+    contextStore.setEventHandler(eventType, handler)
   })
-}
+})
 
 const onCreateNewNote = note => {
   if (note.sid === props.student.sid) {
@@ -133,7 +135,7 @@ const sortDate = message => {
   } else {
     date = message.updatedAt || message.createdAt
   }
-  return date ? DateTime.fromISO(date).setZone(useContextStore().config.timezone).toString() : date
+  return date ? DateTime.fromISO(date).setZone(contextStore.config.timezone).toString() : date
 }
 
 const sortMessages = () => {
@@ -158,10 +160,7 @@ const updateCountsPerType = (type, count) => {
 
 onUnmounted(() => {
   each(eventHandlers.value || {}, (handler, eventType) => {
-    useContextStore().removeEventHandler(eventType, handler)
+    contextStore.removeEventHandler(eventType, handler)
   })
 })
-
-init()
-
 </script>
