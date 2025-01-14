@@ -308,7 +308,7 @@ const toggleShowCourseDetails = () => {
 .course-details.span-columns {
   border: 1px rgba(var(--v-border-color), var(--v-border-opacity)) solid;
   margin: 0 -11px;
-  width: 332% !important;
+  width: calc(300% + 108px) !important;
 }
 .course-expanded {
   background-color: rgb(var(--v-theme-pale-blue));
