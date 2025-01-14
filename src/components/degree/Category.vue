@@ -60,11 +60,11 @@
       <div
         v-if="category.description"
         :id="`column-${category.id}-category-header-description`"
-        class="py-1"
-        :class="{'font-size-12 text-wrap': printable, 'pl-1': !printable}"
+        class="category-description py-1"
+        :class="{'font-size-12': printable, 'pl-1': !printable}"
       >
-        <pre v-if="printable" class="border-0"><span v-html="category.description" /></pre>
-        <pre v-if="!printable"><span v-linkified v-html="category.description" /></pre>
+        <span v-if="printable" class="border-0" v-html="category.description" />
+        <span v-if="!printable" v-linkified v-html="category.description" />
       </div>
     </div>
     <AreYouSureModal
@@ -189,12 +189,11 @@ const onDropCourse = event => {
 </script>
 
 <style scoped>
-pre {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  margin: 0;
-}
 .action-btn {
   margin: 0 1px 0 0;
+}
+.category-description {
+  white-space: pre-line;
 }
 .category-header {
   font-weight: bold;
