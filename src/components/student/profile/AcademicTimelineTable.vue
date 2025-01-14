@@ -73,11 +73,11 @@
     <span v-if="selectedFilter && !showMyNotesOnly">No {{ filterTypes[selectedFilter].name.toLowerCase() }}s</span>
     <span v-if="!selectedFilter">None</span>
   </div>
-  <div v-if="searchResults" class="ml-3 my-2">
-    <h3 id="search-results-header" class="messages-none">
-      {{ pluralize(`advising ${selectedFilter}`, searchResults.length) }} for&nbsp;
+  <div v-if="searchResults" class="mb-2">
+    <h3 id="search-results-header" class="font-size-16">
+      {{ pluralize(`advising ${selectedFilter}`, searchResults.length, {1: 'One'}) }} for
       <span :class="{'demo-mode-blur': currentUser.inDemoMode}">{{ student.name }}</span>
-      with '{{ timelineQuery }}'
+      with '{{ trim(timelineQuery) }}'
     </h3>
   </div>
   <div v-if="countPerActiveTab">
@@ -420,20 +420,7 @@ import AreYouSureModal from '@/components/util/AreYouSureModal'
 import EditAdvisingNote from '@/components/note/EditAdvisingNote'
 import TimelineDate from '@/components/student/profile/TimelineDate'
 import {alertScreenReader, decodeStudentUriAnchor, oxfordJoin, pluralize, putFocusNextTick, stripHtmlAndTrim} from '@/lib/utils'
-import {
-  capitalize,
-  each,
-  filter,
-  find,
-  get,
-  includes,
-  isEmpty,
-  map,
-  remove,
-  size,
-  slice,
-  truncate
-} from 'lodash'
+import {capitalize, each, filter, find, get, includes, isEmpty, map, remove, size, slice, trim, truncate} from 'lodash'
 import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue'
 import {DateTime} from 'luxon'
 import {deleteNote, getNote, markNoteRead} from '@/api/notes'
@@ -530,7 +517,7 @@ watch(() => props.selectedFilter, () => {
 
 watch(timelineQuery, () => {
   if (timelineQuery.value) {
-    const query = timelineQuery.value.replace(/\s/g, '').toLowerCase()
+    const query = normalizeForSearchIndex(timelineQuery.value)
     const results = []
     each(searchIndex.value, entry => {
       if (entry.idx.indexOf(query) > -1) {
@@ -543,7 +530,7 @@ watch(timelineQuery, () => {
   }
 })
 
-const init = () => {
+onMounted(() => {
   refreshSearchIndex()
   if (currentUser.canAccessAdvisingData) {
     eventHandlers.value = {
@@ -562,9 +549,6 @@ const init = () => {
       contextStore.setEventHandler(eventType, handler)
     })
   }
-}
-
-onMounted(() => {
   const permalink = decodeStudentUriAnchor()
   if (permalink) {
     const obj = find(props.messages, function(m) {
@@ -749,6 +733,8 @@ const messagesPerType = type => {
   }
 }
 
+const normalizeForSearchIndex = value => trim(value).replace(/\s+/g, ' ').toLowerCase()
+
 const onClickDeleteNote = message => {
   // The following opens the "Are you sure?" modal
   messageForDelete.value = message
@@ -810,21 +796,35 @@ const refreshSearchIndex = () => {
   const messages = ['appointment', 'eForm', 'note'].includes(props.selectedFilter) ? messagesPerType(props.selectedFilter) : []
   each(messages, m => {
     const advisor = m.author || m.advisor
-    const idx = [
+    let idx = [
       advisor.name,
       (map(advisor.departments || [], 'name')).join(),
       advisor.email,
       m.body,
       m.category,
       m.createdBy,
-      JSON.stringify(m.eForm || {}),
       m.legacySource,
       m.message,
       m.subcategory,
       m.subject,
       (m.topics || []).join()
-    ].join().replace(/\s/g, '').toLowerCase()
-    searchIndex.value.push({idx: idx.toLowerCase(), message: m})
+    ]
+    if (m.eForm) {
+      const e = m.eForm
+      idx = idx.concat([
+        e.action,
+        e.courseName,
+        e.courseTitle,
+        e.gradingBasis,
+        e.id,
+        e.requestedGradingBasis,
+        e.section,
+        e.sectionId,
+        e.status,
+        e.term
+      ])
+    }
+    searchIndex.value.push({idx: normalizeForSearchIndex(idx.join()), message: m})
   })
 }
 
@@ -858,9 +858,6 @@ const userCanDelete = message => {
 const userCanEdit = message => {
   return isEditable(message) && message.type === 'note' && (currentUser.uid === message.author.uid && (!message.isPrivate || currentUser.canAccessPrivateNotes))
 }
-
-init()
-
 </script>
 
 <style>
