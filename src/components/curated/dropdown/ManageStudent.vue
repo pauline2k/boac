@@ -4,7 +4,7 @@
       :aria-label="`${domainLabel(true)}s for ${student.name}`"
       :close-on-content-click="false"
       :disabled="isAdding || isRemoving"
-      @update:model-value="isOpen => isMenuOpen = isOpen"
+      @update:model-value="onUpdateMenuModelValue"
     >
       <template #activator="{props: menuProps}">
         <button
@@ -137,11 +137,11 @@ import {
   removeFromCuratedGroups
 } from '@/api/curated'
 import {alertScreenReader} from '@/lib/utils'
-import {describeCuratedGroupDomain} from '@/berkeley'
 import {clone, difference, filter as _filter, includes, map, size, xor} from 'lodash'
+import {computed, onMounted, onUnmounted, ref} from 'vue'
+import {describeCuratedGroupDomain} from '@/berkeley'
 import {mdiCheckBold, mdiCloseThick, mdiMenuDown, mdiPlus} from '@mdi/js'
 import {pluralize, putFocusNextTick} from '@/lib/utils'
-import {computed, onMounted, onUnmounted, ref} from 'vue'
 import {useContextStore} from '@/stores/context'
 
 const props = defineProps({
@@ -174,9 +174,10 @@ const props = defineProps({
   }
 })
 
+const contextStore = useContextStore()
+
 const selectedGroupIds = ref(undefined)
 const confirmationTimeout = ref(1500)
-const contextStore = useContextStore()
 const currentUser = contextStore.currentUser
 const eventName = 'my-curated-groups-updated'
 const groupsLoading = ref(true)
@@ -261,11 +262,19 @@ const onSubmit = () => {
     if (isAdding.value || isRemoving.value) {
       alertScreenReader(alert)
     }
+    contextStore.broadcast('curated-group-deselect-all', props.domain)
     isAdding.value = isRemoving.value = false
   }
   Promise.all(actions).finally(() => setTimeout(done, confirmationTimeout.value))
 }
 
+const onUpdateMenuModelValue = isOpen => {
+  isMenuOpen.value = isOpen
+  refresh()
+  if (!isMenuOpen.value) {
+    contextStore.broadcast('curated-group-deselect-all', props.domain)
+  }
+}
 const onUpdateMyCuratedGroups = domain => {
   if (domain === props.domain) {
     refresh()

@@ -179,11 +179,13 @@ const myCuratedGroups = computed(() => {
 onMounted(() => {
   contextStore.setEventHandler('curated-group-checkbox-checked', onCheckboxChecked)
   contextStore.setEventHandler('curated-group-checkbox-unchecked', onCheckboxUnchecked)
+  contextStore.setEventHandler('curated-group-deselect-all', () => {
+    isSelectAllChecked.value = indeterminate.value = false
+  })
 })
 
 onUnmounted(() => {
-  contextStore.removeEventHandler('curated-group-checkbox-checked', onCheckboxChecked)
-  contextStore.removeEventHandler('curated-group-checkbox-unchecked', onCheckboxUnchecked)
+  each(['curated-group-checkbox-checked', 'curated-group-checkbox-unchecked', 'curated-group-deselect-all'], contextStore.removeEventHandler)
 })
 
 const afterCreateGroup = () => {
