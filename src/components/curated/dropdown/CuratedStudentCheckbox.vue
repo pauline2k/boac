@@ -46,8 +46,8 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  contextStore.removeEventHandler('curated-group-select-all', onSelectAll)
-  contextStore.removeEventHandler('curated-group-deselect-all', onDeselectAll)
+  contextStore.removeEventHandler('curated-group-select-all')
+  contextStore.removeEventHandler('curated-group-deselect-all')
 })
 
 const onDeselectAll = domain => {
