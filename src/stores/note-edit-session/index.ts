@@ -1,4 +1,4 @@
-import {cloneDeep, find, isNil, sortBy} from 'lodash'
+import {cloneDeep, find, isNil, noop, sortBy} from 'lodash'
 import {defineStore, StoreDefinition} from 'pinia'
 import {onVisibilityChange} from '@/stores/note-edit-session/utils'
 
@@ -76,14 +76,13 @@ export const useNoteStore: StoreDefinition = defineStore('note', {
       if (this.autoSaveJob !== null) {
         clearTimeout(this.autoSaveJob)
         this.autoSaveJob = null
-        document.removeEventListener('visibilitychange', onVisibilityChange)
       }
     },
     exitSession() {
+      document.onvisibilitychange = noop
       if (this.autoSaveJob !== null) {
         clearTimeout(this.autoSaveJob)
         this.autoSaveJob = null
-        document.removeEventListener('visibilitychange', onVisibilityChange)
       }
       this.recipients = $_getDefaultRecipients()
       this.completeSidSet = new Set()
@@ -125,8 +124,7 @@ export const useNoteStore: StoreDefinition = defineStore('note', {
       }
       this.autoSaveJob = jobId
       if (jobId) {
-        document.removeEventListener('visibilitychange', onVisibilityChange)
-        document.addEventListener('visibilitychange', onVisibilityChange)
+        document.onvisibilitychange = onVisibilityChange
       }
     },
     setBody(body: string) {
