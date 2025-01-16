@@ -84,7 +84,7 @@ export function setDemoMode(demoMode: boolean) {
   return axios.post(url, {demoMode}).then(() => useContextStore().setDemoMode(demoMode))
 }
 
-export function createOrUpdateUser(profile: any, memberships: any[], deleteAction: boolean) {
+export function createOrUpdateUser(profile: object, memberships: object[], deleteAction: boolean) {
   const url: string = `${utils.apiBaseUrl()}/api/user/create_or_update`
   return axios.post(url, {deleteAction, profile, memberships}).then(response => response.data)
 }

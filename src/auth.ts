@@ -1,6 +1,8 @@
+import {NavigationGuardNext, RouteLocation} from 'vue-router'
 import {useContextStore} from '@/stores/context'
 
-const goToLogin = (to: any, next: any) => {
+
+const goToLogin = (to: RouteLocation, next: NavigationGuardNext) => {
   next({
     path: '/',
     query: {
@@ -11,7 +13,7 @@ const goToLogin = (to: any, next: any) => {
 }
 
 export default {
-  requiresAuthenticated: (to: any, from: any, next: any) => {
+  requiresAuthenticated: (to: RouteLocation, from: RouteLocation, next: NavigationGuardNext) => {
     if (useContextStore().currentUser.isAuthenticated) {
       next()
     } else {

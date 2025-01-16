@@ -252,7 +252,7 @@ import {computed, ref, watch} from 'vue'
 import {deleteNoteTemplate, renameNoteTemplate} from '@/api/note-templates'
 import {disableFocusLock, enableFocusLock} from '@/stores/note-edit-session/utils'
 import {find, get, size, trim} from 'lodash'
-import {mdiMenuDown, mdiClose} from '@mdi/js'
+import {mdiClose, mdiMenuDown} from '@mdi/js'
 import {useNoteStore} from '@/stores/note-edit-session'
 import {validateTemplateTitle} from '@/lib/note'
 
@@ -320,7 +320,7 @@ const loadTemplate = template => {
 
 const onToggleTemplatesMenu = isOpen => {
   if (isOpen) {
-    let count = size(noteStore.noteTemplates)
+    const count = size(noteStore.noteTemplates)
     const suffix = count === 1 ? 'one saved template' : `${count || 'no'} saved templates`
     alertScreenReader(`You have ${suffix}.`)
   }

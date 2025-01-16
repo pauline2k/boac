@@ -265,7 +265,7 @@ import ProgressButton from '@/components/util/ProgressButton.vue'
 import {alertScreenReader, oxfordJoin, putFocusNextTick, scrollTo} from '@/lib/utils'
 import {computed, ref} from 'vue'
 import {createOrUpdateUser} from '@/api/user'
-import {each, filter as _filter, find, get, includes, isNil, lowerCase, map, remove, size} from 'lodash'
+import {filter as _filter, each, find, get, includes, isNil, lowerCase, map, remove, size} from 'lodash'
 import {isCoe} from '@/berkeley'
 import {mdiAlert, mdiCheckBold, mdiCloseCircleOutline, mdiNoteEditOutline, mdiPlus} from '@mdi/js'
 
@@ -392,9 +392,9 @@ const openEditUserModal = () => {
 }
 
 const removeDepartment = deptCode => {
-  let indexOf = memberships.value.findIndex(d => d.code === deptCode)
-  memberships.value.splice(indexOf, 1)
+  const indexOf = memberships.value.findIndex(d => d.code === deptCode)
   const option = find(departmentOptions.value, ['value', deptCode])
+  memberships.value.splice(indexOf, 1)
   option.disabled = false
 }
 

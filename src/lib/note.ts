@@ -1,6 +1,41 @@
+
+import {BoaConfig} from '@/lib/utils'
+import {Cohort, CuratedGroup} from '@/lib/cohort'
 import {each, filter, get, isEmpty, size, trim} from 'lodash'
-import {BoaConfig, useContextStore} from '@/stores/context'
+import {useContextStore} from '@/stores/context'
 import {useNoteStore} from '@/stores/note-edit-session'
+
+export type Attachment = {
+  displayName: string,
+  id: number,
+  name: string,
+  size: number
+}
+
+export type NoteEditSessionModel = {
+  attachments: Attachment[],
+  author: object,
+  body?: string,
+  contactType?: string | null,
+  deleteAttachmentIds: number[],
+  id: number,
+  isDraft: boolean,
+  isPrivate: boolean,
+  setDate?: string,
+  subject?: string,
+  topics: string[]
+}
+
+export type NoteRecipients = {
+  cohorts: Cohort[],
+  curatedGroups: CuratedGroup[],
+  sids: string[]
+}
+
+export type NoteTemplate = {
+  id: number,
+  title: string
+}
 
 export function addFileDropEventListeners(): void {
   const preventFileDropOutsideFormControl = e => {
@@ -16,7 +51,7 @@ export function addFileDropEventListeners(): void {
   window.addEventListener('drop', preventFileDropOutsideFormControl)
 }
 
-export function validateAttachment(attachments: any[], existingAttachments: any[]): string | null {
+export function validateAttachment(attachments: Attachment[], existingAttachments: Attachment[]): string | null {
   const maxAttachmentMegabytes: number = 20
   const maxAttachmentBytes: number = maxAttachmentMegabytes * 1024 * 1024
   if (!(attachments && attachments.length)) {
@@ -41,7 +76,7 @@ export function validateAttachment(attachments: any[], existingAttachments: any[
   return error
 }
 
-export function validateTemplateTitle(template: any) {
+export function validateTemplateTitle(template: NoteTemplate) {
   const title = template.title
   let msg: string | undefined = undefined
   if (isEmpty(title)) {

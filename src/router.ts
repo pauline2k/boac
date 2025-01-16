@@ -1,5 +1,3 @@
-import {useSearchStore} from '@/stores/search'
-
 const AdmitStudent = () => import('@/views/AdmitStudent.vue')
 const AdmitStudents = () => import('@/views/AdmitStudents.vue')
 const AllCohorts = () => import('@/views/AllCohorts.vue')
@@ -28,12 +26,14 @@ const StandardLayout = () => import('@/layouts/StandardLayout.vue')
 const StudentDegreeCheck = () => import('@/views/degree/StudentDegreeCheck.vue')
 const StudentDegreeCreate = () => import('@/views/degree/StudentDegreeCreate.vue')
 const StudentDegreeHistory = () => import('@/views/degree/StudentDegreeHistory.vue')
-import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
-import {filter, get, includes, size, trim} from 'lodash'
+import {CurrentUser} from './lib/utils'
+import {NavigationGuardNext, RouteLocation, RouteRecordRaw, createRouter, createWebHistory} from 'vue-router'
+import {filter, get, includes, size, toString, trim} from 'lodash'
 import {isAdvisor, isDirector} from '@/berkeley'
-import {CurrentUser, useContextStore} from '@/stores/context'
+import {useContextStore} from '@/stores/context'
+import {useSearchStore} from '@/stores/search'
 
-const $_goToLogin = (to: any, next: any) => {
+const $_goToLogin = (to: RouteLocation, next: NavigationGuardNext) => {
   next({
     path: '/',
     query: {
@@ -45,7 +45,7 @@ const $_goToLogin = (to: any, next: any) => {
 
 const $_isCE3 = user => !!size(filter(user.departments, d => d.code === 'ZCEEE' && includes(['advisor', 'director'], d.role)))
 
-const $_requiresDegreeProgress = (to: any, from: any, next: any) => {
+const $_requiresDegreeProgress = (to: RouteLocation, from: RouteLocation, next: NavigationGuardNext) => {
   const currentUser: CurrentUser = useContextStore().currentUser
   if (currentUser.canReadDegreeProgress) {
     next()
@@ -60,10 +60,10 @@ const routes:RouteRecordRaw[] = [
   {
     path: '/',
     component: Login,
-    beforeEnter: (to: any, from: any, next: any) => {
+    beforeEnter: (to: RouteLocation, from: RouteLocation, next: NavigationGuardNext) => {
       const currentUser: CurrentUser = useContextStore().currentUser
       if (currentUser.isAuthenticated) {
-        next(trim(to.query.redirect) || '/home')
+        next(trim(toString(to.query.redirect)) || '/home')
       } else {
         next()
       }
@@ -75,7 +75,7 @@ const routes:RouteRecordRaw[] = [
   {
     path: '/',
     component: StandardLayout,
-    beforeEnter: (to: any, from: any, next: any) => {
+    beforeEnter: (to: RouteLocation, from: RouteLocation, next: NavigationGuardNext) => {
       // Requires Advisor
       const currentUser: CurrentUser = useContextStore().currentUser
       if (currentUser.isAuthenticated) {
@@ -141,7 +141,7 @@ const routes:RouteRecordRaw[] = [
   {
     path: '/',
     component: StandardLayout,
-    beforeEnter: (to: any, from: any, next: any) => {
+    beforeEnter: (to: RouteLocation, from: RouteLocation, next: NavigationGuardNext) => {
       // Requires Admin
       const currentUser: CurrentUser = useContextStore().currentUser
       if (currentUser.isAuthenticated) {
@@ -170,7 +170,7 @@ const routes:RouteRecordRaw[] = [
   {
     path: '/',
     component: StandardLayout,
-    beforeEnter: (to: any, from: any, next: any) => {
+    beforeEnter: (to: RouteLocation, from: RouteLocation, next: NavigationGuardNext) => {
       // Requires Director
       const currentUser: CurrentUser = useContextStore().currentUser
       if (currentUser.isAuthenticated) {
@@ -194,7 +194,7 @@ const routes:RouteRecordRaw[] = [
   {
     path: '/',
     component: StandardLayout,
-    beforeEnter: (to: any, from: any, next: any) => {
+    beforeEnter: (to: RouteLocation, from: RouteLocation, next: NavigationGuardNext) => {
       // Requires CE3
       const currentUser: CurrentUser = useContextStore().currentUser
       if (currentUser.isAuthenticated) {
@@ -274,7 +274,7 @@ const routes:RouteRecordRaw[] = [
   {
     path: '/',
     component: StandardLayout,
-    beforeEnter: (to: any, from: any, next: any) => {
+    beforeEnter: (to: RouteLocation, from: RouteLocation, next: NavigationGuardNext) => {
       if (useContextStore().currentUser.isAuthenticated) {
         next()
       } else {
@@ -316,18 +316,18 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to: any) => {
+router.beforeEach((to: RouteLocation) => {
   if (to.path !== '/search') {
     useSearchStore().resetAdvancedSearch()
   }
 })
 
-router.afterEach((to: any, from: any) => {
+router.afterEach((to: RouteLocation, from: RouteLocation) => {
   const samePageLink = to.name === from.name && to.hash
   if (!samePageLink) {
     useContextStore().resetApplicationState()
     const pageTitle = get(to, 'name')
-    document.title = `${pageTitle || 'Welcome'} | BOA`
+    document.title = `${String(pageTitle) || 'Welcome'} | BOA`
   }
 })
 

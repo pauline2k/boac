@@ -137,7 +137,7 @@ import {
   removeFromCuratedGroups
 } from '@/api/curated'
 import {alertScreenReader} from '@/lib/utils'
-import {clone, difference, filter as _filter, includes, map, size, xor} from 'lodash'
+import {filter as _filter, clone, difference, includes, map, size, xor} from 'lodash'
 import {computed, onMounted, onUnmounted, ref} from 'vue'
 import {describeCuratedGroupDomain} from '@/berkeley'
 import {mdiCheckBold, mdiCloseThick, mdiMenuDown, mdiPlus} from '@mdi/js'
@@ -236,7 +236,7 @@ const onModalCancel = () => {
 const onSubmit = () => {
   const addToGroups = difference(selectedGroupIds.value, existingGroupMemberships.value)
   const removeFromGroups = difference(existingGroupMemberships.value, selectedGroupIds.value)
-  let actions = []
+  const actions = []
   let alert = `${props.student.name}`
   alertScreenReader('Applying changes.')
   putFocusNextTick(menuButtonId)

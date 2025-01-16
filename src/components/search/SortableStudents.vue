@@ -164,7 +164,7 @@ import {alertScreenReader, lastNameFirst, numFormat, pluralize, round, studentRo
 import {computed, onMounted, ref} from 'vue'
 import {each, find, get, isNil, isString} from 'lodash'
 import {displayAsAscInactive, displayAsCoeInactive} from '@/berkeley'
-import {mdiSchool, mdiInformation} from '@mdi/js'
+import {mdiInformation, mdiSchool} from '@mdi/js'
 import {sortComparator} from '@/lib/utils'
 import {useContextStore} from '@/stores/context'
 import {useDisplay} from 'vuetify'

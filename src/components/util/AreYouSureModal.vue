@@ -78,9 +78,8 @@ const props = defineProps({
 })
 
 const focusLocked = ref(false)
-let isProcessing = ref(false)
-// eslint-disable-next-line vue/require-prop-types
-const model = defineModel()
+const isProcessing = ref(false)
+const model = defineModel({type: Boolean})
 
 watch(model, isOpen => {
   if (isOpen) {

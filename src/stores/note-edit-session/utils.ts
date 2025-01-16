@@ -1,7 +1,8 @@
+import {Cohort, CuratedGroup} from '@/lib/cohort'
 import {deleteNote, updateNote} from '@/api/notes'
+import {get, isString, map, trim} from 'lodash'
 import {getDistinctSids} from '@/api/student'
-import {isString, map, trim} from 'lodash'
-import {NoteEditSessionModel, NoteRecipients} from '@/stores/note-edit-session/index'
+import {NoteEditSessionModel, NoteRecipients} from '@/lib/note'
 import {useContextStore} from '@/stores/context'
 import {useNoteStore} from '@/stores/note-edit-session'
 
@@ -13,13 +14,13 @@ export function enableFocusLock(): void {
   setTimeout(() => useNoteStore().setFocusLockDisabled(false), 500)
 }
 
-export function exitSession(revert: boolean): Promise<NoteEditSessionModel | undefined> {
-  return new Promise<NoteEditSessionModel | undefined>(resolve => {
+export function exitSession(revert: boolean): Promise<NoteEditSessionModel | void> {
+  return new Promise<NoteEditSessionModel | void>(resolve => {
     const noteStore = useNoteStore()
     const mode: string | undefined = noteStore.mode
     const model: NoteEditSessionModel = noteStore.model
     const originalModel: NoteEditSessionModel = noteStore.originalModel
-    const done = (note?: NoteEditSessionModel) => {
+    const done = (note?: NoteEditSessionModel | void) => {
       noteStore.exitSession()
       resolve(note)
     }
@@ -59,7 +60,7 @@ export function scheduleAutoSaveJob() {
     noteStore.clearAutoSaveJob()
     if (model.isDraft) {
       noteStore.setIsAutoSavingDraftNote(true)
-      updateAdvisingNote().then((note: any) => {
+      updateAdvisingNote().then((note: NoteEditSessionModel) => {
         noteStore.setModelId(note.id)
         setTimeout(() => noteStore.setIsAutoSavingDraftNote(false), 2000)
         scheduleAutoSaveJob()
@@ -71,7 +72,7 @@ export function scheduleAutoSaveJob() {
   noteStore.setAutoSaveJob(jobId)
 }
 
-export function setNoteRecipient(sid): Promise<void> {
+export function setNoteRecipient(sid: string): Promise<void> {
   const recipients: NoteRecipients = useNoteStore().recipients
   return setNoteRecipients(
     recipients.cohorts,
@@ -80,7 +81,7 @@ export function setNoteRecipient(sid): Promise<void> {
   )
 }
 
-export function setNoteRecipients(cohorts, curatedGroups, sids): Promise<void> {
+export function setNoteRecipients(cohorts: Cohort[], curatedGroups: CuratedGroup[], sids: string[]): Promise<void> {
   return new Promise(resolve => {
     const noteStore = useNoteStore()
     noteStore.setIsRecalculating(true)
@@ -101,12 +102,12 @@ export function setNoteRecipients(cohorts, curatedGroups, sids): Promise<void> {
   })
 }
 
-export function setSubjectPerEvent(event: any): void {
-  useNoteStore().setSubject(isString(event) ? event : event.target.value)
+export function setSubjectPerEvent(event: Event): void {
+  useNoteStore().setSubject(isString(event) ? event : get(event.target, 'value'))
 }
 
-export function updateAdvisingNote(): Promise<any> {
-  return new Promise<any>(resolve => {
+export function updateAdvisingNote(): Promise<NoteEditSessionModel> {
+  return new Promise<NoteEditSessionModel>(resolve => {
     const noteStore = useNoteStore()
     const completeSidSet: Set<string> = noteStore.completeSidSet
     const model: NoteEditSessionModel = noteStore.model

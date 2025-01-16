@@ -1,50 +1,40 @@
-import {defineStore, StoreDefinition} from 'pinia'
+import {DegreeProgressCourse, DegreeTemplate, DraggingContext} from '@/lib/degree-progress'
+import {StoreDefinition, defineStore} from 'pinia'
 import {get} from 'lodash'
-
-export type DegreeProgressCourses = {
-  assigned: any[],
-  unassigned: any[]
-}
-
-type DraggingContext = {
-  course: any,
-  dragContext: any,
-  target: any
-}
 
 function $_getDefaultDraggingContext(): DraggingContext {
   return {
-    course: undefined,
-    dragContext: undefined,
-    target: undefined
+    course: undefined as DegreeProgressCourse | undefined,
+    dragContext: undefined as unknown | undefined,
+    target: undefined as unknown | undefined
   }
 }
 
 export const useDegreeStore: StoreDefinition = defineStore('degree', {
   state: () => ({
     addCourseMenuOptions: undefined,
-    categories: undefined,
-    courses: undefined,
-    createdAt: undefined,
-    createdBy: undefined,
-    degreeName: undefined,
-    degreeNote: undefined,
+    categories: undefined as object[] | undefined,
+    courses: undefined as DegreeProgressCourse[] | undefined,
+    createdAt: undefined as string | undefined,
+    createdBy: undefined as string | undefined,
+    degreeName: undefined as string | undefined,
+    degreeNote: undefined as string | undefined,
     disableButtons: false,
     dismissedAlerts: [] as number[],
     draggingContext: {
-      course: undefined,
-      dragContext: undefined,
-      target: undefined
+      course: undefined as DegreeProgressCourse | undefined,
+      dragContext: undefined as unknown | undefined,
+      target: undefined as unknown | undefined
     },
     includeNotesWhenPrint: true,
     lastPageRefreshAt: undefined as Date | undefined,
-    parentTemplateId: undefined,
-    parentTemplateUpdatedAt: undefined,
-    sid: undefined,
+    parentTemplateId: undefined as string | undefined,
+    parentTemplateUpdatedAt: undefined as string | undefined,
+    sid: undefined as string | undefined,
     templateId: NaN as number,
-    unitRequirements: undefined,
-    updatedAt: undefined,
-    updatedBy: undefined
+    unitRequirements: undefined as object[] | undefined,
+    updatedAt: undefined as string | undefined,
+    updatedBy: undefined as string | undefined
   }),
   getters: {
     degreeEditSessionToString: state => ({
@@ -68,7 +58,7 @@ export const useDegreeStore: StoreDefinition = defineStore('degree', {
     dismissAlert(templateId: number) {
       this.dismissedAlerts.push(templateId)
     },
-    resetSession(template: any) {
+    resetSession(template: DegreeTemplate) {
       this.disableButtons = false
       this.draggingContext = $_getDefaultDraggingContext()
       if (template) {
@@ -93,13 +83,13 @@ export const useDegreeStore: StoreDefinition = defineStore('degree', {
       }
       this.lastPageRefreshAt = new Date()
     },
-    setDisableButtons(disableAll: any) {
+    setDisableButtons(disableAll: boolean) {
       this.disableButtons = disableAll
     },
-    setDraggingTarget(target: any) {
+    setDraggingTarget(target: unknown | undefined) {
       this.draggingContext.target = target
     },
-    setIncludeNotesWhenPrint(include: any) {
+    setIncludeNotesWhenPrint(include: boolean) {
       this.includeNotesWhenPrint = include
     }
   }

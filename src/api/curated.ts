@@ -1,3 +1,4 @@
+import {CuratedGroup} from '@/lib/cohort'
 import axios from 'axios'
 import {each} from 'lodash'
 import ga from '@/lib/ga'
@@ -7,7 +8,7 @@ import fileDownload from 'js-file-download'
 
 const $_track = (action, label?) => ga.cohort(action, label)
 
-const $_onCreate = (group: any) => {
+const $_onCreate = (group: CuratedGroup) => {
   const contextStore = useContextStore()
   contextStore.addMyCuratedGroup(group)
   contextStore.broadcast('my-curated-groups-updated', group.domain)
@@ -21,7 +22,7 @@ const $_onDelete = (domain: string, curatedGroupId: number) => {
   $_track('delete')
 }
 
-const $_onUpdate = (curatedGroups: any[]) => {
+const $_onUpdate = (curatedGroups: CuratedGroup[]) => {
   const contextStore = useContextStore()
   each(curatedGroups, curatedGroup => {
     contextStore.updateMyCuratedGroup(curatedGroup)
@@ -55,7 +56,7 @@ export function deleteCuratedGroup(domain: string, curatedGroupId: number) {
   })
 }
 
-export function downloadCuratedGroupCsv(curatedGroupId: number, name: string, csvColumnsSelected: any[]) {
+export function downloadCuratedGroupCsv(curatedGroupId: number, name: string, csvColumnsSelected: string[]) {
   const contextStore = useContextStore()
   const termId = contextStore.currentUser.preferences.termId || contextStore.config.currentEnrollmentTermId
   const url: string = `${utils.apiBaseUrl()}/api/curated_group/${curatedGroupId}/download_csv`
@@ -82,7 +83,7 @@ export function getUsersWithCuratedGroupsByDeptCode(deptCode: string) {
   return axios.get(url).then(response => response.data)
 }
 
-export function removeFromCuratedGroups(curatedGroupIds: number[], sid: any) {
+export function removeFromCuratedGroups(curatedGroupIds: number[], sid: string | number) {
   const url: string = `${utils.apiBaseUrl()}/api/curated_group/remove_student/${sid}`
   return axios.post(url, {curatedGroupIds}).then(response => {
     const data = response.data

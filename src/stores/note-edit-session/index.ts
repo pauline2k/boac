@@ -1,33 +1,14 @@
+import {Attachment, NoteEditSessionModel, NoteRecipients, NoteTemplate} from '@/lib/note'
 import {cloneDeep, find, isNil, noop, sortBy} from 'lodash'
-import {defineStore, StoreDefinition} from 'pinia'
+import {StoreDefinition, defineStore} from 'pinia'
 import {onVisibilityChange} from '@/stores/note-edit-session/utils'
 
 const VALID_MODES = ['createBatch', 'createNote', 'editDraft', 'editNote', 'editTemplate']
 
-export type NoteEditSessionModel = {
-  id: number;
-  attachments: any[];
-  author: any,
-  body?: string;
-  contactType?: string;
-  deleteAttachmentIds: number[];
-  isDraft: boolean;
-  isPrivate: boolean;
-  setDate?: string | undefined;
-  subject?: string;
-  topics: string[];
-}
-
-export type NoteRecipients = {
-  cohorts: any[],
-  curatedGroups: any[],
-  sids: string[]
-}
-
 function $_getDefaultModel(): NoteEditSessionModel {
   return {
     id: NaN,
-    attachments: [],
+    attachments: [] as Attachment[],
     author: {},
     body: undefined,
     contactType: undefined,
@@ -60,7 +41,7 @@ export const useNoteStore: StoreDefinition = defineStore('note', {
     isRecalculating: false,
     mode: undefined as string | undefined,
     model: $_getDefaultModel(),
-    noteTemplates: new Array<any>(),
+    noteTemplates: new Array<NoteTemplate>(),
     originalModel: $_getDefaultModel(),
     recipients: $_getDefaultRecipients(),
     template: undefined
@@ -95,7 +76,7 @@ export const useNoteStore: StoreDefinition = defineStore('note', {
     onBoaSessionExpires() {
       this.boaSessionExpired = true
     },
-    onUpdateTemplate(template: any) {
+    onUpdateTemplate(template: NoteTemplate) {
       const indexOf = this.noteTemplates.findIndex(t => t.id === template.id)
       Object.assign(this.noteTemplates[indexOf], template)
     },
@@ -115,7 +96,7 @@ export const useNoteStore: StoreDefinition = defineStore('note', {
     resetModel() {
       this.model = $_getDefaultModel()
     },
-    setAttachments(attachments: any[]) {
+    setAttachments(attachments: Attachment[]) {
       this.model.attachments = sortBy(attachments, ['name', 'id'])
     },
     setAutoSaveJob(jobId: number | null) {
@@ -169,7 +150,7 @@ export const useNoteStore: StoreDefinition = defineStore('note', {
     setModelId(modelId: number) {
       this.model.id = modelId
     },
-    setModel(note?: any) {
+    setModel(note?: NoteEditSessionModel) {
       if (note) {
         const model = cloneDeep(note)
         this.model = {
@@ -190,7 +171,7 @@ export const useNoteStore: StoreDefinition = defineStore('note', {
       }
       this.originalModel = cloneDeep(this.model)
     },
-    setNoteTemplates(templates: any[]) {
+    setNoteTemplates(templates: NoteTemplate[]) {
       this.noteTemplates = templates
     },
     setRecipients(recipients: NoteRecipients) {

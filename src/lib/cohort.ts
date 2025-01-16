@@ -1,6 +1,19 @@
+import {CurrentUser} from '@/lib/utils'
 import {each, get, includes, isEmpty, size, trim} from 'lodash'
 import {myDeptCodes} from '@/berkeley'
-import {CurrentUser, useContextStore} from '@/stores/context'
+import {useContextStore} from '@/stores/context'
+
+export type Cohort = {
+  domain: string,
+  id: number,
+  name: string
+}
+
+export type CuratedGroup = {
+  domain: string,
+  id: number,
+  name: string
+}
 
 const isExistingName = (name: string, id?: number) => {
   const currentUser: CurrentUser = useContextStore().currentUser

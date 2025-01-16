@@ -12,7 +12,7 @@ export function getServiceAnnouncement() {
   return axios.get(url).then(response => response.data)
 }
 
-export function publishAnnouncement(publish: boolean, beforeAlertShown?: Function) {
+export function publishAnnouncement(publish: boolean, beforeAlertShown) {
   return axios.post(`${utils.apiBaseUrl()}/api/service_announcement/publish`, {publish}).then(response => {
     const data = response.data
     if (beforeAlertShown) {
@@ -23,7 +23,7 @@ export function publishAnnouncement(publish: boolean, beforeAlertShown?: Functio
   })
 }
 
-export function updateAnnouncement(text: string, beforeAlertShown?: Function) {
+export function updateAnnouncement(text: string, beforeAlertShown) {
   const url: string = `${utils.apiBaseUrl()}/api/service_announcement/update`
   return axios.post(url, {text}).then(response => {
     const data = response.data

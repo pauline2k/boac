@@ -82,7 +82,7 @@
 </template>
 
 <script setup>
-import {get, filter, includes, isEmpty} from 'lodash'
+import {filter, get, includes, isEmpty} from 'lodash'
 import {mdiCloseCircle} from '@mdi/js'
 import {nextTick, onMounted, ref} from 'vue'
 import {alertScreenReader, escapeForRegExp, pluralize, putFocusNextTick} from '@/lib/utils'

@@ -202,9 +202,9 @@ import {alertScreenReader, pluralize, putFocusNextTick} from '@/lib/utils'
 import {computed, nextTick, onMounted, ref, watch} from 'vue'
 import {createBatchDegreeCheck, getStudents} from '@/api/degree'
 import {
+  filter as _filter,
   difference,
   every,
-  filter as _filter,
   get,
   indexOf,
   isEmpty,

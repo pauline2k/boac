@@ -3,6 +3,7 @@ import ga from '@/lib/ga'
 import utils from '@/api/api-utils'
 import {each, size, toNumber} from 'lodash'
 import {useContextStore} from '@/stores/context'
+import {NoteEditSessionModel} from '@/lib/note'
 
 const $_refreshMyDraftNoteCount = () => {
   axios.get(`${utils.apiBaseUrl()}/api/notes/my_draft_note_count`).then(response => {
@@ -42,7 +43,7 @@ export function updateNote(
     noteId: number,
     body?: string,
     cohortIds?: number[],
-    contactType?: string,
+    contactType?: string | null,
     curatedGroupIds?: number[],
     isDraft?: boolean,
     isPrivate?: boolean,
@@ -85,7 +86,7 @@ export function applyNoteTemplate(noteId: number, templateId: number) {
   })
 }
 
-export function deleteNote(note: any) {
+export function deleteNote(note: NoteEditSessionModel) {
   $_track('delete')
   return axios.delete(`${utils.apiBaseUrl()}/api/notes/delete/${note.id}`).then(response => {
     useContextStore().broadcast('note-deleted', note.id)
@@ -94,7 +95,7 @@ export function deleteNote(note: any) {
   })
 }
 
-export function addAttachments(noteId: number, attachments: any[]) {
+export function addAttachments(noteId: number, attachments: object[]) {
   const data = {}
   each(attachments, (attachment, index) => data[`attachment[${index}]`] = attachment)
   return new Promise(resolve => {

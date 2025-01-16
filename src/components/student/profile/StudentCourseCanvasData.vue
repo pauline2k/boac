@@ -160,8 +160,25 @@ const contextStore = useContextStore()
 const config = contextStore.config
 const currentUser = contextStore.currentUser
 const termId = props.term.termId
+type Analytics = {
+  assignmentsSubmitted: object,
+  courseEnrollmentCount: number,
+  currentScore: object,
+  lastActivity: {
+    boxPlottable: boolean,
+    courseDeciles: number[],
+    courseMean: object,
+    displayPercentile: string,
+    student: {
+      matrixyPercentile: number,
+      percentile: number
+      raw: number,
+      roundedUpPercentile: number
+    }
+  }
+}
 
-const lastActivityInContext = (analytics: any) => {
+const lastActivityInContext = (analytics: Analytics) => {
   let describe = ''
   if (analytics.courseEnrollmentCount) {
     const total = analytics.courseEnrollmentCount

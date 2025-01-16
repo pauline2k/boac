@@ -1,12 +1,13 @@
+import {Cohort} from '@/lib/cohort'
 import axios from 'axios'
-import ga from '@/lib/ga'
 import fileDownload from 'js-file-download'
+import ga from '@/lib/ga'
 import utils from '@/api/api-utils'
 import {useContextStore} from '@/stores/context'
 
 const $_track = (action: string, label?: string) => ga.cohort(action, label)
 
-const $_onCreate = (cohort: any) => {
+const $_onCreate = (cohort: Cohort) => {
   useContextStore().addMyCohort(cohort)
   $_track('create')
 }
@@ -16,7 +17,7 @@ const $_onDelete = (cohortId: number) => {
   $_track('delete')
 }
 
-const $_onUpdate = (updatedCohort: any) => {
+const $_onUpdate = (updatedCohort: Cohort) => {
   useContextStore().updateMyCohort(updatedCohort)
   $_track('update')
 }
@@ -24,7 +25,7 @@ const $_onUpdate = (updatedCohort: any) => {
 export function createCohort(
   domain: string,
   name: string,
-  filters: any[]
+  filters: object[]
 ) {
   const url: string = `${utils.apiBaseUrl()}/api/cohort/create`
   return axios.post(url, {domain, name, filters}).then(response => {
@@ -40,7 +41,7 @@ export function deleteCohort(id: number) {
   return axios.delete(url, {headers}).then(() => $_onDelete(id))
 }
 
-export function downloadCohortCsv(cohortId: number, cohortName: string, csvColumnsSelected: any[]) {
+export function downloadCohortCsv(cohortId: number, cohortName: string, csvColumnsSelected: string[]) {
   const contextStore = useContextStore()
   const termId = contextStore.currentUser.preferences.termId || contextStore.config.currentEnrollmentTermId
   const url: string = `${utils.apiBaseUrl()}/api/cohort/download_csv`
@@ -51,7 +52,7 @@ export function downloadCohortCsv(cohortId: number, cohortName: string, csvColum
   })
 }
 
-export function downloadCsv(domain: string, cohortName: string, filters: any[], csvColumnsSelected: any[]) {
+export function downloadCsv(domain: string, cohortName: string, filters: object[], csvColumnsSelected: string[]) {
   const contextStore = useContextStore()
   const termId = contextStore.currentUser.preferences.termId || contextStore.config.currentEnrollmentTermId
   const url: string = `${utils.apiBaseUrl()}/api/cohort/download_csv_per_filters`
@@ -79,7 +80,7 @@ export function getCohortEvents(id: number, offset: number, limit: number) {
   return axios.get(url).then(response => response.data)
 }
 
-export function getCohortFilterOptions(domain: string, owner: string | undefined, existingFilters: any[]) {
+export function getCohortFilterOptions(domain: string, owner: string | undefined, existingFilters: object[]) {
   owner = owner || 'me'
   const url: string = `${utils.apiBaseUrl()}/api/cohort/filter_options/${owner}`
   return axios.post(url, {domain, existingFilters}).then(response => response.data)
@@ -87,7 +88,7 @@ export function getCohortFilterOptions(domain: string, owner: string | undefined
 
 export function getStudentsPerFilters(
   domain: string,
-  filters: any[],
+  filters: object[],
   orderBy: string,
   termId: string,
   offset: number,
@@ -111,7 +112,7 @@ export function getUsersWithCohortsByDeptCode(deptCode: string) {
 export function saveCohort(
   id: number,
   name: string,
-  filters?: any
+  filters?: object[]
 ) {
   const url: string = `${utils.apiBaseUrl()}/api/cohort/update`
   return axios.post(url, {id, filters, name}).then(response => {
@@ -121,7 +122,7 @@ export function saveCohort(
   })
 }
 
-export function translateToFilterOptions(domain: string, owner: string, criteria: any) {
+export function translateToFilterOptions(domain: string, owner: string, criteria: object) {
   const url: string = `${utils.apiBaseUrl()}/api/cohort/translate_to_filter_options/${owner}`
   return axios.post(url, {criteria, domain}).then(response => response.data)
 }

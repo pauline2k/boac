@@ -38,7 +38,7 @@ export function updateNoteTemplate(
     body: string,
     deleteAttachmentIds: number[],
     isPrivate: boolean,
-    newAttachments: any[],
+    newAttachments: object[],
     noteTemplateId: number,
     subject: string,
     topics: string[]

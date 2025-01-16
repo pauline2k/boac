@@ -1,5 +1,5 @@
 import {cloneDeep, find, isNil, size} from 'lodash'
-import {defineStore, StoreDefinition} from 'pinia'
+import {StoreDefinition, defineStore} from 'pinia'
 
 const EDIT_MODE_TYPES = ['add', 'apply', 'edit-[0-9]+', 'rename']
 
@@ -10,13 +10,13 @@ export const useCohortStore: StoreDefinition = defineStore('cohort', {
     cohortOwnerUid: undefined,
     domain: undefined as string | null | undefined,
     editMode: undefined as string | null | undefined,
-    filterOptionGroups: [] as any[],
-    filters: [] as any[],
+    filterOptionGroups: [] as object[],
+    filters: [] as object[],
     isCompactView: false,
     isModifiedSinceLastSearch: false,
     isOwnedByCurrentUser: false,
     orderBy: undefined,
-    originalFilters: [] as any[],
+    originalFilters: [] as object[],
     pagination: {
       currentPage: undefined as number | null | undefined,
       itemsPerPage: 50
@@ -32,7 +32,7 @@ export const useCohortStore: StoreDefinition = defineStore('cohort', {
     showSortBy: state => !state.isModifiedSinceLastSearch && (state.totalStudentCount || 0) > 1
   },
   actions: {
-    addFilter(filter: any) {
+    addFilter(filter: object) {
       return this.filters.push(filter)
     },
     removeFilter(index: number) {
@@ -86,7 +86,7 @@ export const useCohortStore: StoreDefinition = defineStore('cohort', {
     toggleCompactView() {
       this.isCompactView = !this.isCompactView
     },
-    updateFilterOptions(filterOptionGroups: any[]) {
+    updateFilterOptions(filterOptionGroups: object[]) {
       this.filterOptionGroups = filterOptionGroups
     },
     updateExistingFilter({index, updatedFilter}) {

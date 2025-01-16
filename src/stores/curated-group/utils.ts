@@ -1,6 +1,7 @@
+import {CurrentUser} from '@/lib/utils'
 import {get, multiply} from 'lodash'
 import {getCuratedGroup} from '@/api/curated'
-import {CurrentUser, useContextStore} from '@/stores/context'
+import {useContextStore} from '@/stores/context'
 import {useCuratedGroupStore} from '@/stores/curated-group/index'
 
 export function goToCuratedGroup(curatedGroupId: number, pageNumber: number) {

@@ -1,5 +1,6 @@
-import {defineStore, StoreDefinition} from 'pinia'
-import {CurrentUser, useContextStore} from '@/stores/context'
+import {CurrentUser} from '@/lib/utils'
+import {StoreDefinition, defineStore} from 'pinia'
+import {useContextStore} from '@/stores/context'
 
 export const useSearchStore: StoreDefinition = defineStore('search', {
   state: () => ({
@@ -22,7 +23,7 @@ export const useSearchStore: StoreDefinition = defineStore('search', {
     topicOptions: [] as string[]
   }),
   getters: {
-    isDirty: (state: any): boolean => {
+    isDirty: (state): boolean => {
       const currentUser: CurrentUser = useContextStore().currentUser
       return (currentUser.canAccessCanvasData && !state.includeCourses)
         || (currentUser.canAccessCanvasData && !state.includeNotes)
@@ -67,6 +68,6 @@ export const useSearchStore: StoreDefinition = defineStore('search', {
     setStudent(value: string | null) {this.student = value},
     setToDate(value: string | null) {this.toDate = value},
     setTopic(value: string | null) {this.topic = value},
-    setTopicOptions(topicOptions: any[]) {this.topicOptions = topicOptions}
+    setTopicOptions(topicOptions: string[]) {this.topicOptions = topicOptions}
   }
 })
