@@ -50,7 +50,7 @@ defineProps({
 })
 const nextSisTermId = termId => {
   let nextTermId = ''
-  let strTermId = termId.toString()
+  const strTermId = termId.toString()
   switch (strTermId.slice(3)) {
   case '2':
     nextTermId = strTermId.slice(0, 3) + '5'

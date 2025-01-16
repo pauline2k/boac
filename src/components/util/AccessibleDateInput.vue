@@ -311,7 +311,9 @@ const onUpdateFocus = (hasFocus, inputEvents) => {
     type: hasFocus ? 'focusin' : 'focusout'
   }
   dateInputEvents.value = inputEvents
-  hasFocus ? inputEvents.focusin(event) : inputEvents.focusout(event)
+  if (hasFocus) {
+    inputEvents.focusin(event)
+  } else inputEvents.focusout(event)
 }
 </script>
 

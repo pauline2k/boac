@@ -1,10 +1,11 @@
+import {Pagination} from '@/lib/utils'
 import {getCohort, getCohortFilterOptions, getStudentsPerFilters, translateToFilterOptions} from '@/api/cohort'
 import {get, size} from 'lodash'
 import {useCohortStore} from '@/stores/cohort-edit-session/index'
 
-export function updateFilterOptions(domain: string, owner: string | undefined, existingFilters: any[]) {
+export function updateFilterOptions(domain: string, owner: string | undefined, existingFilters: object[]) {
   return new Promise<void>(resolve => {
-    getCohortFilterOptions(domain, owner, existingFilters).then((data: any) => {
+    getCohortFilterOptions(domain, owner, existingFilters).then((data: object) => {
       useCohortStore().updateFilterOptions(data)
       resolve()
     })
@@ -19,7 +20,7 @@ export function applyFilters(orderBy: string, termId: string) {
       cohortStore.setEditMode('apply')
       const cohortId: number = Number(cohortStore.cohortId)
       const isOwnedByCurrentUser: boolean = Boolean(cohortStore.isOwnedByCurrentUser)
-      const pagination: any = cohortStore.pagination
+      const pagination: Pagination = cohortStore.pagination
       const limit: number = pagination.itemsPerPage
       const offset: number = (pagination.currentPage - 1) * limit
       const isReadOnly: boolean = !!cohortId && !isOwnedByCurrentUser
@@ -44,7 +45,7 @@ export function applyFilters(orderBy: string, termId: string) {
 export function loadCohort(cohortId: number, orderBy: string, termId: string) {
   return new Promise<void>(resolve => {
     const cohortStore = useCohortStore()
-    const pagination: any = cohortStore.pagination
+    const pagination: Pagination = cohortStore.pagination
     getCohort(
       cohortId,
       true,
@@ -56,7 +57,7 @@ export function loadCohort(cohortId: number, orderBy: string, termId: string) {
       if (cohort) {
         cohortStore.setDomain(cohort.domain)
         const owner = cohort.isOwnedByCurrentUser ? 'me' : get(cohort, 'owner.uid')
-        translateToFilterOptions(cohort.domain, owner, cohort.criteria).then((filters: any[]) => {
+        translateToFilterOptions(cohort.domain, owner, cohort.criteria).then((filters: object[]) => {
           cohortStore.updateSession(cohort, filters, cohort.students, cohort.totalStudentCount)
           cohortStore.stashOriginalFilters()
           updateFilterOptions(cohort.domain, owner, filters).then(resolve)

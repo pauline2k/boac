@@ -1,21 +1,106 @@
+import {Cohort, CuratedGroup} from '@/lib/cohort'
 import numeral from 'numeral'
 import {concat, find, head, initial, isNil, isNumber, join, last, toLower, trim} from 'lodash'
-import {CurrentUser, useContextStore} from '@/stores/context'
+import {useContextStore} from '@/stores/context'
 import {getDegreeChecks} from '@/api/degree'
 import {getUserProfile} from '@/api/user'
 import {nextTick} from 'vue'
+
+export type BoaConfig = {
+  academicStandingDescriptions: object,
+  apiBaseUrl: string,
+  currentEnrollmentTerm: string,
+  currentEnrollmentTermId: number,
+  defaultTermUnitsAllowed: {
+    max: number,
+    min: number
+  },
+  draftNoteSubjectPlaceholder: string,
+  fixedWarningOnAllPages: boolean,
+  gaMeasurementId: string,
+  isProduction: boolean,
+  isVueAppDebugMode: boolean,
+  maxAttachmentsPerNote: number,
+  notesDraftAutoSaveInterval: number,
+  supportEmailAddress: string,
+  timezone: string
+}
+
+export type Course = {
+  sections: Section[],
+  waitlisted: boolean
+}
+
+export type CurrentUser = {
+  canAccessAdmittedStudents: boolean,
+  canAccessAdvisingData: boolean,
+  canAccessCanvasData: boolean,
+  canEditDegreeProgress: boolean,
+  canReadDegreeProgress: boolean,
+  departments: Department[],
+  inDemoMode: boolean,
+  isAdmin: boolean,
+  isAuthenticated: boolean,
+  isDemoModeAvailable: boolean,
+  myCohorts: Cohort[],
+  myCuratedGroups: CuratedGroup[],
+  myDraftNoteCount: number | undefined,
+  preferences: {
+    termId: string | undefined
+  },
+  title: string,
+  uid: string
+}
+
+export type Department = {
+  code: string,
+  role?: string
+}
+
+export type ExportListOption = {
+  text: string,
+  value: string,
+  disabled?: boolean
+}
+
+export type Pagination = {
+  currentPage: number,
+  itemsPerPage: number
+}
+
+export type ScreenReaderAlert = {
+  message: string,
+  politeness: string
+}
+
+export type Section = {
+  enrollmentStatus: string,
+  gradingBasis: string,
+  incompleteComments: string,
+  incompleteLapseGradeDate: string,
+  incompleteStatusCode: string
+}
+
+export type ServiceAnnouncement = {
+  isPublished: boolean,
+  text: string
+}
+
+export type Student = {
+  sid: string
+}
 
 let $_screenReaderAlertExpiry: number
 
 const clearScreenReaderAlert = () => {
   window.clearInterval($_screenReaderAlertExpiry)
-  useContextStore().setScreenReaderAlert({message: ''})
+  useContextStore().setScreenReaderAlert({message: ''} as ScreenReaderAlert)
 }
 
 export function alertScreenReader(message: string, persistent?: boolean, politeness?: string) {
   clearScreenReaderAlert()
   nextTick(() => {
-    useContextStore().setScreenReaderAlert({message, politeness})
+    useContextStore().setScreenReaderAlert({message, politeness} as ScreenReaderAlert)
     window.clearInterval($_screenReaderAlertExpiry)
     if (!persistent) {
       $_screenReaderAlertExpiry = window.setInterval(clearScreenReaderAlert, 5000)
@@ -34,7 +119,7 @@ const decodeHtml = (snippet: string) => {
 }
 
 export function decodeStudentUriAnchor() {
-  let decoded: any = undefined
+  let decoded: (object | undefined) = undefined
   const anchor = location.hash
   if (anchor) {
     const match = anchor.match(/^#permalink-(\w+)-([\d\w-]+)/)
@@ -68,7 +153,7 @@ export function goToStudentDegreeChecksByUID(uid: string, openInSameTab?: boolea
   })
 }
 
-export function invokeIfAuthenticated(callback: Function, onReject = () => {}) {
+export function invokeIfAuthenticated(callback: () => void, onReject = () => {}) {
   return getUserProfile().then(data => {
     if (data.isAuthenticated) {
       callback()
@@ -104,11 +189,11 @@ export function oxfordJoin(arr, zeroString?) {
 }
 
 export function pluralize(noun: string, count: number, substitutions = {}, pluralSuffix = 's') {
-  return (`${substitutions[count] || substitutions['other'] || toInt(count, 0).toLocaleString()} ` + (count !== 1 ? `${noun}${pluralSuffix}` : noun))
+  return (`${substitutions[count] || substitutions['other'] || count.toLocaleString()} ` + (count !== 1 ? `${noun}${pluralSuffix}` : noun))
 }
 
 // eslint-disable-next-line no-undef
-export function putFocusNextTick(id: string, {scroll=true, scrollBlock='center', cssSelector=undefined}: {scroll?: Boolean, scrollBlock?: ScrollLogicalPosition, cssSelector?: string}={}) {
+export function putFocusNextTick(id: string, {scroll=true, scrollBlock='center', cssSelector=undefined}: {scroll?: boolean, scrollBlock?: ScrollLogicalPosition, cssSelector?: string}={}) {
   nextTick(() => {
     let counter = 0
     const putFocus = setInterval(() => {
@@ -195,11 +280,11 @@ export function studentRoutePath(uid: string, inDemoMode: boolean) {
   return inDemoMode ? `/student/${window.btoa(uid)}` : `/student/${uid}`
 }
 
-export function toBoolean(value: any) {
+export function toBoolean(value: string) {
   return value && value !== 'false'
 }
 
-export function toInt(value: any, defaultValue: number = NaN): number {
+export function toInt(value: string, defaultValue: number = NaN): number {
   const parsed = parseInt(value, 10)
   return Number.isInteger(parsed) ? parsed : defaultValue
 }

@@ -76,7 +76,7 @@
 
 <script setup>
 import {putFocusNextTick} from '@/lib/utils'
-import {isValidUnits, MAX_UNITS_ALLOWED} from '@/lib/degree-progress'
+import {MAX_UNITS_ALLOWED, isValidUnits} from '@/lib/degree-progress'
 import {onMounted, ref} from 'vue'
 
 const props = defineProps({

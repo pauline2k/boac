@@ -211,7 +211,7 @@
 import NavLink from '@/components/util/NavLink.vue'
 import PillCount from '@/components/util/PillCount.vue'
 import SidebarFooter from '@/components/sidebar/SidebarFooter.vue'
-import {capitalize, filter as _filter} from 'lodash'
+import {filter as _filter, capitalize} from 'lodash'
 import {describeCuratedGroupDomain} from '@/berkeley'
 import {mdiPlus} from '@mdi/js'
 import {pluralize, toInt} from '@/lib/utils'

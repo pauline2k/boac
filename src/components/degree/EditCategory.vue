@@ -187,7 +187,7 @@ import {alertScreenReader, oxfordJoin, pluralize, putFocusNextTick} from '@/lib/
 import {each, every, filter, get, includes, isEmpty, map, reject, size, some, unionBy} from 'lodash'
 import {computed, onMounted, ref, watch} from 'vue'
 import {createDegreeCategory, updateCategory} from '@/api/degree'
-import {findCategoryById, flattenCategories, getItemsForCoursesTable, isCampusRequirement, MAX_UNITS_ALLOWED, validateUnitRange} from '@/lib/degree-progress'
+import {MAX_UNITS_ALLOWED, findCategoryById, flattenCategories, getItemsForCoursesTable, isCampusRequirement, validateUnitRange} from '@/lib/degree-progress'
 import {refreshDegreeTemplate} from '@/stores/degree-edit-session/utils'
 import {useDegreeStore} from '@/stores/degree-edit-session/index'
 import {useContextStore} from '@/stores/context'
@@ -300,7 +300,7 @@ const onChangeParentCategory = option => {
     selectedUnitRequirements.value = unionBy(parentUnitRequirements, initialUnitRequirements, 'id')
     putFocusNextTick(`column-${props.position}-create-requirement-btn`)
   } else {
-    let removed = []
+    const removed = []
     each(parentUnitRequirements, unitRequirement => {
       const indexOf = selectedUnitRequirements.value.findIndex(u => u.id === unitRequirement.id)
       selectedUnitRequirements.value.splice(indexOf, 1)

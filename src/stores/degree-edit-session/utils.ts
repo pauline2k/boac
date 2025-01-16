@@ -1,3 +1,4 @@
+import {Category, CourseRequirement, DegreeProgressCourse, DegreeTemplate} from '@/lib/degree-progress'
 import {alertScreenReader} from '@/lib/utils'
 import {assignCourse, deleteDegreeCategory, deleteDegreeCourse, getDegreeTemplate} from '@/api/degree'
 import {get, includes, map} from 'lodash'
@@ -6,9 +7,9 @@ import {useDegreeStore} from '@/stores/degree-edit-session'
 
 const VALID_DRAG_DROP_CONTEXTS: string[] = ['assigned', 'ignored', 'requirement', 'unassigned']
 
-const $_allowCourseDrop = (category, course, context): boolean => {
+const $_allowCourseDrop = (category: Category | CourseRequirement | null, course: DegreeProgressCourse, context: string | null): boolean => {
   if (category) {
-    const getCourseKey = (c: any): string | null => {
+    const getCourseKey = (c: DegreeProgressCourse): string | null => {
       return c ? `${c.termId}-${c.sectionId}-${c.manuallyCreatedAt}-${c.manuallyCreatedBy}` : null
     }
     return (category.categoryType !== 'Course Requirement' || !category.courses.length)
@@ -20,7 +21,7 @@ const $_allowCourseDrop = (category, course, context): boolean => {
   return false
 }
 
-const $_dropToAssign = (categoryId: number | null, course: any, ignore: boolean) => {
+const $_dropToAssign = (categoryId: number | null, course: DegreeProgressCourse, ignore: boolean) => {
   const degreeStore = useDegreeStore()
   degreeStore.setDisableButtons(true)
   return assignCourse(course.id, categoryId, ignore).then(() => {
@@ -39,7 +40,7 @@ export function deleteCategory(categoryId: number) {
   })
 }
 
-export function deleteCourse(courseId: number): Promise<any> {
+export function deleteCourse(courseId: number): Promise<void|DegreeTemplate> {
   return new Promise(resolve => {
     const templateId: number = useDegreeStore().templateId
     deleteDegreeCourse(courseId).then(() => refreshDegreeTemplate(templateId)).then(resolve)
@@ -47,11 +48,13 @@ export function deleteCourse(courseId: number): Promise<any> {
 }
 
 export function log(message: string) {
-  // eslint-disable-next-line no-console
-  useContextStore().config.isVueAppDebugMode && console.log(message)
+  if (useContextStore().config.isVueAppDebugMode) {
+    // eslint-disable-next-line no-console
+    console.log(message)
+  }
 }
 
-export function onDrop(category: any, context: any) {
+export function onDrop(category: Category, context: string) {
   return new Promise<void>(resolve => {
     const draggingContext = useDegreeStore().draggingContext
     const course = draggingContext.course
@@ -117,9 +120,9 @@ export function onDrop(category: any, context: any) {
   })
 }
 
-export function refreshDegreeTemplate(templateId: number): Promise<any> {
-  return new Promise<any>(resolve => {
-    getDegreeTemplate(templateId).then((template: any) => {
+export function refreshDegreeTemplate(templateId: number): Promise<DegreeTemplate> {
+  return new Promise<DegreeTemplate>(resolve => {
+    getDegreeTemplate(templateId).then((template: DegreeTemplate) => {
       useDegreeStore().resetSession(template)
       return resolve(template)
     })

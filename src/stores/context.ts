@@ -1,3 +1,7 @@
+import {Cohort, CuratedGroup} from '@/lib/cohort'
+import {CurrentUser} from '@/lib/utils'
+import {Handler} from 'mitt'
+import {BoaConfig, ScreenReaderAlert, ServiceAnnouncement} from '@/lib/utils'
 import {get, noop, sortBy} from 'lodash'
 import mitt from 'mitt'
 import router from '@/router'
@@ -6,55 +10,14 @@ import {defineStore} from 'pinia'
 import {nextTick} from 'vue'
 
 const $_getDefaultApplicationState = () => ({
-  message: undefined,
-  stacktrace: undefined,
+  message: undefined as string | undefined,
+  stacktrace: undefined as string | undefined | null,
   status: 200
 })
 
-export type BoaConfig = {
-  academicStandingDescriptions: any,
-  apiBaseUrl: string,
-  currentEnrollmentTerm: string,
-  currentEnrollmentTermId: number,
-  defaultTermUnitsAllowed: {
-    max: number,
-    min: number
-  },
-  draftNoteSubjectPlaceholder: string,
-  fixedWarningOnAllPages: boolean,
-  gaMeasurementId: string,
-  isProduction: boolean,
-  isVueAppDebugMode: boolean,
-  maxAttachmentsPerNote: number,
-  notesDraftAutoSaveInterval: number,
-  supportEmailAddress: string,
-  timezone: string
-}
-
-export type CurrentUser = {
-  canAccessAdmittedStudents: boolean,
-  canAccessAdvisingData: boolean,
-  canAccessCanvasData: boolean,
-  canEditDegreeProgress: boolean,
-  canReadDegreeProgress: boolean,
-  departments: any[],
-  inDemoMode: boolean,
-  isAdmin: boolean,
-  isAuthenticated: boolean,
-  isDemoModeAvailable: boolean,
-  myCohorts: any[],
-  myCuratedGroups: any[],
-  myDraftNoteCount: number | undefined,
-  preferences: {
-    termId: string | undefined
-  },
-  title: string,
-  uid: string
-}
-
 export const useContextStore = defineStore('context', {
   state: () => ({
-    announcement: undefined,
+    announcement: undefined as ServiceAnnouncement | undefined,
     applicationState: $_getDefaultApplicationState(),
     config: {} as BoaConfig,
     currentUser: {
@@ -67,8 +30,8 @@ export const useContextStore = defineStore('context', {
       isAdmin: false,
       isAuthenticated: false,
       isDemoModeAvailable: false,
-      myCohorts: [] as any[],
-      myCuratedGroups: [] as any[],
+      myCohorts: [] as Cohort[],
+      myCuratedGroups: [] as CuratedGroup[],
       myDraftNoteCount: undefined as number | undefined,
       preferences: {
         termId: undefined as string | undefined
@@ -84,13 +47,13 @@ export const useContextStore = defineStore('context', {
     screenReaderAlert: {
       message: '',
       politeness: 'polite'
-    }
+    } as ScreenReaderAlert
   }),
   actions: {
-    addMyCohort(cohort: any) {
+    addMyCohort(cohort: Cohort) {
       this.currentUser.myCohorts.push(cohort)
     },
-    addMyCuratedGroup(curatedGroup: any) {
+    addMyCuratedGroup(curatedGroup: CuratedGroup) {
       this.currentUser.myCuratedGroups.push(curatedGroup)
       this.currentUser.myCuratedGroups = sortBy(this.currentUser.myCuratedGroups, 'name')
     },
@@ -112,7 +75,7 @@ export const useContextStore = defineStore('context', {
       this.loading = false
       alertScreenReader(srAlert || `${String(get(route, 'name', ''))} page loaded.`, true)
       const callable = () => {
-        let element: any
+        let element: HTMLElement | null
         if (putFocusElementId) {
           element = document.getElementById(putFocusElementId)
         } else {
@@ -143,7 +106,7 @@ export const useContextStore = defineStore('context', {
       const route = router.currentRoute.value
       alertScreenReader(srAlert || `${String(get(route, 'name', ''))} page is loading.`, true)
     },
-    removeEventHandler(type: string, handler?: any) {
+    removeEventHandler(type: string, handler?: Handler) {
       this.eventHub.off(type, handler)
     },
     removeMyCohort(cohortId: number) {
@@ -160,19 +123,19 @@ export const useContextStore = defineStore('context', {
     restoreServiceAnnouncement() {
       this.dismissedServiceAnnouncement = false
     },
-    setApplicationState(status: number, message?: any, stacktrace?: any) {
+    setApplicationState(status: number, message?: string, stacktrace?: string | null) {
       this.applicationState = {message, stacktrace, status}
     },
-    setConfig(data: any) {
+    setConfig(data: BoaConfig) {
       this.config = data
     },
-    setCurrentUser(currentUser: any) {
+    setCurrentUser(currentUser: CurrentUser) {
       this.currentUser = currentUser
     },
-    setDemoMode(inDemoMode: any): void {
+    setDemoMode(inDemoMode: boolean): void {
       this.currentUser.inDemoMode = inDemoMode
     },
-    setEventHandler(type: string, handler: any) {
+    setEventHandler(type: string, handler: Handler) {
       this.eventHub.on(type, handler)
     },
     setMyDraftNoteCount(count: number) {
@@ -181,25 +144,25 @@ export const useContextStore = defineStore('context', {
     setRouteKeyId(id: number) {
       this.routeKeyId = id
     },
-    setScreenReaderAlert(screenReaderAlert: any) {
+    setScreenReaderAlert(screenReaderAlert: ScreenReaderAlert) {
       this.screenReaderAlert = {
         message: screenReaderAlert.message,
         politeness: screenReaderAlert.politeness || 'polite'
       }
     },
-    setServiceAnnouncement(data: any) {
+    setServiceAnnouncement(data: ServiceAnnouncement) {
       this.announcement = data
     },
     updateCurrentUserPreference(key, value) {
       this.currentUser.preferences[key] = value
     },
-    updateMyCohort(updatedCohort: any) {
-      const cohort = this.currentUser.myCohorts.find(cohort => cohort.id === +updatedCohort.id)
-      Object.assign(cohort, updatedCohort)
+    updateMyCohort(updatedCohort: Cohort) {
+      const cohort = this.currentUser.myCohorts.find((cohort: Cohort) => cohort.id === +updatedCohort.id)
+      Object.assign(cohort as Cohort, updatedCohort)
     },
-    updateMyCuratedGroup(updatedCuratedGroup: any) {
-      const group = this.currentUser.myCuratedGroups.find(group => group.id === +updatedCuratedGroup.id)
-      Object.assign(group, updatedCuratedGroup)
+    updateMyCuratedGroup(updatedCuratedGroup: CuratedGroup) {
+      const group = this.currentUser.myCuratedGroups.find((group: CuratedGroup) => group.id === +updatedCuratedGroup.id)
+      Object.assign(group as CuratedGroup, updatedCuratedGroup)
     }
   }
 })

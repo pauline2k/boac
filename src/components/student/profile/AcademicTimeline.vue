@@ -24,7 +24,7 @@
 import AcademicTimelineHeader from '@/components/student/profile/AcademicTimelineHeader'
 import AcademicTimelineTable from '@/components/student/profile/AcademicTimelineTable'
 import {DateTime} from 'luxon'
-import {get, each, findIndex, keys, remove, size, find} from 'lodash'
+import {each, find, findIndex, get, keys, remove, size} from 'lodash'
 import {getNote} from '@/api/notes'
 import {onMounted, onUnmounted, ref} from 'vue'
 import {useContextStore} from '@/stores/context'
@@ -59,7 +59,7 @@ onMounted(() => {
     filterTypes.value.appointment = {name: 'Appointment', tab: 'Appointments', tabWidth: 126}
   }
   each(keys(filterTypes.value), (type, typeIndex) => {
-    let notifications = props.student.notifications[type]
+    const notifications = props.student.notifications[type]
     countsPerType.value[type] = size(notifications)
     each(notifications, (message, index) => {
       // If object is not a BOA advising note then generate a transient and non-zero primary key.
@@ -140,8 +140,8 @@ const sortDate = message => {
 
 const sortMessages = () => {
   messages.value.sort((m1, m2) => {
-    let d1 = sortDate(m1)
-    let d2 = sortDate(m2)
+    const d1 = sortDate(m1)
+    const d2 = sortDate(m2)
     if (d1 && d2 && d1 !== d2) {
       return d2.localeCompare(d1)
     } else if (d1 === d2 && m1.id && m2.id) {

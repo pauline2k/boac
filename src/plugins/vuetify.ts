@@ -13,14 +13,14 @@ import {VBtnToggle} from 'vuetify/components/VBtnToggle'
 import {VCard, VCardActions, VCardSubtitle, VCardText, VCardTitle} from 'vuetify/components/VCard'
 import {VCheckbox, VCheckboxBtn} from 'vuetify/components/VCheckbox'
 import {VChip} from 'vuetify/components/VChip'
-import {VCol, VContainer, VSpacer, VRow} from 'vuetify/components/VGrid'
+import {VCol, VContainer, VRow, VSpacer} from 'vuetify/components/VGrid'
 import {VCombobox} from 'vuetify/components/VCombobox'
 import {VDataTable, VDataTableVirtual} from 'vuetify/components/VDataTable'
 import {VDateInput} from 'vuetify/labs/VDateInput'
 import {VDialog} from 'vuetify/components/VDialog'
 import {VDivider} from 'vuetify/components/VDivider'
 import {VExpandTransition, VFadeTransition} from 'vuetify/components/transitions'
-import {VExpansionPanel, VExpansionPanels, VExpansionPanelText, VExpansionPanelTitle} from 'vuetify/components/VExpansionPanel'
+import {VExpansionPanel, VExpansionPanelText, VExpansionPanelTitle, VExpansionPanels} from 'vuetify/components/VExpansionPanel'
 import {VFileInput} from 'vuetify/components/VFileInput'
 import {VFooter} from 'vuetify/components/VFooter'
 import {VIcon} from 'vuetify/components/VIcon'
@@ -39,8 +39,7 @@ import {VTextarea} from 'vuetify/components/VTextarea'
 import {VTextField} from 'vuetify/components/VTextField'
 import {VTooltip} from 'vuetify/components/VTooltip'
 
-// @ts-ignore
-import colors from 'vuetify/lib/util/colors'
+import colors from 'vuetify/lib/util/colors.mjs'
 
 export default createVuetify({
   components: {

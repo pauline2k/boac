@@ -1,4 +1,5 @@
-import {defineStore, StoreDefinition} from 'pinia'
+import {Student} from '@/lib/utils'
+import {StoreDefinition, defineStore} from 'pinia'
 import {find, isNil} from 'lodash'
 
 const VALID_MODES = ['bulkAdd', 'rename']
@@ -13,7 +14,7 @@ export const useCuratedGroupStore: StoreDefinition = defineStore('curatedGroup',
     ownerId: undefined as undefined | number,
     pageNumber: undefined as undefined | number,
     referencingCohortIds: [] as number[],
-    students: [] as any[],
+    students: [] as Student[],
     totalStudentCount: undefined as undefined | number
   }),
   actions: {
@@ -53,7 +54,7 @@ export const useCuratedGroupStore: StoreDefinition = defineStore('curatedGroup',
     setReferencingCohortIds(referencingCohortIds: number[]) {
       this.referencingCohortIds = referencingCohortIds
     },
-    setStudents(students: any[]) {
+    setStudents(students: Student[]) {
       this.students = students
     },
     setTotalStudentCount(totalStudentCount: number) {

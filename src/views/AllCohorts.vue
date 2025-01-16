@@ -139,7 +139,7 @@
 <script setup>
 import {alertScreenReader, pluralize, setPageTitle} from '@/lib/utils'
 import {computed, onMounted, ref} from 'vue'
-import {each, filter as _filter, get, isNil, map, startsWith, toLower} from 'lodash'
+import {filter as _filter, each, get, isNil, map, startsWith, toLower} from 'lodash'
 import {getDepartments} from '@/api/user'
 import {getUsersWithCohortsByDeptCode} from '@/api/cohort'
 import {getUsersWithCuratedGroupsByDeptCode} from '@/api/curated'

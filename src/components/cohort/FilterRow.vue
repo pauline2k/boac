@@ -220,17 +220,17 @@ import ProgressButton from '@/components/util/ProgressButton'
 import {useCohortStore} from '@/stores/cohort-edit-session'
 import {
   cloneDeep,
-  get,
   each,
   find,
   flatten,
+  get,
   isNaN,
   isNil,
   isPlainObject,
   isUndefined,
-  toLower,
   noop,
   size,
+  toLower,
   trim,
   values
 } from 'lodash'

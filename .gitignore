@@ -35,6 +35,7 @@ tmp/
 *.log
 .cache
 .pytest_cache/
+vite.config.*.timestamp-*
 
 # BEA
 geckodriver.log

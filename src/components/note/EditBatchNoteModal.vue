@@ -429,7 +429,9 @@ const showAlert = (value, seconds=3) => {
 
 const toggleFocusLock = isSecondModalOpen => {
   if (dialogModel.value) {
-    isSecondModalOpen ? disableFocusLock() : enableFocusLock()
+    if (isSecondModalOpen) {
+      disableFocusLock()
+    } else enableFocusLock()
   }
 }
 

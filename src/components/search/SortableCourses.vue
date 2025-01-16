@@ -108,8 +108,8 @@ const onUpdateSortBy = primarySortBy => {
 const sortRaw = (c1, c2) => {
   if (sortBy.value.key === 'section') {
     // Compare by subject area.
-    let split1 = splitCourseName(c1)
-    let split2 = splitCourseName(c2)
+    const split1 = splitCourseName(c1)
+    const split2 = splitCourseName(c2)
     if (split1[0] > split2[0]) {
       return 1
     }
@@ -117,8 +117,8 @@ const sortRaw = (c1, c2) => {
       return -1
     }
     // If subject areas are identical, extract and compare numeric portion of catalog id.
-    let code1 = parseInt(split1[1].match(/\d+/)[0], 10)
-    let code2 = parseInt(split2[1].match(/\d+/)[0], 10)
+    const code1 = parseInt(split1[1].match(/\d+/)[0], 10)
+    const code2 = parseInt(split2[1].match(/\d+/)[0], 10)
     if (code1 > code2) {
       return 1
     }
@@ -148,7 +148,7 @@ const sortRaw = (c1, c2) => {
 }
 
 const splitCourseName = course => {
-  let split = course.courseName.split(' ')
+  const split = course.courseName.split(' ')
   return [split.slice(0, -1).join(' '), split[split.length - 1]]
 }
 </script>

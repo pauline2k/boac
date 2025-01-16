@@ -1,19 +1,14 @@
-import {capitalize as _capitalize, each, filter, findIndex, get, includes, map, size, startsWith, toUpper, upperFirst, words} from 'lodash'
+import {Course, CurrentUser, Department, ExportListOption, Section} from '@/lib/utils'
 import {DateTime} from 'luxon'
-import {CurrentUser, useContextStore} from '@/stores/context'
-
-type ExportListOption = {
-  text: string,
-  value: string,
-  disabled?: boolean
-}
+import {capitalize as _capitalize, each, filter, findIndex, get, includes, map, size, startsWith, toUpper, upperFirst, words} from 'lodash'
+import {useContextStore} from '@/stores/context'
 
 export function describeCuratedGroupDomain(domain: string, capitalize?: boolean): string {
   const format = s => capitalize ? _capitalize(s) : s
   return format(domain === 'admitted_students' ? 'admissions ' : 'curated ') + format('group')
 }
 
-export function displayAsAscInactive(student: any) {
+export function displayAsAscInactive(student: object) {
   return (
     includes(myDeptCodes(['advisor', 'director']), 'UWASC') &&
     get(student, 'athleticsProfile') &&
@@ -21,7 +16,7 @@ export function displayAsAscInactive(student: any) {
   )
 }
 
-export function displayAsCoeInactive(student: any) {
+export function displayAsCoeInactive(student: object) {
   const isAuthorized = useContextStore().currentUser.isAdmin || includes(myDeptCodes(['advisor', 'director']), 'COENG')
   return isAuthorized && get(student, 'coeProfile') && !get(student, 'coeProfile.isActiveCoe')
 }
@@ -92,7 +87,7 @@ export function getAdmitCsvExportColumns(): ExportListOption[] {
   ]
 }
 
-export function getBoaUserRoles(department: any): string[] {
+export function getBoaUserRoles(department: Department): string[] {
   const roles: string[] = []
   if (department.role) {
     roles.push(upperFirst(department.role))
@@ -149,7 +144,7 @@ export function getDefaultCsvExportColumns(): ExportListOption[] {
   return columns
 }
 
-export function getIncompleteGradeDescription(courseDisplayName: string, sections: any[]): string | undefined {
+export function getIncompleteGradeDescription(courseDisplayName: string, sections: Section[]): string | undefined {
   let description: string | undefined
   const sections_with_incomplete = getSectionsWithIncompleteStatus(sections)
   if (sections_with_incomplete.length) {
@@ -201,7 +196,7 @@ export function getSectionsWithIncompleteStatus(sections) {
   return filter(sections, 'incompleteStatusCode')
 }
 
-export function isAdvisor(user: any) {
+export function isAdvisor(user: CurrentUser) {
   return !!size(filter(user.departments, d => d.role === 'advisor'))
 }
 
@@ -210,16 +205,16 @@ export function isAlertGrade(grade: string) {
   return grade && /^[DFINR]/.test(grade)
 }
 
-export function isCoe(user: any) {
+export function isCoe(user: CurrentUser) {
   return !!size(filter(user.departments, d => d.code === 'COENG' && includes(['advisor', 'director'], d.role)))
 }
 
-export function isDirector(user: any) {
+export function isDirector(user: CurrentUser) {
   return !!size(filter(user.departments, d => d.role === 'director'))
 }
 
-export function lastActivityDays(analytics: any) {
-  const timestamp = parseInt(get(analytics, 'lastActivity.student.raw'), 10)
+export function lastActivityDays(analytics: object) {
+  const timestamp = parseInt(get(analytics, 'lastActivity.student.raw', ''), 10)
   if (!timestamp || isNaN(timestamp)) {
     return 'Never'
   }
@@ -239,12 +234,12 @@ export function lastActivityDays(analytics: any) {
   }
 }
 
-export function myDeptCodes(roles: any[]) {
+export function myDeptCodes(roles: string[]) {
   const departments = useContextStore().currentUser.departments
-  return map(filter(departments, (d: any) => findIndex(roles, role => d.role === role) > -1), 'code')
+  return map(filter(departments, (d: {role: string}) => findIndex(roles, role => d.role === role) > -1), 'code')
 }
 
-export function isGraduate(student: any) {
+export function isGraduate(student: object) {
   return get(student, 'sisProfile.level.description') === 'Graduate'
 }
 
@@ -267,7 +262,7 @@ export function previousSisTermId(termId: number | string): string {
   }
   return previousTermId
 }
-export function setWaitlistedStatus(course: any) {
+export function setWaitlistedStatus(course: Course) {
   each(course.sections, function(section) {
     course.waitlisted = course.waitlisted || section.enrollmentStatus === 'W'
   })
