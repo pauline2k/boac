@@ -36,9 +36,9 @@
           <Sidebar />
         </v-navigation-drawer>
         <v-main role="none" tag="div">
-          <div id="main-container" class="h-100" :class="{'align-center d-flex justify-center': loading}">
-            <div v-if="loading" class="loading-container d-flex">
-              <div class="my-auto" role="progressbar">
+          <div id="main-container" class="h-100">
+            <div v-if="loading" class="loading-container align-center d-flex justify-center">
+              <div class="ma-auto" role="progressbar">
                 <PlaneGoRound
                   id="spinner-when-loading"
                   aria-label="page loading"
@@ -57,12 +57,16 @@
               </div>
             </v-expand-transition>
             <div
-              v-show="!loading"
               class="w-100"
               :class="{'service-alert-offset': get(contextStore, 'announcement.isPublished') && !contextStore.dismissedServiceAnnouncement}"
             >
               <ServiceAnnouncement ref="serviceAlert" />
-              <div id="content" class="scroll-margins" role="main">
+              <div
+                v-show="!loading"
+                id="content"
+                class="scroll-margins"
+                role="main"
+              >
                 <router-view :key="split(route.fullPath, '#', 1)[0]" />
               </div>
             </div>
