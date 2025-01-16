@@ -106,6 +106,9 @@ class FilteredStudentsPageFilters(FilteredStudentsPageResults):
             self.wait_for_element_and_click(self.NEW_SUB_FILTER_SELECT)
             self.matching_option(self.NEW_SUB_FILTER_SELECT, filter_sub_option).click()
 
+    def click_unsaved_filter_add_button(self):
+        self.wait_for_element_and_click(self.UNSAVED_FILTER_ADD_BUTON)
+
     def select_new_filter(self, filter_option, filter_sub_option=None):
         self.select_new_filter_option(filter_option)
         no_options = ['Midpoint Deficient Grade', 'Transfer Student', 'Underrepresented Minority', 'Inactive (ASC)',
@@ -115,7 +118,7 @@ class FilteredStudentsPageFilters(FilteredStudentsPageResults):
                       'Last School LCFF+', 'Holds']
         if filter_option not in no_options:
             self.select_new_filter_sub_option(filter_option, filter_sub_option)
-        self.wait_for_element_and_click(self.UNSAVED_FILTER_ADD_BUTON)
+        self.click_unsaved_filter_add_button()
 
     def perform_student_search(self, cohort):
         # Academic

@@ -59,14 +59,18 @@ class ListViewStudentPages(Pagination, UserListPages):
         return list(map(lambda el: el.text, self.elements(self.PLAYER_NAME)))
 
     def list_view_sids(self):
-        try:
-            self.wait_for_players()
-            time.sleep(utils.get_click_sleep())
-            return list(map(lambda el: el.text.replace('INACTIVE', '').replace('WAITLISTED', '').strip(),
-                            self.elements(self.PLAYER_SID)))
-        except TimeoutException:
-            app.logger.info('No list view SIDs found')
+        if self.is_present((By.XPATH, '//span[contains(., "(0 students)")]')) or self.is_present(
+                (By.XPATH, '//h1[text()="0 Results"]')):
             return []
+        else:
+            try:
+                self.wait_for_players()
+                time.sleep(utils.get_click_sleep())
+                return list(map(lambda el: el.text.replace('INACTIVE', '').replace('WAITLISTED', '').strip(),
+                                self.elements(self.PLAYER_SID)))
+            except TimeoutException:
+                app.logger.info('No list view SIDs found')
+                return []
 
     @staticmethod
     def student_row_xpath(student):

@@ -560,8 +560,9 @@ class TestMyStudents:
         self.filtered_students_page.verify_default_export_student_list(my_students_cohort, downloaded_csv)
 
     def test_custom_my_students_cohort_export(self):
-        downloaded_csv = self.filtered_students_page.export_custom_student_list(my_students_cohort)
-        self.filtered_students_page.verify_custom_export_student_list(my_students_cohort, downloaded_csv)
+        downloaded_csv = self.filtered_students_page.export_custom_student_list(my_students_cohort, my_students_advisor)
+        self.filtered_students_page.verify_custom_export_student_list(my_students_cohort, downloaded_csv,
+                                                                      my_students_advisor)
 
     def test_my_students_cohort_visible_to_others(self):
         self.filtered_students_page.log_out()

@@ -64,9 +64,12 @@ class CuratedPages(CohortPages, CuratedModal):
 
     DELETE_GROUP_BUTTON = By.ID, 'delete-curated-group-button'
 
+    def click_delete_group_button(self):
+        self.wait_for_page_and_click(self.DELETE_GROUP_BUTTON)
+
     def delete_group(self, group):
         app.logger.info(f'Deleting a group named {group.name}')
-        self.wait_for_page_and_click(self.DELETE_GROUP_BUTTON)
+        self.click_delete_group_button()
         self.wait_for_element_and_click(self.ARE_YOU_SURE_CONFIRM_BUTTON)
         Wait(self.driver, utils.get_short_timeout()).until(ec.url_contains(f'{boa_utils.get_boa_base_url()}/home'))
         time.sleep(utils.get_click_sleep())

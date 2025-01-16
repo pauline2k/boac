@@ -401,11 +401,16 @@ class BEATestBaseConfigs(object):
 
     def set_default_cohort(self, cohort_filter=None, opts=None):
         if not cohort_filter:
-            if opts and utils.safe_key(opts, 'include_inactive'):
-                data = {
-                    'intended_majors': [{'major': app.config['TEST_DEFAULT_COHORT_MAJOR']}],
-                    'career_statuses': [{'status': 'Active'}, {'status': 'Inactive'}],
-                }
+            if opts:
+                if opts.get('include_inactive'):
+                    data = {
+                        'intended_majors': [{'major': app.config['TEST_DEFAULT_COHORT_MAJOR']}],
+                        'career_statuses': [{'status': 'Active'}, {'status': 'Inactive'}],
+                    }
+                elif opts.get('major'):
+                    data = {
+                        'majors': [{'major': opts['major']}],
+                    }
             else:
                 data = {
                     'intended_majors': [{'major': app.config['TEST_DEFAULT_COHORT_MAJOR']}],

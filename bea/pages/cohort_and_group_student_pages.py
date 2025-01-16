@@ -23,6 +23,8 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 ENHANCEMENTS, OR MODIFICATIONS.
 """
 
+from bea.models.cohorts_and_groups.filtered_cohort import FilteredCohort
+from bea.models.department import Department
 from bea.pages.cohort_pages import CohortPages
 from bea.pages.list_view_student_pages import ListViewStudentPages
 from bea.test_utils import utils
@@ -46,12 +48,14 @@ class CohortAndGroupStudentPages(CohortPages, ListViewStudentPages):
         self.confirm_export(cohort)
         return utils.wait_for_export_csv()
 
-    def export_custom_student_list(self, cohort):
+    def export_custom_student_list(self, cohort, user):
         app.logger.info('Exporting student list with default columns')
         utils.prepare_download_dir()
         self.click_export_list()
-        for i in range(19):
-            self.wait_for_element_and_click((By.ID, f'csv-column-options-{i}'))
+        self.when_present((By.ID, 'csv-column-options-0'), utils.get_short_timeout())
+        checkbox_count = 25 if Department.ADMIN in user.depts or Department.COE in user.depts else 24
+        for i in range(checkbox_count):
+            self.element((By.ID, f'csv-column-options-{i}')).click()
         self.confirm_export(cohort)
         return utils.wait_for_export_csv()
 
@@ -63,11 +67,11 @@ class CohortAndGroupStudentPages(CohortPages, ListViewStudentPages):
         emails = []
         phones = []
         for r in csv_reader:
-            sids.append(r['sid'])
-            first_names.append(r['first_name'])
-            last_names.append(r['last_name'])
-            emails.append(r['email'])
-            phones.append(r['phone'])
+            sids.append(r['SID'])
+            first_names.append(r['First Name'])
+            last_names.append(r['Last Name'])
+            emails.append(r['Email Address'])
+            phones.append(r['Phone Number'])
         sids.sort()
         cohort_sids = list(map(lambda m: m.sid, cohort.members))
         cohort_sids.sort()
@@ -78,9 +82,9 @@ class CohortAndGroupStudentPages(CohortPages, ListViewStudentPages):
         assert list(filter(lambda ph: ph, phones))
 
     @staticmethod
-    def verify_custom_export_student_list(cohort, csv_reader):
-        prev_term_sis_id = utils.get_prev_term_sis_id()
-        prev_prev_term_sis_id = utils.get_prev_term_sis_id(prev_term_sis_id)
+    def verify_custom_export_student_list(cohort, csv_reader, user):
+        prev_term = utils.get_previous_term()
+        prev_prev_term = utils.get_previous_term(prev_term)
         majors = []
         minors = []
         subplans = []
@@ -95,21 +99,39 @@ class CohortAndGroupStudentPages(CohortPages, ListViewStudentPages):
         transfers = []
         intended_majors = []
         units_in_progress = []
+        college_advisors = []
+        academic_standings = []
+        coe_statuses = []
+        cohorts = []
+        curated_groups = []
+        class_names = []
+        units = []
+        final_grades = []
         for r in csv_reader:
-            majors.append(r['majors'])
-            minors.append(r['minors'])
-            subplans.append(r['subplans'])
-            levels_by_units.append(r['level_by_units'])
-            terms_in_attend.append(r['terms_in_attendance'])
-            expected_grad_terms.append(r['expected_graduation_term'])
-            units_complete.append(r['units_completed'])
-            gpas_last_term.append(r[f'term_gpa_{prev_term_sis_id}'])
-            gpas_last_last_term.append(r[f'term_gpa_{prev_prev_term_sis_id}'])
-            cumul_gpas.append(r['cumulative_gpa'])
-            program_statuses.append(r['program_status'])
-            transfers.append(r['transfer'])
-            intended_majors.append(r['intended_major'])
-            units_in_progress.append(r['units_in_progress'])
+            majors.append(r['Major(s)'])
+            minors.append(r['Minor(s)'])
+            subplans.append(r['Academic Subplans'])
+            levels_by_units.append(r['Level by Units'])
+            terms_in_attend.append(r['Terms in Attendance'])
+            expected_grad_terms.append(r['Expected Graduation Term'])
+            units_complete.append(r['Units Completed'])
+            gpas_last_term.append(r[f'{prev_term.name} Term GPA'])
+            gpas_last_last_term.append(r[f'{prev_prev_term.name} Term GPA'])
+            cumul_gpas.append(r['Cumulative GPA'])
+            program_statuses.append(r['Program Status'])
+            transfers.append(r['Transfer Status'])
+            intended_majors.append(r['Intended Major'])
+            units_in_progress.append(r['Units in Progress'])
+            college_advisors.append(r['College Advisor'])
+            academic_standings.append(r['Academic Standing'])
+            if Department.ADMIN in user.depts or Department.COE in user.depts:
+                coe_statuses.append(r['CoE status'])
+            cohorts.append(r['Cohorts'])
+            curated_groups.append(r['Curated Groups'])
+            class_names.append(r['Class Name'])
+            units.append(r['Units'])
+            # Mid-point grades may or may not exist depending on where in the term we are, so skip verifying those
+            final_grades.append(r['Final Grade'])
         assert list(filter(lambda ma: ma, majors))
         assert list(filter(lambda mi: mi, minors))
         assert list(filter(lambda su: su, subplans))
@@ -124,6 +146,17 @@ class CohortAndGroupStudentPages(CohortPages, ListViewStudentPages):
         assert list(filter(lambda tr: tr, transfers))
         assert list(filter(lambda ima: ima, intended_majors))
         assert list(filter(lambda up: up, units_in_progress))
+        assert list(filter(lambda adv: adv, college_advisors))
+        assert list(filter(lambda st: st, academic_standings))
+        if Department.ADMIN in user.depts or Department.COE in user.depts:
+            assert list(filter(lambda ce: ce, coe_statuses))
+        if isinstance(cohort, FilteredCohort):
+            assert list(filter(lambda co: co, cohorts))
+        else:
+            assert list(filter(lambda gr: gr, curated_groups))
+        assert list(filter(lambda cl: cl, class_names))
+        assert list(filter(lambda un: un, units))
+        assert list(filter(lambda fg: fg, final_grades))
 
     # LIST VIEW - shared by filtered cohorts and curated groups
 

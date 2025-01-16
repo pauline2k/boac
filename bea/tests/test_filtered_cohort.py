@@ -392,7 +392,7 @@ class TestFilteredCohortEdits:
 class TestFilteredCohortExport:
 
     def test_ferpa_before_export(self):
-        test.set_default_cohort()
+        test.set_default_cohort(opts={'major': 'Computer Science BA'})
         self.filtered_students_page.search_and_create_new_student_cohort(test.default_cohort)
         self.filtered_students_page.click_export_list()
         title = 'FERPA (Privacy Disclosure) - Office of the Registrar'
@@ -404,5 +404,5 @@ class TestFilteredCohortExport:
         self.filtered_students_page.verify_default_export_student_list(test.default_cohort, downloaded_csv)
 
     def test_custom_cohort_export(self):
-        downloaded_csv = self.filtered_students_page.export_custom_student_list(test.default_cohort)
-        self.filtered_students_page.verify_custom_export_student_list(test.default_cohort, downloaded_csv)
+        downloaded_csv = self.filtered_students_page.export_custom_student_list(test.default_cohort, test.advisor)
+        self.filtered_students_page.verify_custom_export_student_list(test.default_cohort, downloaded_csv, test.advisor)

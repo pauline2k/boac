@@ -46,6 +46,7 @@ from bea.pages.degree_template_mgmt_page import DegreeTemplateMgmtPage
 from bea.pages.degree_template_page import DegreeTemplatePage
 from bea.pages.draft_notes_page import DraftNotesPage
 from bea.pages.filtered_admits_page import FilteredAdmitsPage
+from bea.pages.filtered_students_history_page import FilteredStudentsHistoryPage
 from bea.pages.filtered_students_page import FilteredStudentsPage
 from bea.pages.flight_data_recorder_page import FlightDataRecorderPage
 from bea.pages.flight_deck_page import FlightDeckPage
@@ -102,6 +103,7 @@ def page_objects(request):
     degree_template_page = DegreeTemplatePage(driver, headless)
     draft_notes_page = DraftNotesPage(driver, headless)
     filtered_admits_page = FilteredAdmitsPage(driver, headless)
+    filtered_students_history_page = FilteredStudentsHistoryPage(driver, headless)
     filtered_students_page = FilteredStudentsPage(driver, headless)
     flight_data_recorder_page = FlightDataRecorderPage(driver, headless)
     flight_deck_page = FlightDeckPage(driver, headless)
@@ -137,6 +139,7 @@ def page_objects(request):
             setattr(cls.obj, 'degree_template_page', degree_template_page)
             setattr(cls.obj, 'draft_notes_page', draft_notes_page)
             setattr(cls.obj, 'filtered_admits_page', filtered_admits_page)
+            setattr(cls.obj, 'filtered_students_history_page', filtered_students_history_page)
             setattr(cls.obj, 'filtered_students_page', filtered_students_page)
             setattr(cls.obj, 'flight_data_recorder_page', flight_data_recorder_page)
             setattr(cls.obj, 'flight_deck_page', flight_deck_page)
