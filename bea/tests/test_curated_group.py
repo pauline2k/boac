@@ -25,6 +25,7 @@ ENHANCEMENTS, OR MODIFICATIONS.
 
 from bea.config.bea_test_config import BEATestConfig
 from bea.models.cohorts_and_groups.cohort import Cohort
+from bea.models.cohorts_and_groups.filtered_cohort import FilteredCohort
 from bea.test_utils import boa_utils
 from bea.test_utils import utils
 from flask import current_app as app
@@ -51,6 +52,9 @@ class TestCuratedGroup:
     group_8 = Cohort({'name': f'Group 8 {test.test_id}'})
     group_9 = Cohort({'name': f'Group 9 {test.test_id}'})
     advisor_groups = [group_1, group_2, group_3, group_4, group_5, group_6, group_7, group_8]
+
+    curated_cohort = FilteredCohort({})
+    removed_members = []
 
     def test_get_test_student_enrollment(self):
         self.homepage.dev_auth(self.advisor)
@@ -319,8 +323,8 @@ class TestCuratedGroup:
 
     def test_export_group_membership_with_custom_columns(self):
         self.curated_students_page.load_page(self.group_4)
-        download = self.curated_students_page.export_custom_student_list(self.group_4)
-        self.curated_students_page.verify_custom_export_student_list(self.group_4, download)
+        download = self.curated_students_page.export_custom_student_list(self.group_4, self.test.advisor)
+        self.curated_students_page.verify_custom_export_student_list(self.group_4, download, self.test.advisor)
 
     def test_group_deletion_can_be_canceled(self):
         self.curated_students_page.load_page(self.group_1)
@@ -340,3 +344,61 @@ class TestCuratedGroup:
         for g in self.advisor_groups:
             self.homepage.expand_member_rows(g)
             self.homepage.verify_member_alerts(g, self.test.advisor)
+
+    # Groups as filters
+
+    def test_group_as_filter_members(self):
+        self.homepage.click_sidebar_create_filtered()
+        self.filtered_students_page.select_new_filter_option('My Curated Groups')
+        self.filtered_students_page.wait_for_select_and_click_option(self.filtered_students_page.NEW_SUB_FILTER_SELECT,
+                                                                     self.group_1.name)
+        self.filtered_students_page.click_unsaved_filter_add_button()
+        self.filtered_students_page.select_new_filter('Career Status', 'Active')
+        self.filtered_students_page.select_new_filter('Career Status', 'Inactive')
+        self.filtered_students_page.execute_search()
+        expected = [m.sid for m in self.group_1.members]
+        expected.sort()
+        visible = self.filtered_students_page.visible_sids()
+        visible.sort()
+        utils.assert_equivalence(visible, expected)
+
+    def test_group_as_filter_show_filters(self):
+        self.curated_cohort.name = f'Curated Cohort {self.test.test_id}'
+        self.filtered_students_page.create_new_cohort(self.curated_cohort)
+        self.curated_cohort.members = self.group_1.members
+        self.filtered_students_page.show_filters()
+        self.filtered_students_page.when_present(
+            self.filtered_students_page.existing_filter_loc('My Curated Groups', self.group_1.name),
+            2)
+
+    def test_group_as_filter_history_added_entries(self):
+        self.filtered_students_page.load_cohort(self.curated_cohort)
+        self.filtered_students_page.click_history()
+        expected_adds = self.filtered_students_history_page.expected_history_entries(self.group_1.members, 'ADDED')
+        actual_adds = self.filtered_students_history_page.visible_history_entries()
+        utils.assert_equivalence(actual_adds, expected_adds)
+
+    def test_group_as_filter_member_update(self):
+        member_to_remove = self.group_1.members[0]
+        self.curated_students_page.load_page(self.group_1)
+        self.curated_students_page.remove_student_by_row_index(self.group_1, member_to_remove)
+        self.filtered_students_page.load_cohort(self.curated_cohort)
+        visible = self.filtered_students_page.visible_sids(self.curated_cohort)
+        assert member_to_remove.sid not in visible
+        self.removed_members.append(member_to_remove)
+
+    def test_group_as_filter_history_removed(self):
+        self.filtered_students_page.load_cohort(self.curated_cohort)
+        self.filtered_students_page.click_history()
+        expected_removes = self.filtered_students_history_page.expected_history_entries(self.removed_members, 'REMOVED')
+        actual_entries = self.filtered_students_history_page.visible_history_entries()
+        utils.assert_actual_includes_expected(actual_entries, expected_removes[0])
+
+    def test_group_as_filter_cohort_link(self):
+        self.curated_students_page.load_page(self.group_1)
+        self.curated_students_page.when_present(self.curated_students_page.linked_cohort_link_loc(self.curated_cohort),
+                                                utils.get_short_timeout())
+
+    def test_group_as_filter_no_deleting(self):
+        self.curated_students_page.click_delete_group_button()
+        self.curated_students_page.when_present(self.curated_students_page.NO_DELETING_MSG, 2)

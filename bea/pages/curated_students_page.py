@@ -35,6 +35,7 @@ from selenium.webdriver.common.by import By
 class CuratedStudentsPage(CohortAndGroupStudentPages, CuratedPages):
 
     GROUP_NOT_FOUND_MSG = By.XPATH, '//span[contains(.,"No curated group found with id: ")]'
+    NO_DELETING_MSG = By.XPATH, '//div[contains(., "cannot delete this curated group until you have removed the filter")]'
 
     def remove_student_button_loc(self, student):
         return By.XPATH, f'{self.student_row_xpath(student)}//button[contains(@id, "remove-student-from-curated-group")]'
@@ -50,10 +51,6 @@ class CuratedStudentsPage(CohortAndGroupStudentPages, CuratedPages):
     @staticmethod
     def linked_cohort_link_loc(cohort):
         return By.XPATH, f'//a[contains(@id, "referencing-cohort-")][contains(., "{cohort.name}")]'
-
-    @staticmethod
-    def no_deleting_msg_loc(cohort):
-        return By.XPATH, f'//div[@id="cohort-warning-body"][contains(., "{cohort.name}")]'
 
     def remove_student_by_row_index(self, group, student):
         self.wait_for_student_list()

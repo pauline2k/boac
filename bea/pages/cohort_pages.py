@@ -41,7 +41,6 @@ class CohortPages(BoaPages):
     FERPA_WARNING_LINK = By.ID, 'ferpa-guide-external-href'
     EXPORT_LIST_CXL_BUTTON = By.ID, 'export-list-cancel'
     COHORT_HISTORY_LINK = By.ID, 'cohort-history-link'
-    BACK_TO_COHORT_LINK = By.ID, 'back-to-cohort-link'
 
     @staticmethod
     def cohort_heading_loc(cohort):
