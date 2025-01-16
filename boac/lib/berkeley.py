@@ -35,7 +35,7 @@ ACADEMIC_STANDING_DESCRIPTIONS = {
     'NOT': 'Notice',
     'PRO': 'Probation',
     'SSP': 'Subject to Academic Suspension',
-    'SUB': 'Subject to Dismissal',
+    'SUB': 'Subject to Disqualification',
     'SUS': 'Academic Suspension',
 }
 
