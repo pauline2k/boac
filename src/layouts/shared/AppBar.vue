@@ -10,7 +10,7 @@
       >
         <span class="hide-in-narrow-viewport">
           <span class="font-weight-bold">UC Berkeley</span>
-          Online Advising
+          Online Advising <span class="sr-only">home page</span>
         </span>
         <v-icon class="show-in-narrow-viewport" :icon="mdiHome" />
       </NavLink>

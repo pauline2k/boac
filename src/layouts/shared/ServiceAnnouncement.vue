@@ -1,17 +1,12 @@
 <template>
-  <h2 v-if="announcement && announcement.isPublished" id="service-announcement-label" class="sr-only">BOA Service Alert</h2>
-  <div
-    v-if="announcement && announcement.isPublished"
-    ref="serviceAlert"
-    aria-labelledby="service-announcement-label"
-  >
-    <v-expand-transition>
+  <div aria-live="assertive" role="alert">
+    <div
+      v-if="!contextStore.loading && announcement && announcement.isPublished"
+      ref="serviceAlert"
+    >
       <div v-if="!dismissedServiceAnnouncement" class="align-center bg-service-announcement d-flex font-weight-medium py-4 px-6">
-        <div aria-live="polite" class="d-inline-block pr-1 service-announcement-container w-100">
-          <span
-            id="service-announcement-banner"
-            v-html="announcement.text"
-          />
+        <div class="d-inline-block pr-1 service-announcement-container w-100">
+          <span id="service-announcement-banner" v-html="announcement.text" />
         </div>
         <v-btn
           id="dismiss-service-announcement"
@@ -23,24 +18,24 @@
           @click="toggle"
         />
       </div>
-    </v-expand-transition>
-    <v-btn
-      v-if="dismissedServiceAnnouncement"
-      id="restore-service-announcement"
-      class="sr-only"
-      @click="toggle"
-    >
-      Restore BOA Service Alert
-    </v-btn>
+    </div>
   </div>
+  <v-btn
+    v-if="!contextStore.loading && announcement && announcement.isPublished && dismissedServiceAnnouncement"
+    id="restore-service-announcement"
+    class="sr-only"
+    @click="toggle"
+  >
+    Restore BOA Service Alert
+  </v-btn>
 </template>
 
 <script setup>
-import {alertScreenReader, putFocusNextTick} from '@/lib/utils'
 import {mdiClose} from '@mdi/js'
+import {useTemplateRef} from 'vue'
+import {putFocusNextTick} from '@/lib/utils'
 import {storeToRefs} from 'pinia'
 import {useContextStore} from '@/stores/context'
-import {useTemplateRef} from 'vue'
 
 const contextStore = useContextStore()
 const {announcement, dismissedServiceAnnouncement} = storeToRefs(contextStore)
@@ -51,11 +46,9 @@ defineExpose({ref: serviceAlertRef})
 const toggle = () => {
   if (dismissedServiceAnnouncement.value) {
     contextStore.restoreServiceAnnouncement()
-    alertScreenReader('Alert restored')
     putFocusNextTick('dismiss-service-announcement', {scroll: false})
   } else {
     contextStore.dismissServiceAnnouncement()
-    alertScreenReader('Dismissed')
     putFocusNextTick('restore-service-announcement', {scroll: false})
   }
 }
