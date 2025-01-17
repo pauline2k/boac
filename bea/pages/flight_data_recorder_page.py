@@ -39,7 +39,6 @@ class FlightDataRecorderPage(BoaPages):
         self.driver.get(f"{boa_utils.get_boa_base_url()}/analytics/{dept.value['code']}")
 
     DEPT_SELECT = By.ID, 'available-department-reports'
-    DEPT_HEADING = By.XPATH, '(//h2)[2])'
     SHOW_HIDE_REPORT_BUTTON = By.ID, 'show-hide-notes-report'
     NOTES_COUNT_BOA = By.XPATH, '//h3[contains(text(), " notes have been created in BOA")]'
     NOTES_COUNT_BOA_AUTHORS = By.ID, 'notes-count-boa-authors'
@@ -60,9 +59,10 @@ class FlightDataRecorderPage(BoaPages):
         self.wait_for_select_and_click_option(self.DEPT_SELECT, dept.value['code'])
         time.sleep(2)
 
-    def dept_select_option_values(self):
+    def dept_select_option_names(self):
+        self.when_present(self.DEPT_SELECT, utils.get_short_timeout())
         sel = Select(self.element(self.DEPT_SELECT))
-        return [el.get_attribute('value') for el in sel.options]
+        return [el.text for el in sel.options]
 
     def toggle_note_report_visibility(self):
         app.logger.info('Clicking the show/hide report button')

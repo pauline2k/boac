@@ -94,6 +94,11 @@ class BoaPages(CreateNoteModal, SearchForm):
         self.open_menu()
         self.wait_for_page_and_click(self.DEGREE_CHECKS_LINK)
 
+    def click_flight_data_recorder_link(self):
+        app.logger.info('Clicking FDR link in the header')
+        self.open_menu()
+        self.wait_for_page_and_click(self.FLIGHT_DATA_RECORDER_LINK)
+
     def click_flight_deck_link(self):
         app.logger.info('Clicking flight deck link in the header')
         self.open_menu()
