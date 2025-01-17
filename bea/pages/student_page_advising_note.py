@@ -31,6 +31,7 @@ import time
 import zipfile
 
 from bea.models.department import Department
+from bea.models.notes_and_appts.timeline_e_form import TimelineEForm
 from bea.models.notes_and_appts.timeline_record_source import TimelineRecordSource
 from bea.pages.create_note_modal import CreateNoteModal
 from bea.pages.student_page_timeline import StudentPageTimeline
@@ -381,22 +382,25 @@ class StudentPageAdvisingNote(StudentPageTimeline, CreateNoteModal):
         return utils.wait_for_export_zip()
 
     def note_export_file_names(self, student):
-        return self.downloaded_zip_file_name_list(self.notes_export_zip_file_name(student))
+        names = self.downloaded_zip_file_name_list(self.notes_export_zip_file_name(student))
+        names = list(map(lambda n: n.lower(), names))
+        return names
 
     def expected_note_export_file_names(self, student, notes, downloader):
         names = [self.notes_export_csv_file_name(student)]
 
         attachments = []
         for note in notes:
-            if not (note.__class__.__name__ == 'TimelineEForm') or (
+            if not isinstance(note, TimelineEForm) and not (
                     note.is_private and not downloader.is_admin and Department.ZCEEE not in downloader.depts):
                 attachments.extend([attach for attach in note.attachments if not attach.deleted_at])
 
         # Account for duplicate attachment file names
         for key, result in itertools.groupby(attachments, key=lambda att: att.file_name):
-            parts = result[0].file_name.rpartition('.')
-            for dupe_attach in result:
-                idx = result.index(dupe_attach)
+            parts = key.rpartition('.')
+            grouped = list(result)
+            for dupe_attach in grouped:
+                idx = grouped.index(dupe_attach)
                 names.append(f"{parts[0]}{'' if idx == 0 else idx}.{parts[-1]}")
         return names
 

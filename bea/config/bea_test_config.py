@@ -337,6 +337,12 @@ class BEATestConfig(BEATestBaseConfigs):
         self.set_advisor()
         self.set_students(students=test_config.students)
 
+    def user_role_director(self):
+        users = boa_utils.get_authorized_users()
+        self.advisor = boa_utils.get_director(users)
+        self.set_students()
+        self.set_test_students(count=1, opts={'notes': True, 'inactive': True})
+
     def user_role_l_and_s(self, test_config):
         self.set_dept(dept=Department.L_AND_S)
         self.set_advisor()
