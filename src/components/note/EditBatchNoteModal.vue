@@ -13,7 +13,7 @@
       width="800"
       max-width="90%"
     >
-      <FocusLock :disabled="noteStore.isFocusLockDisabled">
+      <div>
         <CreateNoteHeader :exit="discardRequested" />
         <v-card-text class="modal-body">
           <Transition
@@ -118,7 +118,7 @@
           :show-alert="showAlert"
           :update-template="updateTemplate"
         />
-      </FocusLock>
+      </div>
     </v-card>
   </v-dialog>
   <AreYouSureModal
@@ -150,7 +150,6 @@ import ContactMethod from '@/components/note/ContactMethod'
 import CreateNoteFooter from '@/components/note/CreateNoteFooter'
 import CreateNoteHeader from '@/components/note/CreateNoteHeader'
 import CreateTemplateModal from '@/components/note/CreateTemplateModal'
-import FocusLock from 'vue-focus-lock'
 import ManuallySetDate from '@/components/note/ManuallySetDate'
 import PrivacyPermissions from '@/components/note/PrivacyPermissions'
 import RichTextEditor from '@/components/util/RichTextEditor'
