@@ -188,10 +188,13 @@ const bulkAddSids = sids => {
 }
 
 const goToPage = page => {
-  curatedStore.setPageNumber(page)
-  contextStore.loadingStart(pageLoadAlert.value)
-  return goToCuratedGroup(curatedGroupId.value, page).then(() => {
-    contextStore.loadingComplete(pageLoadAlert.value)
+  return new Promise(resolve => {
+    curatedStore.setPageNumber(page)
+    contextStore.loadingStart(pageLoadAlert.value)
+    goToCuratedGroup(curatedGroupId.value, page).then(() => {
+      contextStore.loadingComplete(pageLoadAlert.value)
+      resolve()
+    })
   })
 }
 const onChangeSortBy = () => {
