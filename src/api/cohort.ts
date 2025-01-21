@@ -104,8 +104,8 @@ export function getStudentsWithAlerts(cohortId: number) {
   return axios.get(url).then(response => response.data)
 }
 
-export function getUsersWithCohortsByDeptCode(deptCode: string) {
-  const url: string = `${utils.apiBaseUrl()}/api/cohorts/by_dept_code/${deptCode}`
+export function getUsersWithCohorts() {
+  const url: string = `${utils.apiBaseUrl()}/api/cohorts/all`
   return axios.get(url).then(response => response.data)
 }
 

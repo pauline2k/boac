@@ -191,12 +191,12 @@
     <hr class="sidebar-section-divider" />
     <v-list-item class="pa-0">
       <div class="font-weight-medium pretty-hover">
-        <NavLink id="cohorts-all" path="/all/cohorts">
+        <NavLink id="cohorts-all" path="/cohorts/all">
           Everyone's Cohorts
         </NavLink>
       </div>
       <div class="font-weight-medium mt-1 pretty-hover">
-        <NavLink id="groups-all" path="/all/groups">
+        <NavLink id="groups-all" path="/groups/all">
           Everyone's Groups
         </NavLink>
       </div>
