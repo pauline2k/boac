@@ -172,11 +172,16 @@ const onClick = page => {
     nextPage = page
     putFocusId = `${props.idPrefix}-page-${page}`
   }
-  props.clickHandler(toNumber(nextPage)).then(() => {
-    if (!props.isWidgetAtBottomOfPage) {
-      putFocusNextTick(putFocusId, {scroll: false})
-    }
-  })
+  const obj = props.clickHandler(toNumber(nextPage))
+  if (obj instanceof Promise) {
+    obj.then(() => {
+      if (!props.isWidgetAtBottomOfPage) {
+        putFocusNextTick(putFocusId, {scroll: false})
+      }
+    })
+  } else {
+    throw new TypeError('ERROR: \'clickHandler\' must return a Promise.')
+  }
 }
 </script>
 

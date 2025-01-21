@@ -165,15 +165,19 @@ const exportCohort = () => {
 }
 
 const goToPage = page => {
-  if (page !== pagination.currentPage) {
-    if (pagination.currentPage) {
-      alertScreenReader(`Loading page ${page} of this cohort's students`)
+  return new Promise(resolve => {
+    if (page !== pagination.currentPage) {
+      if (pagination.currentPage) {
+        alertScreenReader(`Loading page ${page} of this cohort's students`)
+      }
+      pagination.currentPage = page
+      router.push({
+        query: {...route.query, p: pagination.currentPage}
+      }).then(resolve)
+    } else {
+      resolve()
     }
-    pagination.currentPage = page
-    router.push({
-      query: {...route.query, p: pagination.currentPage}
-    })
-  }
+  })
 }
 
 const initPagination = () => {

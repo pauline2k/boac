@@ -203,14 +203,17 @@ onMounted(() => {
 })
 
 const goToPage = page => {
-  isToggling.value = true
-  contextStore.broadcast('hide-footer', true)
-  currentPage.value = page
-  updateWindowLocationParam('p', page)
-  return reload(section.value.sectionId, section.value.termId).then(() => {
-    isToggling.value = false
-    scrollToTop()
-    contextStore.broadcast('hide-footer', false)
+  return new Promise(resolve => {
+    isToggling.value = true
+    contextStore.broadcast('hide-footer', true)
+    currentPage.value = page
+    updateWindowLocationParam('p', page)
+    reload(section.value.sectionId, section.value.termId).then(() => {
+      isToggling.value = false
+      scrollToTop()
+      contextStore.broadcast('hide-footer', false)
+      resolve()
+    })
   })
 }
 

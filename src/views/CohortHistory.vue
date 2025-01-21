@@ -116,15 +116,18 @@ onMounted(() => {
 })
 
 const goToPage = page => {
-  currentPage.value = page
-  offset.value = (page - 1) * itemsPerPage.value
-  contextStore.loadingStart()
-  scrollToTop(10)
-  getCohortEvents(cohortStore.cohortId, offset.value, itemsPerPage.value).then(data => {
-    totalEventsCount.value = data.count
-    events.value = data.events
-    contextStore.loadingComplete('Cohort history has loaded')
-    putFocusNextTick(page > 1 ? `pagination-page-${page}` : 'page-header')
+  return new Promise(resolve => {
+    currentPage.value = page
+    offset.value = (page - 1) * itemsPerPage.value
+    contextStore.loadingStart()
+    scrollToTop(10)
+    getCohortEvents(cohortStore.cohortId, offset.value, itemsPerPage.value).then(data => {
+      totalEventsCount.value = data.count
+      events.value = data.events
+      contextStore.loadingComplete('Cohort history has loaded')
+      putFocusNextTick(page > 1 ? `pagination-page-${page}` : 'page-header')
+      resolve()
+    })
   })
 }
 </script>
