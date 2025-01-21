@@ -6,34 +6,31 @@
         <v-btn
           v-if="countExpandedDepartments"
           id="collapse-all-departments"
-          aria-controls="department-expansion-panels"
-          aria-label="Collapse all departments"
           color="primary"
           slim
-          text="Collapse all"
           variant="text"
           @click="collapseAllDepartments"
-        />
+        >
+          Collapse all<span class="sr-only"> department panels</span>
+        </v-btn>
         <div v-if="countExpandedDepartments && countExpandedDepartments < departments.length" class="mb-1">|</div>
         <v-btn
           v-if="countExpandedDepartments < departments.length"
-          id="expand-all-departments"
-          aria-controls="department-expansion-panels"
-          aria-label="Expand all departments"
+          id="collapse-all-departments"
           color="primary"
           slim
-          text="Expand all"
           variant="text"
           @click="expandAllDepartments"
-        />
+        >
+          Expand all
+        </v-btn>
       </div>
     </div>
     <div v-if="currentUser.canAccessAdmittedStudents" class="pl-1">
       <v-icon class="mr-1 vertical-bottom" color="warning" :icon="mdiStar" />
-      <span class="sr-only">Star icon</span>denotes a {{ modeLabel.toLowerCase() }} of admitted students.
+      <span class="sr-only">Star icon</span>denotes a {{ modeLabel }} of admitted students.
     </div>
     <v-expansion-panels
-      id="department-expansion-panels"
       v-model="panels"
       class="mt-1"
       flat
@@ -44,21 +41,22 @@
         :key="department.id"
       >
         <v-expansion-panel
+          :id="`department-${department.id}`"
           :bg-color="department.isOpen ? 'pale-blue' : 'transparent'"
           class="sortable-group"
-          :class="department.isOpen ? 'border-1 pb-6' : 'border-0'"
+          :class="department.isOpen ? 'border-1 pb-8' : 'border-0'"
           hide-actions
           rounded
           :value="department.code"
           @group:selected="open => onClickExpansionPanel(department, open)"
         >
           <v-expansion-panel-title
-            :id="`department-${department.code.toLowerCase()}`"
+            :id="`department-${department.id}-expansion-panel`"
             class="bg-transparent pl-2 py-1 w-100"
             hide-actions
           >
             <template #default="{expanded}">
-              <div class="align-center d-flex justify-space-between w-100">
+              <div class="d-flex justify-space-between w-100">
                 <div class="align-center d-flex">
                   <div class="expand-icon-container">
                     <v-progress-circular
@@ -75,59 +73,35 @@
                       size="large"
                     />
                   </div>
-                  <h2 class="page-section-header-sub pr-8 text-primary">
+                  <h3 class="page-section-header-sub pr-8 text-primary">
                     <span class="sr-only">{{ `${department.isOpen ? 'Hide' : 'Show'} details for ${department.name} ` }}</span>
                     {{ department.name }}
-                  </h2>
+                  </h3>
                 </div>
               </div>
             </template>
           </v-expansion-panel-title>
-          <v-expansion-panel-text class="bg-transparent">
-            <div v-if="department.isFetching" class="px-8 pt-8">
-              <v-progress-linear
-                color="primary"
-                height="2"
-                indeterminate
-                size="x-small"
-              />
-            </div>
-            <div v-if="!department.isFetching" class="ml-14">
-              <div class="font-size-14 font-weight-bold text-medium-emphasis" :class="{'mb-3': department.users.length}">
-                {{ department.users.length || 'Zero' }} out of
-                <span v-if="department.code === 'ZZZZZ'">{{ department.memberCount }}</span>
-                <span v-if="department.code !== 'ZZZZZ'">
-                  <span v-if="department.name.includes('Advisors')">{{ department.memberCount }} {{ department.name }}</span>
-                  <span v-if="!department.name.includes('Advisors')">{{ pluralize(`${department.name} advisor`, department.memberCount) }}</span>
-                </span>
-                {{ department.users.length === 1 ? 'has' : 'have' }} {{ modeLabel.toLowerCase() }}s.
-              </div>
-              <div
-                v-for="(user, index) in department.users"
-                :id="`users-of-department-${department.code.toLowerCase()}`"
-                :key="index"
-                :class="{'mt-3': index > 0}"
-              >
-                <h3 :id="`user-${user.uid}-name`" class="font-size-14">
-                  <span class="sr-only">{{ modeLabel }}s of</span>
-                  <span v-if="user.name">{{ user.name }}</span>
-                  <span v-if="!user.name">UID: {{ user.uid }}</span>
-                </h3>
-                <ul
-                  :id="`${mode}s-of-user-${user.uid}`"
-                  :aria-labelledby="`user-${user.uid}`"
-                  class="mt-1"
-                >
-                  <li v-for="object in (mode === 'cohort' ? user.cohorts : user.curatedGroups)" :key="object.id" class="ml-8">
-                    <span v-if="object.domain === 'admitted_students'" class="mr-1">
-                      <v-icon class="vertical-bottom" color="warning" :icon="mdiStar" />
-                      <span class="sr-only">Star: Admitted Students {{ mode }}</span>
-                    </span>
-                    <router-link :id="`${mode}-${object.id}`" :to="`/${mode}/${object.id}`">{{ object.name }}</router-link>
-                    (<span :id="`${mode}-${object.id}-student-count`">{{ object.totalStudentCount }}</span><span class="sr-only">students</span>)
-                  </li>
-                </ul>
-              </div>
+          <v-expansion-panel-text :id="`department-${department.id}-details`" class="bg-transparent">
+            <div
+              v-for="(user, index) in department.users"
+              :key="index"
+              class="ml-14"
+              :class="{'mt-3': index > 0}"
+            >
+              <h2 :id="`${mode}-list-${index}-heading`" class="font-size-14">
+                <span class="sr-only">{{ modeLabel }}s of</span>
+                <span v-if="user.name">{{ user.name }}</span>
+                <span v-if="!user.name">UID: {{ user.uid }}</span>
+              </h2>
+              <ul :aria-labelledby="`${mode}-list-${index}-heading`">
+                <li v-for="object in (mode === 'cohort' ? user.cohorts : user.curatedGroups)" :key="object.id" class="ml-8">
+                  <span v-if="object.domain === 'admitted_students'" class="mr-1">
+                    <v-icon class="vertical-bottom" color="warning" :icon="mdiStar" />
+                    <span class="sr-only">Star: Admitted Students {{ mode }}</span>
+                  </span>
+                  <router-link :to="`/${mode}/${object.id}`">{{ object.name }}</router-link> ({{ object.totalStudentCount }}<span class="sr-only">students</span>)
+                </li>
+              </ul>
             </div>
           </v-expansion-panel-text>
         </v-expansion-panel>
@@ -137,7 +111,7 @@
 </template>
 
 <script setup>
-import {alertScreenReader, pluralize, setPageTitle} from '@/lib/utils'
+import {alertScreenReader, setPageTitle} from '@/lib/utils'
 import {computed, onMounted, ref} from 'vue'
 import {filter as _filter, each, get, isNil, map, startsWith, toLower} from 'lodash'
 import {getDepartments} from '@/api/user'
