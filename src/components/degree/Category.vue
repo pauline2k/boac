@@ -59,6 +59,14 @@
         </div>
       </div>
       <div
+        v-if="category.description && printable"
+        :id="`column-${category.id}-category-header-description`"
+        class="category-description py-1"
+        :class="{'': printable, 'pl-1': !printable}"
+      >
+        <span v-if="printable" class="border-0" v-html="category.description" />
+      </div>
+      <div
         v-if="category.description"
         :id="`column-${category.id}-category-header-description`"
         class="category-description py-1"

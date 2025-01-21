@@ -25,10 +25,9 @@
       >
         Skip to students
       </a>
-      <RenameCuratedGroup
-        v-if="mode === 'rename'"
-        class="mb-2 ml-1"
-      />
+      <div v-if="mode === 'rename'" class="w-100">
+        <RenameCuratedGroup />
+      </div>
       <div v-if="!mode" class="d-flex align-center">
         <div v-if="ownerId === currentUser.id">
           <v-btn

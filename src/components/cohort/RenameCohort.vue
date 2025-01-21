@@ -1,12 +1,13 @@
 <template>
-  <v-card class="w-100" flat>
-    <div class="align-start d-flex flex-wrap">
+  <v-card class="py-1 w-100" flat>
+    <div class="d-flex flex-wrap">
       <v-text-field
         id="rename-cohort-input"
         v-model="name"
         :aria-invalid="!name"
         aria-label="Cohort name"
-        class="v-input-details-override mr-3 mt-1"
+        autocomplete="off"
+        class="v-input-details-override mr-3"
         counter="255"
         density="comfortable"
         :disabled="isSaving"
@@ -19,8 +20,8 @@
         @keyup.enter="submit"
         @keyup.esc="cancel"
       >
-        <template #details>
-          <div class="pt-1">
+        <template #counter>
+          <div>
             {{ size(name) ? `${maxlength} character limit (${maxlength - size(name)} left)` : `${maxlength} character limit` }}
           </div>
         </template>
@@ -33,11 +34,12 @@
       >
         Cohort name cannot exceed {{ maxlength }} characters.
       </span>
-      <div class="d-flex justify-end">
+      <div>
         <ProgressButton
           id="rename-cohort-confirm"
           :action="submit"
           aria-label="Rename Cohort"
+          class="mr-1"
           :disabled="isValidName !== true || isSaving"
           :in-progress="isSaving"
           size="large"
@@ -46,7 +48,6 @@
         <v-btn
           id="rename-cohort-cancel"
           aria-label="Cancel Rename Cohort"
-          class="ml-1"
           :disabled="isSaving"
           size="large"
           text="Cancel"
