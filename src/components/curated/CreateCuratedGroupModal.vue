@@ -59,7 +59,6 @@
             <v-btn
               id="create-curated-group-cancel"
               aria-label="Cancel Create Curated Group"
-              class="ml-2"
               :disabled="isSaving"
               text="Cancel"
               variant="text"

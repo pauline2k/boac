@@ -166,13 +166,10 @@ def remove_student_from_curated_groups(sid):
     params = request.get_json()
     curated_group_ids = params.get('curatedGroupIds')
     curated_groups = []
-    for curated_group_id in curated_group_ids:
-        curated_group = CuratedGroup.find_by_id(curated_group_id)
-        if not curated_group:
-            raise ResourceNotFoundError(f'No curated group found with id: {curated_group_id}')
+    for curated_group in CuratedGroup.find_by_ids(curated_group_ids):
         if curated_group.owner_id != current_user.get_id():
             raise ForbiddenRequestError(f'Current user, {current_user.uid}, does not own curated group {curated_group.id}')
-        CuratedGroup.remove_student(curated_group_id, sid)
+        CuratedGroup.remove_student(curated_group.id, sid)
         curated_groups.append(curated_group.to_api_json(include_students=False))
     return tolerant_jsonify(curated_groups)
 

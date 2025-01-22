@@ -1,10 +1,11 @@
-import {CuratedGroup} from '@/lib/cohort'
 import axios from 'axios'
-import {each} from 'lodash'
+import fileDownload from 'js-file-download'
 import ga from '@/lib/ga'
 import utils from '@/api/api-utils'
+import {CuratedGroup} from '@/lib/cohort'
+import {getUserProfile} from '@/api/user'
+import {noop} from 'lodash'
 import {useContextStore} from '@/stores/context'
-import fileDownload from 'js-file-download'
 
 const $_track = (action, label?) => ga.cohort(action, label)
 
@@ -15,26 +16,22 @@ const $_onCreate = (group: CuratedGroup) => {
   $_track('create')
 }
 
-const $_onDelete = (domain: string, curatedGroupId: number) => {
+const $_onDelete = (domain: string) => {
   const contextStore = useContextStore()
-  contextStore.removeMyCuratedGroup(curatedGroupId)
+  $_onUpdate().then(noop)
   contextStore.broadcast('my-curated-groups-updated', domain)
   $_track('delete')
 }
 
-const $_onUpdate = (curatedGroups: CuratedGroup[]) => {
-  const contextStore = useContextStore()
-  each(curatedGroups, curatedGroup => {
-    contextStore.updateMyCuratedGroup(curatedGroup)
-  })
-  contextStore.broadcast('my-curated-groups-updated', curatedGroups[0].domain)
-  $_track('update')
+async function $_onUpdate() {
+  // Changes in curated-group may impact cohort counts thus we refresh user-session object.
+  getUserProfile().then(useContextStore().setCurrentUser).then(() => $_track('update'))
 }
 
 export function addStudentsToCuratedGroups(curatedGroupIds: number[], sids: string[], returnStudentProfiles?: boolean) {
   const url: string = `${utils.apiBaseUrl()}/api/curated_group/students/add`
   return axios.post(url, {curatedGroupIds, sids, returnStudentProfiles}).then(response => {
-    $_onUpdate(response.data)
+    $_onUpdate().then(noop)
     return response.data
   })
 }
@@ -51,7 +48,7 @@ export function deleteCuratedGroup(domain: string, curatedGroupId: number) {
   const url: string = `${utils.apiBaseUrl()}/api/curated_group/delete/${curatedGroupId}`
   const headers = {'Content-Type': 'application/json'}
   return axios.delete(url, {headers}).then(() => {
-    $_onDelete(domain, curatedGroupId)
+    $_onDelete(domain)
     $_track('delete')
   })
 }
@@ -82,19 +79,17 @@ export function getUsersWithCuratedGroups() {
   return axios.get(`${utils.apiBaseUrl()}/api/curated_groups/all`).then(response => response.data)
 }
 
-export function removeFromCuratedGroups(curatedGroupIds: number[], sid: string | number) {
+export function removeFromCuratedGroups(curatedGroupIds: number[], sid: string | number): Promise<void> {
   const url: string = `${utils.apiBaseUrl()}/api/curated_group/remove_student/${sid}`
-  return axios.post(url, {curatedGroupIds}).then(response => {
-    const data = response.data
-    $_onUpdate(data)
-    return data
-  })
+  return axios.post(url, {curatedGroupIds}).then($_onUpdate)
 }
 
-export function renameCuratedGroup(curatedGroupId: number, name: string) {
+export function renameCuratedGroup(curatedGroupId: number, domain: string, name: string) {
   return axios.post(`${utils.apiBaseUrl()}/api/curated_group/rename`, {id: curatedGroupId, name}).then(response => {
     const data = response.data
-    $_onUpdate([data])
+    $_onUpdate().then(noop, () => {
+      useContextStore().broadcast('my-curated-groups-updated', domain)
+    })
     return data
   })
 }

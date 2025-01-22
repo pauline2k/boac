@@ -65,6 +65,10 @@ class CuratedGroup(Base):
         return cls.query.filter_by(id=curated_group_id).first()
 
     @classmethod
+    def find_by_ids(cls, curated_group_ids):
+        return cls.query.filter(cls.id.in_(curated_group_ids)).all()
+
+    @classmethod
     def get_curated_groups(cls, owner_id):
         return cls.query.filter_by(owner_id=owner_id).order_by(cls.name).all()
 

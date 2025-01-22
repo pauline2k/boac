@@ -93,7 +93,7 @@ const rename = () => {
   } else {
     alertScreenReader(`Renaming ${describeCuratedGroupDomain(domain.value)}`)
     isSaving.value = true
-    renameCuratedGroup(curatedGroupId.value, name.value).then(curatedGroup => {
+    renameCuratedGroup(curatedGroupId.value, domain.value, name.value).then(curatedGroup => {
       curatedStore.setCuratedGroupName(curatedGroup.name)
       setPageTitle(curatedGroupName.value)
       exitRenameMode()
