@@ -529,10 +529,11 @@ def _response_with_students_csv_download(sids, fieldnames, benchmark, term_id):
         if is_requesting_course_activity and sid in enrollments_for_term_by_sid:
             enrollments_for_term = enrollments_for_term_by_sid[sid]
             for enrollment in enrollments_for_term['enrollments']:
+                is_waitlisted = next((u for u in enrollment.get('sections', []) if u.get('enrollmentStatus') == 'W'), False)
                 rows.append({
                     **_construct_csv_row(),
                     **{
-                        'Class Name': enrollment['displayName'],
+                        'Class Name': f"{enrollment['displayName']}{' (waitlisted)' if is_waitlisted else ''}",
                         'Units': enrollment['units'],
                         'Mid-point Grade': enrollment.get('midtermGrade'),
                         'Final Grade': enrollment['grade'] or enrollment['gradingBasis'],
