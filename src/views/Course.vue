@@ -31,7 +31,7 @@
         >
           {{ section.displayName }}
         </h1>
-        <div class="font-size-14">
+        <div class="font-size-14" :class="{'demo-mode-blur': currentUser.inDemoMode}">
           <h2 class="sr-only">Details</h2>
           {{ section.instructionFormat }}
           {{ section.sectionNum }}
@@ -49,10 +49,10 @@
           {{ section.title }}
         </div>
       </div>
-      <div class="course-column-schedule bg-primary-darken-1" :class="{'demo-mode-blur': currentUser.inDemoMode}">
+      <div class="course-column-schedule bg-primary-darken-1">
         <h2 class="sr-only">Schedule</h2>
-        <div class="course-term-name">{{ section.termName }}</div>
-        <div v-for="(meeting, meetingIndex) in meetings" :key="meetingIndex">
+        <div class="course-term-name" :class="{'demo-mode-blur': currentUser.inDemoMode}">{{ section.termName }}</div>
+        <div v-for="(meeting, meetingIndex) in meetings" :key="meetingIndex" :class="{'demo-mode-blur': currentUser.inDemoMode}">
           <div v-if="size(meeting.instructors)" class="mt-2">
             <span :id="'instructors-' + meetingIndex" class="course-schedule-header">
               {{ meeting.instructors.length > 1 ? 'Instructors:' : 'Instructor:' }}
@@ -70,7 +70,7 @@
             <div>{{ meeting.location }}<span v-if="meeting.instructionModeName"><span v-if="meeting.location"> &mdash; </span>{{ meeting.instructionModeName }}</span></div>
           </div>
         </div>
-        <div id="course-class-number">
+        <div id="course-class-number" :class="{'demo-mode-blur': currentUser.inDemoMode}">
           <span class="course-schedule-header">Class Number:</span> {{ section.sectionId }}
         </div>
       </div>

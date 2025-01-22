@@ -21,15 +21,13 @@
     >
       {{ studentName }}
     </span>
-    <div
-      :class="{'demo-mode-blur': currentUser.inDemoMode}"
-      class="d-flex align-center font-weight-bold font-size-13"
-    >
-      <div :id="`row-${rowIndex}-student-sid`">{{ student.sid }}</div>
+    <div class="d-flex align-center font-weight-bold font-size-13">
+      <div :id="`row-${rowIndex}-student-sid`" :class="{'demo-mode-blur': currentUser.inDemoMode}">{{ student.sid }}</div>
       <div
         v-if="student.academicCareerStatus === 'Inactive'"
         :id="`row-${rowIndex}-inactive`"
         class="text-error ml-1"
+        :class="{'demo-mode-blur': currentUser.inDemoMode}"
       >
         INACTIVE
       </div>
@@ -37,6 +35,7 @@
         v-if="student.academicCareerStatus === 'Completed'"
         aria-label="Graduated"
         class="ml-1"
+        :class="{'demo-mode-blur': currentUser.inDemoMode}"
         :icon="mdiSchool"
         size="small"
       />
@@ -69,7 +68,11 @@
       :id-prefix="`student-${student.sid}`"
       :standing="student.academicStanding"
     />
-    <div v-if="student.academicCareerStatus !== 'Completed'" class="font-size-13 text-medium-emphasis">
+    <div
+      v-if="student.academicCareerStatus !== 'Completed'"
+      class="font-size-13 text-medium-emphasis"
+      :class="{'demo-mode-blur': currentUser.inDemoMode}"
+    >
       <div :id="`row-${rowIndex}-student-level`">
         {{ student.level }}
       </div>
