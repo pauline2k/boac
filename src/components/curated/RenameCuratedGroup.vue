@@ -1,12 +1,13 @@
 <template>
-  <v-card class="w-100" flat>
-    <div class="align-center d-flex flex-wrap">
+  <v-card class="py-1 w-100" flat>
+    <div class="align-start d-flex flex-wrap">
       <v-text-field
         id="rename-curated-group-input"
         v-model="name"
         :aria-invalid="!name"
         :aria-label="`${describeCuratedGroupDomain(domain, true)} name`"
-        class="v-input-details-override mr-3 mt-1"
+        autocomplete="off"
+        class="v-input-details-override mr-3"
         counter="255"
         density="comfortable"
         :disabled="isSaving"
@@ -19,8 +20,8 @@
         @keyup.enter="rename"
         @keyup.esc="exitRenameMode"
       >
-        <template #details>
-          <div class="pt-1">
+        <template #counter>
+          <div>
             {{ size(name) ? `${maxlength} character limit (${maxlength - size(name)} left)` : `${maxlength} character limit` }}
           </div>
         </template>
@@ -33,11 +34,12 @@
       >
         Name cannot exceed {{ maxlength }} characters.
       </span>
-      <div class="d-flex justify-end">
+      <div>
         <ProgressButton
           id="rename-curated-group-confirm"
           :action="rename"
           :aria-label="`Rename ${describeCuratedGroupDomain(domain.value, false)}`"
+          class="mr-1"
           :disabled="isValidName !== true || isSaving"
           :in-progress="isSaving"
           size="large"
@@ -46,7 +48,6 @@
         <v-btn
           id="rename-curated-group-cancel"
           :aria-label="`Cancel Rename ${describeCuratedGroupDomain(domain.value, false)}`"
-          class="ml-1"
           :disabled="isSaving"
           size="large"
           text="Cancel"

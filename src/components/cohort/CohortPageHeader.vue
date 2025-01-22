@@ -148,7 +148,9 @@
         </router-link>
       </div>
     </div>
-    <RenameCohort v-if="editMode === 'rename'" class="mb-1 pt-1" />
+    <div v-if="editMode === 'rename'" class="mt-1">
+      <RenameCohort />
+    </div>
     <AreYouSureModal
       id="confirm-delete-modal"
       v-model="showDeleteModal"

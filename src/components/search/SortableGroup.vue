@@ -18,7 +18,7 @@
           <div class="align-center d-flex">
             <div class="expand-icon-container">
               <v-progress-circular
-                v-if="isFetching && group.alertCount > 0"
+                v-if="isFetching"
                 color="primary"
                 indeterminate
                 size="x-small"
