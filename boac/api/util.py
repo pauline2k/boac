@@ -413,10 +413,10 @@ def is_unauthorized_search(filter_keys, order_by=None):
         if not current_user.is_admin and 'UWASC' not in dept_codes_where_advising(current_user):
             return True
     coe_keys = {
+        'coeAcademicStandings',
         'coeAdvisorLdapUids',
         'coeEthnicities',
         'coePrepStatuses',
-        'coeProbation',
         'coeUnderrepresented',
         'isInactiveCoe',
     }

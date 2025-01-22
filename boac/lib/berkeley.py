@@ -39,6 +39,19 @@ ACADEMIC_STANDING_DESCRIPTIONS = {
     'SUS': 'Academic Suspension',
 }
 
+COE_ACADEMIC_STANDING_DESCRIPTIONS = {
+    '1': 'Subject to Suspension (pending)',
+    '2': 'Subject to Dismissal (pending)',
+    '3': 'Subject to Academic Notice (pending)',
+    '4': 'Subject to Disqualification (pending)',
+    'A': 'Academic Suspension',
+    'D': 'Dismissed',
+    'P': 'Subject to Dismissal',
+    'N': 'Academic Notice',
+    'S': 'Subject to Suspension',
+    'U': 'Subject to Disqualification',
+}
+
 COE_ETHNICITIES_PER_CODE = {
     'A': 'African-American / Black',
     'B': 'Japanese / Japanese American',

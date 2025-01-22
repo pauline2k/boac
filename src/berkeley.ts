@@ -21,6 +21,11 @@ export function displayAsCoeInactive(student: object) {
   return isAuthorized && get(student, 'coeProfile') && !get(student, 'coeProfile.isActiveCoe')
 }
 
+export function displayCoeAcademicStanding(student: object) {
+  const isAuthorized = useContextStore().currentUser.isAdmin || includes(myDeptCodes(['advisor', 'director']), 'COENG')
+  return isAuthorized && get(student, 'coeProfile') && get(student, 'coeProfile.acadStatusDescription')
+}
+
 export function getAdmitCsvExportColumns(): ExportListOption[] {
   return [
     {text: 'First name', value: 'first_name'},

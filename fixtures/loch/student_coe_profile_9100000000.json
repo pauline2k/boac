@@ -11,8 +11,9 @@
   "sat2read": 760,
   "sat2math": 770,
   "inMet": true,
-  "gradTerm": "fa",
-  "gradYear": "2018",
   "probation": "true",
-  "status": "N"
+  "status": "N",
+  "acadStatus": "N",
+  "acadStatusTermId": "2188",
+  "gradTermId": "2188"
 }

@@ -62,6 +62,13 @@
         id-prefix="profile"
         :standing="student.sisProfile.academicStanding"
       />
+      <div
+        v-if="displayCoeAcademicStanding(student)"
+        id="student-bio-acad-standing-coe"
+        class="text-error font-weight-bold font-size-13 text-no-wrap"
+      >
+        {{ student.coeProfile.acadStatusDescription }} ({{ termNameForSisId(student.coeProfile.acadStatusTermId) }}, COE)
+      </div>
       <div v-if="!compact">
         <div v-if="student.sisProfile.emailAddress">
           <a
@@ -110,7 +117,7 @@
 
 <script setup>
 import StudentAcademicStanding from '@/components/student/profile/StudentAcademicStanding'
-import {displayAsAscInactive, displayAsCoeInactive} from '@/berkeley'
+import {displayAsAscInactive, displayAsCoeInactive, displayCoeAcademicStanding, termNameForSisId} from '@/berkeley'
 import {get} from 'lodash'
 import {mdiSchool} from '@mdi/js'
 import {pluralize} from '@/lib/utils'

@@ -69,6 +69,13 @@
       :standing="student.academicStanding"
     />
     <div
+      v-if="displayCoeAcademicStanding(student)"
+      :id="`row-${rowIndex}-acad-standing-coe`"
+      class="text-error font-weight-bold font-size-13 text-no-wrap"
+    >
+      {{ student.coeProfile.acadStatusDescription }} ({{ termNameForSisId(student.coeProfile.acadStatusTermId) }}, COE)
+    </div>
+    <div
       v-if="student.academicCareerStatus !== 'Completed'"
       class="font-size-13 text-medium-emphasis"
       :class="{'demo-mode-blur': currentUser.inDemoMode}"
@@ -148,7 +155,7 @@ import DegreesAwarded from '@/components/student/DegreesAwarded'
 import StudentAcademicStanding from '@/components/student/profile/StudentAcademicStanding'
 import {computed} from 'vue'
 import {DateTime} from 'luxon'
-import {displayAsAscInactive, displayAsCoeInactive} from '@/berkeley'
+import {displayAsAscInactive, displayAsCoeInactive, displayCoeAcademicStanding, termNameForSisId} from '@/berkeley'
 import {get, map, uniq} from 'lodash'
 import {goToStudentDegreeChecksByUID, lastNameFirst, studentRoutePath} from '@/lib/utils'
 import {mdiOpenInNew, mdiSchool} from '@mdi/js'
