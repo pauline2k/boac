@@ -137,9 +137,10 @@ import {
   removeFromCuratedGroups
 } from '@/api/curated'
 import {alertScreenReader} from '@/lib/utils'
-import {filter as _filter, clone, difference, includes, map, size, xor} from 'lodash'
 import {computed, onMounted, onUnmounted, ref} from 'vue'
 import {describeCuratedGroupDomain} from '@/berkeley'
+import {filter as _filter, clone, difference, includes, map, noop, size, xor} from 'lodash'
+import {getUserProfile} from '@/api/user'
 import {mdiCheckBold, mdiCloseThick, mdiMenuDown, mdiPlus} from '@mdi/js'
 import {pluralize, putFocusNextTick} from '@/lib/utils'
 import {useContextStore} from '@/stores/context'
@@ -254,7 +255,8 @@ const onSubmit = () => {
     const groupDescription = groupCount > 1 ? pluralize(domainLabel(false), groupCount) : domainLabel(false)
     actions.push(new Promise(resolve => {
       isRemoving.value = true
-      removeFromCuratedGroups(removeFromGroups, props.student.sid).then(resolve)
+      removeFromCuratedGroups(removeFromGroups, props.student.sid).then(noop)
+      resolve()
     }))
     alert = alert.concat(`${size(addToGroups) ? ' and' : ''} removed from ${groupDescription}`)
   }
@@ -264,6 +266,8 @@ const onSubmit = () => {
     }
     contextStore.broadcast('curated-group-deselect-all', props.domain)
     isAdding.value = isRemoving.value = false
+    // Changes in curated-group may impact cohort counts thus we refresh user-session object.
+    getUserProfile().then(contextStore.setCurrentUser)
   }
   Promise.all(actions).finally(() => setTimeout(done, confirmationTimeout.value))
 }

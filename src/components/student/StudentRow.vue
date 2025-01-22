@@ -20,8 +20,7 @@
                 :id="`row-${rowIndex}-remove-student-from-curated-group`"
                 variant="flat"
                 :icon="mdiCloseCircle"
-                @click="onClickRemoveStudent(student)"
-                @keyup.enter="onClickRemoveStudent(student)"
+                @click="removeStudent"
               >
                 <v-icon
                   color="primary"
@@ -164,7 +163,6 @@ import StudentAvatar from '@/components/student/StudentAvatar'
 import StudentGpaChart from '@/components/student/StudentGpaChart'
 import StudentRowBioColumn from '@/components/student/StudentRowBioColumn'
 import StudentRowCourseActivity from '@/components/student/StudentRowCourseActivity'
-import {alertScreenReader} from '@/lib/utils'
 import {computed, ref} from 'vue'
 import {get, isNil, isUndefined, size} from 'lodash'
 import {mdiAlert, mdiCloseCircle} from '@mdi/js'
@@ -205,11 +203,6 @@ const hover = ref(false)
 const isCurrentTerm = computed(() => {
   return props.termId === `${config.currentEnrollmentTermId}`
 })
-
-const onClickRemoveStudent = student => {
-  props.removeStudent(student.sid)
-  alertScreenReader(`Removed ${student.firstName} ${student.lastName} from group`)
-}
 </script>
 
 <style scoped>

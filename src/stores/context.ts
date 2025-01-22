@@ -1,12 +1,12 @@
-import {Cohort, CuratedGroup} from '@/lib/cohort'
-import {CurrentUser} from '@/lib/utils'
-import {Handler} from 'mitt'
-import {BoaConfig, ScreenReaderAlert, ServiceAnnouncement} from '@/lib/utils'
-import {get, noop, sortBy} from 'lodash'
 import mitt from 'mitt'
 import router from '@/router'
 import {alertScreenReader} from '@/lib/utils'
+import {BoaConfig, ScreenReaderAlert, ServiceAnnouncement} from '@/lib/utils'
+import {Cohort, CuratedGroup} from '@/lib/cohort'
+import {CurrentUser} from '@/lib/utils'
 import {defineStore} from 'pinia'
+import {get, noop, sortBy} from 'lodash'
+import {Handler} from 'mitt'
 import {nextTick} from 'vue'
 
 const $_getDefaultApplicationState = () => ({
@@ -112,10 +112,6 @@ export const useContextStore = defineStore('context', {
     removeMyCohort(cohortId: number) {
       const indexOf = this.currentUser.myCohorts.findIndex(cohort => cohort.id === cohortId)
       this.currentUser.myCohorts.splice(indexOf, 1)
-    },
-    removeMyCuratedGroup(curatedGroupId: number) {
-      const indexOf = this.currentUser.myCuratedGroups.findIndex(curatedGroup => curatedGroup.id === curatedGroupId)
-      this.currentUser.myCuratedGroups.splice(indexOf, 1)
     },
     resetApplicationState() {
       this.applicationState = $_getDefaultApplicationState()

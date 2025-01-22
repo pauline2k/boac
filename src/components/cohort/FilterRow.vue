@@ -140,7 +140,7 @@
         <v-btn
           id="unsaved-filter-reset"
           aria-label="Discard Cohort Filter"
-          class="text-uppercase ml-2"
+          class="text-uppercase"
           color="primary"
           text="Cancel"
           variant="text"

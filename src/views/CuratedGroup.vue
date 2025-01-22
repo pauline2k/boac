@@ -42,7 +42,7 @@
               class="border-b-sm border-t-sm pb-2 pt-3"
               :class="{'list-group-item-info': anchor === `#${student.uid}`}"
               :list-type="curatedStore.ownerId === currentUser.id ? 'curatedGroupForOwner' : 'curatedGroup'"
-              :remove-student="removeStudent"
+              :remove-student="() => removeStudent(student)"
               :row-index="index"
               :sorted-by="currentUser.preferences.sortBy"
               :student="student"
@@ -97,9 +97,9 @@ import StudentRow from '@/components/student/StudentRow'
 import TermSelector from '@/components/student/TermSelector'
 import {addStudentsToCuratedGroups, removeFromCuratedGroups} from '@/api/curated'
 import {alertScreenReader, pluralize, putFocusNextTick, scrollTo, setPageTitle, toInt} from '@/lib/utils'
-import {describeCuratedGroupDomain, translateSortByOption} from '@/berkeley'
-import {capitalize, get, size} from 'lodash'
+import {capitalize, get, noop, size} from 'lodash'
 import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue'
+import {describeCuratedGroupDomain, translateSortByOption} from '@/berkeley'
 import {goToCuratedGroup} from '@/stores/curated-group/utils'
 import {storeToRefs} from 'pinia'
 import {useContextStore} from '@/stores/context'
@@ -215,10 +215,9 @@ const onChangeTerm = () => {
   }
 }
 
-const removeStudent = sid => {
-  curatedStore.removeStudent(sid)
-  return removeFromCuratedGroups([curatedGroupId.value], sid).then(data => {
-    curatedStore.setTotalStudentCount(data[0].totalStudentCount)
-  })
+const removeStudent = student => {
+  curatedStore.removeStudent(student.sid)
+  removeFromCuratedGroups([curatedGroupId.value], student.sid).then(noop)
+  alertScreenReader(`Removed ${student.firstName} ${student.lastName} from group`)
 }
 </script>
