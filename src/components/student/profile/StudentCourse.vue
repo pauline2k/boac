@@ -109,7 +109,7 @@
             v-for="(section, sectionIndex) in course.sections"
             :key="sectionIndex"
           >
-            <span v-if="section.displayName" :class="{'demo-mode-blur': currentUser.inDemoMode}">
+            <span v-if="section.displayName">
               <span v-if="sectionIndex === 0"></span><!--
                 --><router-link
                 v-if="section.isViewableOnCoursePage"

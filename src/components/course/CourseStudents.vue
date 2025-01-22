@@ -76,18 +76,15 @@
             <span v-if="!item.firstName" v-html="item.lastName"></span>
           </span>
         </div>
-        <div
-          :id="`row-${index}-student-sid`"
-          :class="{'demo-mode-blur': currentUser.inDemoMode}"
-          class="align-baseline d-flex mr-2 student-sid"
-        >
-          <div>
+        <div :id="`row-${index}-student-sid`" class="align-baseline d-flex mr-2 student-sid">
+          <div :class="{'demo-mode-blur': currentUser.inDemoMode}">
             {{ item.sid }}
           </div>
           <div
             v-if="get(item.enrollment, 'enrollmentStatus') === 'W'"
             :id="`student-${item.uid}-waitlisted-for-${section.termId}-${section.sectionId}`"
             class="font-weight-bold ml-1 text-error"
+            :class="{'demo-mode-blur': currentUser.inDemoMode}"
           >
             WAITLISTED
           </div>
@@ -95,12 +92,14 @@
             v-if="item.academicCareerStatus === 'Inactive'"
             :id="`student-${item.uid}-inactive-for-${section.termId}-${section.sectionId}`"
             class="font-weight-bold ml-1 text-error"
+            :class="{'demo-mode-blur': currentUser.inDemoMode}"
           >
             INACTIVE
           </div>
           <div
             v-if="item.academicCareerStatus === 'Completed'"
             class="ml-1"
+            :class="{'demo-mode-blur': currentUser.inDemoMode}"
           >
             <v-icon :icon="mdiSchool" />
             <v-tooltip activator="parent" location="bottom">

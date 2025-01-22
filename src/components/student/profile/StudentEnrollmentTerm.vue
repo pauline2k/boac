@@ -65,7 +65,7 @@
             :class="{'demo-mode-blur': currentUser.inDemoMode}"
             role="row"
           >
-            <div :id="`term-${term.termId}-dropped-course-${droppedIndex}`" class="text-disabled" role="cell">
+            <div :id="`term-${term.termId}-dropped-course-${droppedIndex}`" role="cell">
               <div>
                 {{ droppedSection.displayName }} - {{ droppedSection.component }} {{ droppedSection.sectionNumber }}
               </div>
