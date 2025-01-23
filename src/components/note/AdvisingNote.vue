@@ -114,7 +114,6 @@
       <div v-if="!note.legacySource || size(note.attachments)" class="note-attachments-container">
         <AdvisingNoteAttachments
           :add="addNoteAttachments"
-          :aria-labelledby="`note-${note.id}-attachments-list-label`"
           :attachments="note.attachments"
           class="attachments-edit py-3"
           :disabled="!!(isUpdatingAttachments || noteStore.boaSessionExpired)"
@@ -123,17 +122,7 @@
           :note-author-uid="note.author.uid"
           :read-only="!!note.legacySource"
           :remove="removeAttachmentByIndex"
-        >
-          <template #label>
-            <label
-              :id="`note-${note.id}-attachments-list-label`"
-              class="font-size-16 font-weight-bold"
-              :for="`note-${note.id}-attachments-list`"
-            >
-              Attachments
-            </label>
-          </template>
-        </AdvisingNoteAttachments>
+        />
       </div>
     </div>
     <AreYouSureModal
