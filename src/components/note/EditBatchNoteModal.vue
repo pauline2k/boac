@@ -67,21 +67,12 @@
             </TransitionGroup>
             <AdvisingNoteAttachments
               :add="addNoteAttachments"
-              aria-labelledby="create-note-attachments-list-label"
               :attachments="noteStore.model.attachments"
               class="pt-5"
               :disabled="!!(noteStore.isSaving || noteStore.boaSessionExpired)"
               :note-author-uid="noteStore.model.author.uid"
               :remove="removeAttachmentByIndex"
-            >
-              <template #label>
-                <label
-                  id="create-note-attachments-list-label"
-                  class="sr-only"
-                  for="attachments-list"
-                >Attachments</label>
-              </template>
-            </AdvisingNoteAttachments>
+            />
           </div>
           <v-alert
             v-if="alert"

@@ -1,62 +1,68 @@
 <template>
   <div>
-    <slot name="label" />
-    <v-file-input
-      v-if="!attachmentLimitReached && !isReadOnly"
-      :id="inputId"
-      ref="attachmentFileInput"
-      :aria-busy="isAdding"
-      :aria-describedby="isAdding ? progressBarId : null"
-      :aria-label="`Select file for attachment; ${pluralize('file', attachments.length)} attached.`"
-      class="border-sm choose-file-for-note-attachment rounded"
-      :class="{'border-success': disabled, 'border-md border-error': !!attachmentError}"
-      :clearable="false"
-      :disabled="isAdding || disabled"
-      flat
-      hide-details
-      :loading="isAdding ? 'primary' : false"
-      :model-value="attachments"
-      multiple
-      :prepend-icon="null"
-      single-line
-      :variant="disabled ? 'outlined' : 'solo-filled'"
-      @click:control="onClickBrowseForAttachment"
-      @update:model-value="onAttachmentsInput"
+    <label
+      :id="`${idPrefix}-attachments-list-label`"
+      class="font-size-16 font-weight-bold mb-2 d-inline-block"
+      :for="`${idPrefix}-attachments-list`"
     >
-      <template #label>
-        <div
-          class="font-size-16 align-center d-flex flex-wrap justify-center"
-          :class="{
-            'font-weight-bold text-black text-center': disabled,
-            'font-weight-medium': !disabled
-          }"
-        >
-          <div v-if="isAdding" class="pb-1">
-            Adding attachments...
-          </div>
-          <div v-if="!isAdding" class="mr-2 ">
-            Add attachment:
-          </div>
-          <v-btn
-            v-if="!isAdding"
-            :id="`${idPrefix}choose-file-for-note-attachment-btn`"
-            :aria-hidden="true"
-            class="bg-white"
-            color="black"
-            :disabled="disabled"
-            density="comfortable"
-            tabindex="-1"
-            type="file"
-            variant="outlined"
-          >
-            Select File
-          </v-btn>
+      Attachments
+    </label>
+    <div class="position-relative">
+      <label
+        class="note-attachment-inner-label font-size-16 align-center d-flex flex-wrap justify-center"
+        :class="{
+          'font-weight-bold text-black text-center': disabled,
+          'font-weight-medium': !disabled
+        }"
+        :for="inputId"
+      >
+        <div v-if="isAdding">
+          Adding attachments...
         </div>
-      </template>
-      <template #selection>
-        <div></div>
-      </template>
-    </v-file-input>
+        <div v-if="!isAdding" class="mr-2 ">
+          Add attachment:
+        </div>
+        <v-btn
+          v-if="!isAdding"
+          :id="`${idPrefix}choose-file-for-note-attachment-btn`"
+          class="bg-white"
+          color="black"
+          :disabled="disabled"
+          density="comfortable"
+          tabindex="-1"
+          type="file"
+          variant="outlined"
+          @click="onClickBrowseForAttachment"
+        >
+          Select File
+        </v-btn>
+      </label>
+      <v-file-input
+        v-if="!attachmentLimitReached && !isReadOnly"
+        :id="inputId"
+        ref="attachmentFileInput"
+        :aria-busy="isAdding"
+        :aria-describedby="isAdding ? progressBarId : null"
+        :aria-label="`Select file for attachment; ${pluralize('file', attachments.length)} attached.`"
+        class="border-sm choose-file-for-note-attachment rounded"
+        :class="{'border-success': disabled, 'border-md border-error': !!attachmentError}"
+        :clearable="false"
+        :disabled="isAdding || disabled"
+        flat
+        hide-details
+        :loading="isAdding ? 'primary' : false"
+        :model-value="attachments"
+        multiple
+        :prepend-icon="null"
+        :variant="disabled ? 'outlined' : 'solo-filled'"
+        @click:control="onClickBrowseForAttachment"
+        @update:model-value="onAttachmentsInput"
+      >
+        <template #selection>
+          <div></div>
+        </template>
+      </v-file-input>
+    </div>
     <v-alert
       v-if="attachmentError"
       :id="`${idPrefix}attachment-error`"
@@ -81,7 +87,7 @@
     </v-alert>
     <ul
       :id="`${idPrefix}attachments-list`"
-      :aria-labelledby="ariaLabelledby"
+      :aria-labelledby="`${idPrefix}-attachments-list-label`"
       class="list-no-bullets advising-note-pill-list mt-2"
     >
       <li
@@ -123,10 +129,6 @@ const props = defineProps({
     default: () => {},
     required: false,
     type: Function
-  },
-  ariaLabelledby: {
-    required: true,
-    type: String
   },
   attachments: {
     required: true,
@@ -256,11 +258,16 @@ const onRemoveAttachment = index => {
 }
 </script>
 
-<style>
-.choose-file-for-note-attachment .v-label.v-field-label {
-  visibility: visible !important;
+<style scoped>
+.note-attachment-inner-label {
+  height: 100%;
+  position: absolute;
   width: 100%;
+  z-index: 1;
 }
+</style>
+
+<style>
 .choose-file-for-note-attachment input {
   cursor: pointer;
 }
