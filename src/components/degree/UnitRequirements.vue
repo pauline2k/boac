@@ -3,7 +3,7 @@
     <div class="align-center d-flex flex-row justify-space-between">
       <h3
         id="unit-requirements-header"
-        class="font-size-18 mb-1 text-medium-emphasis text-no-wrap"
+        class="font-size-18 mb-1 mr-1 text-medium-emphasis text-no-wrap"
         :class="{'font-size-14': printable, 'font-size-20': !printable}"
       >
         Unit Requirements
@@ -121,13 +121,12 @@
             </td>
             <td
               v-if="currentUser.canEditDegreeProgress && !degreeStore.sid && !printable"
-              class="align-start d-flex font-size-16 justify-end pr-1 py-1"
+              class="font-size-16"
             >
-              <div>
+              <div class="action-buttons align-center d-flex justify-end text-no-wrap">
                 <v-btn
                   :id="`unit-requirement-${item.id}-edit-btn`"
                   :aria-label="`Edit ${item.name}`"
-                  class="mr-1"
                   :class="{'text-primary': !degreeStore.disableButtons}"
                   color="transparent"
                   density="compact"
@@ -138,12 +137,9 @@
                   title="Edit"
                   @click.prevent="() => onClickEdit(item)"
                 />
-              </div>
-              <div>
                 <v-btn
                   :id="`unit-requirement-${item.id}-delete-btn`"
                   :aria-label="`Delete ${item.name}`"
-                  class="mr-1"
                   :class="{'text-primary': !degreeStore.disableButtons}"
                   color="transparent"
                   density="compact"
@@ -340,6 +336,9 @@ td {
 th {
   height: 20px;
   padding-bottom: 5px;
+}
+.action-buttons {
+  padding-right: 1px;
 }
 .th-actions {
   width: 10%;
