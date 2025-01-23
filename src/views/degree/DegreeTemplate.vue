@@ -3,7 +3,7 @@
     <div class="border-b-sm">
       <h1 id="page-header" class="overflow-wrap-break-word">{{ degreeStore.degreeName || 'Degree Builder' }}</h1>
     </div>
-    <div class="py-4 w-50">
+    <div class="py-4 w-100 template-unit-requirements">
       <h2 class="sr-only">Requirements</h2>
       <UnitRequirements />
     </div>
@@ -61,7 +61,11 @@ onMounted(() => {
 
 <style scoped>
 .degree-progress-column {
-  min-width: 300px;
+  min-width: 20.3rem;
   padding-bottom: 10px;
+}
+.template-unit-requirements {
+  max-width: 50rem;
+  min-width: 20.3rem;
 }
 </style>
