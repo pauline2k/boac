@@ -30,7 +30,7 @@ import operator
 from boac import db
 from boac.externals import data_loch, s3
 from boac.lib import analytics
-from boac.lib.berkeley import academic_year_for_term_name, dept_codes_where_advising, term_name_for_sis_id
+from boac.lib.berkeley import academic_year_for_term_name, COE_ACADEMIC_STANDING_DESCRIPTIONS, dept_codes_where_advising, term_name_for_sis_id
 from boac.lib.util import get_benchmarker
 from boac.merged.sis_terms import current_term_id, current_term_name, future_term_id
 from flask import current_app as app
@@ -326,10 +326,10 @@ def query_students(
     academic_division=None,
     academic_standings=None,
     advisor_plan_mappings=None,
+    coe_academic_standings=None,
     coe_advisor_ldap_uids=None,
     coe_ethnicities=None,
     coe_prep_statuses=None,
-    coe_probation=None,
     coe_underrepresented=None,
     colleges=None,
     curated_group_ids=None,
@@ -369,10 +369,10 @@ def query_students(
 
     criteria = {
         'advisor_plan_mappings': advisor_plan_mappings,
+        'coe_academic_standings': coe_academic_standings,
         'coe_advisor_ldap_uids': coe_advisor_ldap_uids,
         'coe_ethnicities': coe_ethnicities,
         'coe_prep_statuses': coe_prep_statuses,
-        'coe_probation': coe_probation,
         'coe_underrepresented': coe_underrepresented,
         'epn_cpn_grading_terms': epn_cpn_grading_terms,
         'ethnicities': ethnicities,
@@ -393,10 +393,10 @@ def query_students(
         academic_division=academic_division,
         academic_standings=academic_standings,
         advisor_plan_mappings=advisor_plan_mappings,
+        coe_academic_standings=coe_academic_standings,
         coe_advisor_ldap_uids=coe_advisor_ldap_uids,
         coe_ethnicities=coe_ethnicities,
         coe_prep_statuses=coe_prep_statuses,
-        coe_probation=coe_probation,
         coe_underrepresented=coe_underrepresented,
         colleges=colleges,
         curated_group_ids=curated_group_ids,
@@ -554,6 +554,8 @@ def merge_coe_student_profile_data(profiles_by_sid):
         profile = profiles_by_sid.get(coe_student['sid'])
         coe_profile = coe_student['profile']
         profile['coeProfile'] = json.loads(coe_profile)
+        if len(profile['coeProfile'].get('acadStatus', '')):
+            profile['coeProfile']['acadStatusDescription'] = COE_ACADEMIC_STANDING_DESCRIPTIONS.get(profile['coeProfile']['acadStatus'])
         if 'minority' in profile['coeProfile']:
             profile['coeProfile']['underrepresented'] = profile['coeProfile']['minority']
         coe_profile_status = profile['coeProfile'].get('status')
@@ -610,10 +612,10 @@ def scope_for_criteria(**kwargs):
         ],
         'COENG': [
             'is_active_coe',
+            'coe_academic_standings',
             'coe_advisor_ldap_uids',
             'coe_ethnicities',
             'coe_prep_statuses',
-            'coe_probation',
             'coe_underrepresented',
         ],
     }

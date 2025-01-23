@@ -1098,10 +1098,10 @@ def get_students_query(     # noqa
     academic_division=None,
     academic_standings=None,
     advisor_plan_mappings=None,
+    coe_academic_standings=None,
     coe_advisor_ldap_uids=None,
     coe_ethnicities=None,
     coe_prep_statuses=None,
-    coe_probation=None,
     coe_underrepresented=None,
     colleges=None,
     curated_group_ids=None,
@@ -1343,6 +1343,9 @@ def get_students_query(     # noqa
         query_bindings.update({'group_codes': group_codes})
 
     # COE criteria
+    if coe_academic_standings:
+        query_filter += ' AND s.acad_status = ANY(%(coe_academic_standings)s)'
+        query_bindings.update({'coe_academic_standings': coe_academic_standings})
     if coe_advisor_ldap_uids:
         query_filter += ' AND s.advisor_ldap_uid = ANY(%(coe_advisor_ldap_uids)s)'
         query_bindings.update({'coe_advisor_ldap_uids': coe_advisor_ldap_uids})
@@ -1351,14 +1354,12 @@ def get_students_query(     # noqa
         query_bindings.update({'coe_ethnicities': coe_ethnicities})
     if coe_prep_statuses:
         query_filter += ' AND (' + ' OR '.join([f's.{cps} IS TRUE' for cps in coe_prep_statuses]) + ')'
-    if coe_probation is not None:
-        query_filter += f' AND s.probation IS {coe_probation}'
     if coe_underrepresented is not None:
         query_filter += f' AND s.minority IS {coe_underrepresented}'
 
     # COE criteria in a cohort filter will default to COE-active students only.
     if is_active_coe is None and (
-        coe_advisor_ldap_uids or coe_ethnicities or coe_prep_statuses or coe_probation or coe_underrepresented
+        coe_academic_standings or coe_advisor_ldap_uids or coe_ethnicities or coe_prep_statuses or coe_underrepresented
     ):
         is_active_coe = True
     if is_active_coe is False:

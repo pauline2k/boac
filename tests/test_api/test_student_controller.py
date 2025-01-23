@@ -570,11 +570,13 @@ class TestStudent:
             assert 'degreeChecks' in student
 
             expected_coe_profile = {
+                'acadStatus': 'N',
+                'acadStatusDescription': 'Academic Notice',
+                'acadStatusTermId': '2202',
                 'didPrep': False,
                 'didTprep': False,
                 'ethnicity': 'B',
-                'gradTerm': 'sp',
-                'gradYear': '2020',
+                'gradTermId': '2202',
                 'inMet': False,
                 'isActiveCoe': True,
                 'prepEligible': True,

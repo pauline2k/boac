@@ -26,7 +26,8 @@ from itertools import groupby
 
 from boac import db
 from boac.externals import data_loch
-from boac.lib.berkeley import ACADEMIC_STANDING_DESCRIPTIONS, COE_ETHNICITIES_PER_CODE, term_ids_range, term_name_for_sis_id
+from boac.lib.berkeley import ACADEMIC_STANDING_DESCRIPTIONS, COE_ACADEMIC_STANDING_DESCRIPTIONS, COE_ETHNICITIES_PER_CODE, \
+    term_ids_range, term_name_for_sis_id
 from boac.merged import athletics
 from boac.merged.calnet import get_calnet_users_for_uids
 from boac.merged.calnet import get_csid_for_uid
@@ -199,6 +200,11 @@ def level_options():
         {'name': 'Doctoral Advanced to Candidacy <= 6 Terms', 'value': 'Doctoral Candidate <= 6'},
         {'name': 'Doctoral Advanced to Candidacy > 6 Terms', 'value': 'Doctoral Candidate > 6'},
     ]
+
+
+def coe_academic_standing_options():
+    options = [{'name': description, 'value': code} for code, description in COE_ACADEMIC_STANDING_DESCRIPTIONS.items()]
+    return sorted(options, key=lambda e: e['name'])
 
 
 @stow('cohort_filter_options_coe_ethnicities')

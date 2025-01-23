@@ -895,14 +895,14 @@ class TestCohortPerFilters:
             {
                 'filters':
                     [
-                        {'key': 'coeProbation', 'value': 'true'},
+                        {'key': 'coeAcademicStandings', 'value': ['N']},
                     ],
             },
             expected_status_code=403,
         )
 
     def test_students_per_ranges(self, client, coe_advisor_login):
-        """API translates 'coeProbation' filter to proper filter_criteria query."""
+        """API translates range filters to proper filter_criteria query."""
         api_json = self._api_get_students_per_filters(
             client,
             {
@@ -1385,7 +1385,7 @@ class TestDownloadCsvPerFilters:
             client,
             {
                 'filters': [
-                    {'key': 'coeProbation', 'value': 'true'},
+                    {'key': 'coeAcademicStandings', 'value': ['P']},
                 ],
                 'csvColumnsSelected': [
                     'first_name',
@@ -1673,20 +1673,20 @@ class TestCohortFilterOptions:
         assert {'name': 'Medieval Studies UG', 'value': '25I054U'} in my_students['options']
 
     def test_filter_options_with_category_disabled(self, client, coe_advisor_login):
-        """The coe_probation option is disabled if it is in existing-filters."""
+        """The transfer option is disabled if it is in existing-filters."""
         api_json = self._api_cohort_filter_options(
             client,
             {
                 'existingFilters':
                     [
-                        {'key': 'coeProbation', 'value': True},
+                        {'key': 'transfer', 'value': True},
                     ],
             },
         )
         assert len(api_json.keys())
         for label, option_group in api_json.items():
             for entry in option_group:
-                if entry['key'] == 'coeProbation':
+                if entry['key'] == 'transfer':
                     assert entry['disabled'] is True
                 else:
                     assert 'disabled' not in entry

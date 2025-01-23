@@ -11,8 +11,9 @@
   "sat2read": 520,
   "sat2math": 620,
   "inMet": false,
-  "gradTerm": "sp",
-  "gradYear": "2020",
   "probation": false,
-  "status": "C"
+  "status": "C",
+  "acadStatus": "N",
+  "acadStatusTermId": "2202",
+  "gradTermId": "2202"
 }

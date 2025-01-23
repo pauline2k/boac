@@ -11,8 +11,9 @@
   "sat2read": null,
   "sat2math": 720,
   "inMet": false,
-  "gradTerm": null,
-  "gradYear": null,
   "probation": false,
-  "status": "Z"
+  "status": "Z",
+  "acadStatus": "N",
+  "acadStatusTermId": "2202",
+  "gradTermId": null
 }

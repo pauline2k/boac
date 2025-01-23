@@ -104,10 +104,11 @@ CREATE TABLE boac_advising_coe.students
     sat1math INT,
     sat2math INT,
     in_met BOOLEAN NOT NULL,
-    grad_term VARCHAR,
-    grad_year VARCHAR,
     probation BOOLEAN NOT NULL,
-    status VARCHAR
+    status VARCHAR,
+    acad_status VARCHAR,
+    acad_status_term_id VARCHAR,
+    grad_term_id VARCHAR
 );
 
 CREATE TABLE boac_advising_coe.student_profiles
@@ -669,12 +670,12 @@ VALUES
 
 INSERT INTO boac_advising_coe.students
 (sid, advisor_ldap_uid, gender, ethnicity, minority, did_prep, prep_eligible, did_tprep, tprep_eligible,
-  sat1read, sat1math, sat2math, in_met, grad_term, grad_year, probation, status)
+  sat1read, sat1math, sat2math, in_met, probation, status, acad_status, acad_status_term_id, grad_term_id)
 VALUES
-('11667051', '90412', 'M', 'H', FALSE, TRUE, FALSE, FALSE, FALSE, NULL, NULL, NULL, FALSE, NULL, NULL, FALSE, 'C'),
-('7890123456', '1133399', 'F', 'B', TRUE, FALSE, TRUE, FALSE, FALSE, 510, 520, 620, FALSE, 'sp', '2020', FALSE, 'C'),
-('9000000000', '1133399', 'F', 'B', TRUE, FALSE, TRUE, FALSE, FALSE, NULL, NULL, 720, FALSE, NULL, NULL, FALSE, 'Z'),
-('9100000000', '90412', 'M', 'X', FALSE, FALSE, FALSE, FALSE, TRUE, 720, 760, 770, TRUE, 'fa', '2018', TRUE, 'N');
+('11667051', '90412', 'M', 'H', FALSE, TRUE, FALSE, FALSE, FALSE, NULL, NULL, NULL, FALSE, FALSE, 'C', NULL, NULL, NULL),
+('7890123456', '1133399', 'F', 'B', TRUE, FALSE, TRUE, FALSE, FALSE, 510, 520, 620, FALSE, FALSE, 'C', 'N', '2202', '2202'),
+('9000000000', '1133399', 'F', 'B', TRUE, FALSE, TRUE, FALSE, FALSE, NULL, NULL, 720, FALSE, FALSE, 'Z', '', NULL, NULL),
+('9100000000', '90412', 'M', 'X', FALSE, FALSE, FALSE, FALSE, TRUE, 720, 760, 770, TRUE, TRUE, 'N', 'N', '2188', '2188');
 
 INSERT INTO boac_advising_coe.student_profiles
 (sid, profile)
