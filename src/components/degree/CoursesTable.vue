@@ -202,7 +202,7 @@
             </td>
             <td
               v-if="!degreeStore.sid && !isCampusRequirements"
-              class="vertical-top td-max-width-0"
+              class="vertical-top td-fulfillment"
               :class="{
                 'font-italic text-surface-variant': !bundle.course && !getAccentColor(bundle),
                 'font-size-12': printable,
@@ -210,12 +210,19 @@
               }"
               :title="oxfordJoin(map(bundle.unitRequirements, 'name'), 'None')"
             >
-              <div v-if="size(bundle.unitRequirements)" class="align-items-start d-flex justify-space-between">
+              <div v-if="size(bundle.unitRequirements)" class="align-items-start d-flex flex-row-reverse justify-end">
+                <v-chip
+                  v-if="size(bundle.unitRequirements) > 1"
+                  class="d-flex justify-center unit-requirement-count font-weight-bold"
+                  color="primary"
+                  rounded="circle"
+                  size="small"
+                  variant="flat"
+                >
+                  <span :title="`Fulfills ${bundle.unitRequirements.length} Unit Requirements`">{{ bundle.unitRequirements.length }}</span>
+                </v-chip>
                 <div>
                   {{ oxfordJoin(map(bundle.unitRequirements, 'name'), '&mdash;') }}
-                </div>
-                <div v-if="size(bundle.unitRequirements) > 1" class="unit-requirement-count bg-primary">
-                  <span class="sr-only">(Has </span>{{ bundle.unitRequirements.length }}<span class="sr-only"> requirements.)</span>
                 </div>
               </div>
             </td>
@@ -227,19 +234,7 @@
                 'vertical-top': !isCampusRequirements
               }"
             >
-              <div class="pr-1 text-right">
-                <v-btn
-                  v-if="!degreeStore.sid || (bundle.course && (bundle.course.isCopy || bundle.course.manuallyCreatedBy)) && (degreeStore.draggingCourseId !== get(bundle.course, 'id'))"
-                  :id="`column-${position}-delete-${bundle.key}-btn`"
-                  :aria-label="`Delete ${bundle.name}`"
-                  :class="{'bg-transparent text-primary': !degreeStore.disableButtons}"
-                  density="compact"
-                  :disabled="degreeStore.disableButtons"
-                  flat
-                  :icon="mdiTrashCan"
-                  size="small"
-                  @click="() => onDelete(bundle)"
-                />
+              <div class="action-buttons align-center d-flex justify-end text-no-wrap">
                 <v-btn
                   v-if="!degreeStore.draggingCourseId || degreeStore.draggingCourseId !== get(bundle.course, 'id')"
                   :id="`column-${position}-edit-${bundle.key}-btn`"
@@ -251,6 +246,18 @@
                   :icon="mdiNoteEditOutline"
                   size="small"
                   @click="edit(bundle, position)"
+                />
+                <v-btn
+                  v-if="!degreeStore.sid || (bundle.course && (bundle.course.isCopy || bundle.course.manuallyCreatedBy)) && (degreeStore.draggingCourseId !== get(bundle.course, 'id'))"
+                  :id="`column-${position}-delete-${bundle.key}-btn`"
+                  :aria-label="`Delete ${bundle.name}`"
+                  :class="{'bg-transparent text-primary': !degreeStore.disableButtons}"
+                  density="compact"
+                  :disabled="degreeStore.disableButtons"
+                  flat
+                  :icon="mdiTrashCan"
+                  size="small"
+                  @click="() => onDelete(bundle)"
                 />
               </div>
             </td>
@@ -697,6 +704,9 @@ th {
   height: 20px;
   padding-bottom: 5px;
 }
+.action-buttons {
+  padding-right: 1px;
+}
 .changed-units-icon {
   margin-right: 0.3em;
 }
@@ -704,13 +714,13 @@ th {
   font-size: 14px;
   vertical-align: top;
 }
+.td-fulfillment {
+  word-break: break-word;
+}
 .td-grade {
   padding: 1px 0 0 0;
   text-transform: capitalize;
   vertical-align: top;
-}
-.td-max-width-0 {
-  max-width: 0;
 }
 .td-name {
   font-size: 14px;
@@ -746,8 +756,8 @@ th {
   width: 36px !important;
 }
 .th-fulfillment {
-  max-width: 72px !important;
-  width: 72px !important;
+  min-width: 72px !important;
+  width: 35% !important;
 }
 .th-note {
   max-width: 25% !important;
@@ -769,13 +779,11 @@ th {
   border-radius: 0 10px 10px 0;
 }
 .unit-requirement-count {
-  border-radius: 12px;
-  color: rgb(var(--v-theme-on-tertiary));
   height: 20px;
-  margin-top: 4px;
+  margin-top: 1px;
   max-width: 20px;
   min-width: 20px;
-  text-align: center;
+  width: 20px;
 }
 .text-strikethrough {
   text-decoration: line-through;
