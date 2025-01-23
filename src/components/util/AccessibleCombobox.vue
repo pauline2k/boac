@@ -220,11 +220,7 @@ const props = defineProps({
 
 const container = ref()
 const focusedListItemIndex = ref(undefined)
-const mergedMenuProps = ref({
-  id: `${props.idPrefix}-menu`,
-  closeOnContentClick: true,
-  ...props.menuProps
-})
+const mergedMenuProps = ref({})
 const model = defineModel({
   get() {
     return props.getValue()
@@ -251,6 +247,11 @@ onMounted(() => {
     input.setAttribute('aria-controls', `${props.idPrefix}-menu`)
     input.setAttribute('aria-expanded', false)
     input.setAttribute('aria-label', props.label)
+  }
+  mergedMenuProps.value = {
+    id: `${props.idPrefix}-menu`,
+    closeOnContentClick: true,
+    ...props.menuProps
   }
 })
 
