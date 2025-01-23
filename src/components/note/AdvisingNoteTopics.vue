@@ -1,9 +1,9 @@
 <template>
   <div>
-    <label id="add-note-topic-label" class="font-weight-bold" for="add-topic-select-list">
+    <label id="add-note-topic-label" class="font-size-16 font-weight-bold" for="add-topic-select-list">
       Topic Categories
     </label>
-    <div v-if="!readOnly && size(topicOptions)">
+    <div v-if="!readOnly && size(topicOptions)" class="pt-2">
       <select
         id="add-topic-select-list"
         :key="noteStore.model.topics.length"

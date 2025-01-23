@@ -2,7 +2,7 @@
   <v-form
     :id="`note-${noteId}-edit-form`"
     ref="editNoteForm"
-    class="edit-advising-note-container edit-note-form"
+    class="edit-note-form pl-2"
     @submit.prevent="save"
   >
     <div v-if="noteStore.model.isDraft" class="font-size-18 text-error pa-2">
@@ -62,22 +62,13 @@
     />
     <AdvisingNoteAttachments
       v-if="size(noteStore.model.attachments)"
-      aria-labelledby="edit-note-attachments-list-label"
       :attachments="noteStore.model.attachments"
       class="mt-3"
       :disabled="isSaving || boaSessionExpired"
       id-prefix="edit-note-"
       :is-read-only="true"
       :note-author-uid="noteStore.model.author.uid"
-    >
-      <template #label>
-        <label
-          id="edit-note-attachments-list-label"
-          class="font-size-16 font-weight-bold"
-          for="edit-note-attachments-list"
-        >Attachments</label>
-      </template>
-    </AdvisingNoteAttachments>
+    />
     <div>
       <div
         v-if="noteStore.boaSessionExpired"
@@ -295,9 +286,6 @@ const save = isDraft => {
 </script>
 
 <style scoped>
-.edit-advising-note-container {
-  width: 70%;
-}
 .edit-note-form {
   cursor: auto !important;
   flex-basis: 100%;
