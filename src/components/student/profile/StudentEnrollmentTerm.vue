@@ -21,7 +21,7 @@
           />
           <div
             v-if="displayCoeAcademicStanding(student) && term.coeAcademicStanding"
-            :id="`student-term-{term.id}-acad-standing-coe`"
+            :id="`student-term-${term.id}-acad-standing-coe`"
             class="text-error font-weight-bold font-size-13 text-no-wrap"
           >
             {{ term.coeAcademicStanding.description }} (COE)
