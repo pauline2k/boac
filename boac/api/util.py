@@ -515,7 +515,7 @@ def _response_with_students_csv_download(sids, fieldnames, benchmark, term_id):
         cohorts = CohortFilter.get_cohorts(user_id=current_user.get_id())
     if 'curated_groups' in fieldnames:
         # We are going to need curated_groups.
-        curated_groups = CuratedGroup.get_curated_groups_owned_by(include_admitted_students=True, uids=[current_user.uid])
+        curated_groups = CuratedGroup.get_curated_groups_owned_by(uids=[current_user.uid])
     if is_requesting_course_activity:
         # We are going to need enrollment data.
         enrollments_for_term = data_loch.get_enrollments_for_term(term_id, sids)
