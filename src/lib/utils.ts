@@ -218,8 +218,9 @@ export function round(value: number, decimals: number) {
   return (Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals)).toFixed(decimals)
 }
 
-export function setPageTitle(phrase: string) {
-  document.title = `${phrase ? decodeHtml(phrase) : 'UC Berkeley'} | BOA`
+export function setPageTitle(phrase: string): void {
+  const title: string = phrase && decodeHtml(phrase)
+  document.title = `${title || 'UC Berkeley'} | BOA`
 }
 
 // eslint-disable-next-line no-undef
