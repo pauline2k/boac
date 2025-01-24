@@ -334,7 +334,7 @@ router.afterEach((to: RouteLocation, from: RouteLocation) => {
   if (!samePageLink) {
     useContextStore().resetApplicationState()
     const pageTitle = get(to, 'name')
-    document.title = `${String(pageTitle) || 'Welcome'} | BOA`
+    document.title = `${pageTitle ? toString(pageTitle) : 'Welcome'} | BOA`
   }
 })
 
