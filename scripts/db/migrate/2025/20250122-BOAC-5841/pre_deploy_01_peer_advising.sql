@@ -10,14 +10,14 @@ CREATE TABLE IF NOT EXISTS peer_advising_departments (
   updated_at timestamp with time zone NOT NULL
 );
 
-ALTER TABLE peer_advising_departments OWNER TO boac;
+ALTER TABLE peer_advising_departments OWNER TO app_boa;
 CREATE SEQUENCE IF NOT EXISTS peer_advising_departments_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-ALTER SEQUENCE peer_advising_departments_id_seq OWNER TO boac;
+ALTER SEQUENCE peer_advising_departments_id_seq OWNER TO app_boa;
 ALTER SEQUENCE peer_advising_departments_id_seq OWNED BY peer_advising_departments.id;
 ALTER TABLE ONLY peer_advising_departments ALTER COLUMN id SET DEFAULT nextval('peer_advising_departments_id_seq'::regclass);
 
