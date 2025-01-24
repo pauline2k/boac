@@ -48,9 +48,6 @@ def get_curated_groups_by_dept_code(dept_code):
     scope = get_query_scope(current_user)
     if department and scope:
         uids = UniversityDeptMember.get_membership_uids(department.id)
-        if 'ADMIN' in scope:
-            admin_user_uids = [admin_user.uid for admin_user in AuthorizedUser.get_admin_users()]
-            uids = list(set(uids + admin_user_uids))
         calnet_users = calnet.get_calnet_users_for_uids(app, uids)
         for curated_group in CuratedGroup.get_curated_groups_owned_by(
             include_admitted_students=current_user.can_access_admitted_students,
