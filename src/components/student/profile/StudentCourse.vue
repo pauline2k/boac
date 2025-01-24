@@ -118,7 +118,7 @@
                 class="font-weight-black"
                 :class="{'demo-mode-blur': currentUser.inDemoMode}"
               ><span class="sr-only">Link to {{ course.displayName }}, </span>{{ section.displayName }}</router-link><!--
-                --><span v-if="!section.isViewableOnCoursePage">{{ section.displayName }}</span><!--
+                --><span v-if="!section.isViewableOnCoursePage" :class="{'demo-mode-blur': currentUser.inDemoMode}">{{ section.displayName }}</span><!--
                 --><span v-if="sectionIndex < course.sections.length - 1"> | </span><!--
                 --><span v-if="sectionIndex === course.sections.length - 1"></span>
             </span>
