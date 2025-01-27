@@ -77,6 +77,18 @@ def admin_or_director_required(func):
     return _admin_or_director_required
 
 
+def peer_advisor_required(func):
+    @wraps(func)
+    def _authorize(*args, **kw):
+        is_authorized = current_user.is_authenticated and (current_user.is_admin or current_user.is_peer_advisor)
+        if is_authorized or _api_key_ok():
+            return func(*args, **kw)
+        else:
+            app.logger.warning(f'Unauthorized request to {request.path}')
+            return app.login_manager.unauthorized()
+    return _authorize
+
+
 def advising_data_access_required(func):
     @wraps(func)
     def _advising_data_access_required(*args, **kw):
@@ -212,6 +224,7 @@ def authorized_users_api_feed(users, sort_by=None, sort_descending=False):
             'departments': [],
             'isAdmin': user.is_admin,
             'isBlocked': user.is_blocked,
+            'isPeerAdvisor': user.is_peer_advisor,
         })
         for m in user.department_memberships:
             profile['departments'].append({

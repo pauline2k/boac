@@ -154,6 +154,18 @@ _test_users = [
         'lastName': 'Mitchell',
     },
     {
+        'uid': '1133400',
+        'csid': '800700601',
+        'canAccessAdvisingData': False,
+        'canAccessCanvasData': False,
+        'degreeProgressPermission': None,
+        'isAdmin': False,
+        'isPeerAdvisor': True,
+        'inDemoMode': False,
+        'firstName': 'Peer',
+        'lastName': 'Pressure',
+    },
+    {
         'uid': '211159',
         'csid': '211159',
         'isAdmin': False,
@@ -296,6 +308,17 @@ _test_users = [
     },
 ]
 
+_peer_advising_depts = {
+    'COENG': {
+        'users': [
+            {
+                'uid': '1133400',
+                'role': 'peer_advisor',
+            },
+        ],
+    },
+}
+
 _university_depts = {
     'COENG': {
         'users': [
@@ -435,6 +458,7 @@ def _load_users_and_departments():
         UniversityDept.create(code, name)
     _create_users()
     _create_department_memberships()
+    _create_peer_advising_department_memberships()
 
 
 def _create_users():
@@ -474,6 +498,7 @@ def _create_users():
                 can_access_advising_data=test_user['canAccessAdvisingData'],
                 can_access_canvas_data=test_user['canAccessCanvasData'],
                 degree_progress_permission=test_user.get('degreeProgressPermission'),
+                is_peer_advisor=test_user.get('isPeerAdvisor', False),
                 search_history=test_user.get('searchHistory', []),
             )
             if test_user.get('deleted'):
@@ -498,6 +523,20 @@ def _create_department_memberships():
                 role=user['role'],
                 automate_membership=user['automate_membership'],
             )
+
+
+def _create_peer_advising_department_memberships():
+    pass
+    # TODO: Implement when BOAC-5841 is resolved.
+    # for dept_code, dept_membership in _peer_advising_depts.items():
+    #     peer_advising_dept = PeerAdvisingDept.find_by_dept_code(dept_code)
+    #     db.session.add(peer_advising_dept)
+    #     for user in dept_membership['users']:
+    #         authorized_user = AuthorizedUser.find_by_uid(user['uid'])
+    #         PeerAdvisingDeptMember.create_or_update_membership(
+    #             peer_advising_dept_id=peer_advising_dept.id,
+    #             authorized_user_id=authorized_user.id,
+    #         )
 
 
 def _create_topics():
