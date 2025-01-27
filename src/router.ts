@@ -1,3 +1,5 @@
+import PeerAdvisor from '@/views/PeerAdvisor.vue'
+
 const AdmitStudent = () => import('@/views/AdmitStudent.vue')
 const AdmitStudents = () => import('@/views/AdmitStudents.vue')
 const AllCohorts = () => import('@/views/AllCohorts.vue')
@@ -32,6 +34,7 @@ import {filter, get, includes, size, toString, trim} from 'lodash'
 import {isAdvisor, isDirector} from '@/berkeley'
 import {useContextStore} from '@/stores/context'
 import {useSearchStore} from '@/stores/search'
+import PeerAdvisingLayout from '@/layouts/PeerAdvisingLayout.vue'
 
 const $_goToLogin = (to: RouteLocation, next: NavigationGuardNext) => {
   next({
@@ -135,6 +138,33 @@ const routes:RouteRecordRaw[] = [
         path: '/student/:uid',
         component: Student,
         name: 'Student'
+      }
+    ]
+  },
+  {
+    path: '/',
+    component: PeerAdvisingLayout,
+    beforeEnter: (to: RouteLocation, from: RouteLocation, next: NavigationGuardNext) => {
+      // Requires Peer Advisor
+      const currentUser: CurrentUser = useContextStore().currentUser
+      if (currentUser.isAuthenticated) {
+        if (currentUser.isAdmin || currentUser.isPeerAdvisor) {
+          next()
+        } else {
+          next({path: '/404'})
+        }
+      } else {
+        $_goToLogin(to, next)
+      }
+    },
+    meta: {
+      hideSidebar: true,
+    },
+    children: [
+      {
+        path: '/peer/advisor',
+        component: PeerAdvisor,
+        name: 'Peer Advising'
       }
     ]
   },
