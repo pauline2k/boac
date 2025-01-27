@@ -28,6 +28,7 @@ import re
 from boac.api import errors
 from boac.api.util import (
     admin_required,
+    advisor_or_peer_advisor_required,
     advisor_required,
     authorized_users_api_feed,
     get_current_user_profile,
@@ -48,14 +49,6 @@ from flask_login import current_user, login_required, login_user
 @app.route('/api/profile/my')
 def my_profile():
     return tolerant_jsonify(get_current_user_profile())
-
-
-@app.route('/api/profile/<uid>')
-@login_required
-def user_profile(uid):
-    if not AuthorizedUser.find_by_uid(uid):
-        raise errors.ResourceNotFoundError('Unknown path')
-    return tolerant_jsonify(calnet.get_calnet_user_for_uid(app, uid))
 
 
 @app.route('/api/user/calnet_profile/by_csid/<csid>')
@@ -232,7 +225,7 @@ def create_or_update_user_profile():
 
 
 @app.route('/api/user/demo_mode', methods=['POST'])
-@login_required
+@advisor_or_peer_advisor_required
 def set_demo_mode():
     if app.config['DEMO_MODE_AVAILABLE']:
         in_demo_mode = request.get_json().get('demoMode', None)

@@ -102,21 +102,6 @@ class TestUserProfile:
         assert departments[0]['name'] == 'Athletic Study Center'
         assert departments[0]['role'] == 'advisor'
 
-    def test_other_user_profile(self, client, fake_auth):
-        fake_auth.login(admin_uid)
-        response = client.get('/api/profile/6446')
-        api_json = response.json
-        assert api_json['uid'] == '6446'
-        assert 'firstName' in api_json
-        assert 'lastName' in api_json
-        assert 'canEditDegreeProgress' not in api_json
-        assert 'canReadDegreeProgress' not in api_json
-
-    def test_other_user_profile_not_found(self, client, fake_auth):
-        fake_auth.login(admin_uid)
-        response = client.get('/api/profile/2549')
-        assert response.status_code == 404
-
 
 class TestMyCohorts:
 

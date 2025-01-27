@@ -80,13 +80,28 @@ def admin_or_director_required(func):
 def peer_advisor_required(func):
     @wraps(func)
     def _authorize(*args, **kw):
-        is_authorized = current_user.is_authenticated and (current_user.is_admin or current_user.is_peer_advisor)
-        if is_authorized or _api_key_ok():
+        if current_user.is_admin or _is_authorized_peer_advisor(current_user) or _api_key_ok():
             return func(*args, **kw)
         else:
             app.logger.warning(f'Unauthorized request to {request.path}')
             return app.login_manager.unauthorized()
     return _authorize
+
+
+def advisor_or_peer_advisor_required(func):
+    @wraps(func)
+    def _advisor_required(*args, **kw):
+        if (
+            current_user.is_admin
+            or _is_authorized_advisor(current_user)
+            or _is_authorized_peer_advisor(current_user)
+            or _api_key_ok()
+        ):
+            return func(*args, **kw)
+        else:
+            app.logger.warning(f'Unauthorized request to {request.path}')
+            return app.login_manager.unauthorized()
+    return _advisor_required
 
 
 def advising_data_access_required(func):
@@ -112,13 +127,7 @@ def advising_data_access_required(func):
 def advisor_required(func):
     @wraps(func)
     def _advisor_required(*args, **kw):
-        is_authorized = current_user.is_authenticated \
-            and (
-                current_user.is_admin
-                or _has_role_in_any_department(current_user, 'advisor')
-                or _has_role_in_any_department(current_user, 'director')
-            )
-        if is_authorized or _api_key_ok():
+        if current_user.is_admin or _is_authorized_advisor(current_user) or _api_key_ok():
             return func(*args, **kw)
         else:
             app.logger.warning(f'Unauthorized request to {request.path}')
@@ -463,6 +472,14 @@ def validate_advising_note_set_date(params):
         except (TypeError, ValueError):
             raise BadRequestError('Invalid set date format')
     return set_date
+
+
+def _is_authorized_advisor(user):
+    return user.is_authenticated and (_has_role_in_any_department(user, 'advisor') or _has_role_in_any_department(user, 'director'))
+
+
+def _is_authorized_peer_advisor(user):
+    return user.is_authenticated and user.is_peer_advisor
 
 
 def _response_with_students_csv_download(sids, fieldnames, benchmark, term_id):
