@@ -57,13 +57,26 @@ class UniversityDept(Base):
         return cls.query.filter_by(dept_code=dept_code).first()
 
     @classmethod
-    def get_all(cls, exclude_empty=False):
-        if exclude_empty:
-            results = db.session.execute(text('select distinct university_dept_id from university_dept_members'))
-            dept_ids = [row['university_dept_id'] for row in results]
-            return cls.query.filter(cls.id.in_(dept_ids)).order_by(cls.dept_name).all()
-        else:
-            return cls.query.order_by(cls.dept_name).all()
+    def get_all_departments(cls, exclude_empty=False):
+        sql = f"""
+            SELECT d.id, d.dept_code, d.dept_name, COUNT(m.authorized_user_id) AS member_count
+            FROM university_dept_members m
+            JOIN university_depts d ON d.id = m.university_dept_id
+            LEFT JOIN authorized_users u ON u.id = m.authorized_user_id
+            WHERE u.deleted_at IS NULL
+            GROUP BY d.id, d.dept_code, d.dept_name
+            {'HAVING COUNT(m.authorized_user_id) > 0' if exclude_empty else ''}
+            ORDER BY d.dept_name
+        """
+
+        def _to_json(row):
+            return {
+                'id': row['id'],
+                'code': row['dept_code'],
+                'name': row['dept_name'],
+                'memberCount': row['member_count'],
+            }
+        return [_to_json(result) for result in db.session.execute(text(sql))]
 
     @classmethod
     def create(cls, dept_code, dept_name):

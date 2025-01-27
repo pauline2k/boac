@@ -388,11 +388,10 @@ class TestGetDepartments:
         assert len(api_json) > 1
         for index, department in enumerate(api_json):
             assert 'id' in department
-            # TODO: Bring this back when 'All advisors can see all cohorts' is brought back.
-            # assert department['memberCount'] > 0
-            # if index > 0:
-            #     previous_department = api_json[index - 1]
-            #     assert department['name'] > previous_department['name']
+            assert department['memberCount'] > 0
+            if index > 0:
+                previous_department = api_json[index - 1]
+                assert department['name'] > previous_department['name']
 
 
 class TestGetUsers:
