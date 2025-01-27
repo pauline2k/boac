@@ -113,6 +113,10 @@ class UserSession(UserMixin):
     def is_authenticated(self):
         return self.api_json['isAuthenticated']
 
+    @property
+    def is_peer_advisor(self):
+        return self.api_json['isPeerAdvisor']
+
     @classmethod
     @stow('boa_user_session_{user_id}')
     def load_user(cls, user_id):
@@ -164,20 +168,21 @@ class UserSession(UserMixin):
             **(calnet_profile or {}),
             **{
                 'id': user and user.id,
-                'automateDegreeProgressPermission': user and user.automate_degree_progress_permission,
+                'automateDegreeProgressPermission': user.automate_degree_progress_permission if user else False,
                 'canAccessAdmittedStudents': can_access_ce3_features,
-                'canAccessAdvisingData': user and user.can_access_advising_data,
-                'canAccessCanvasData': user and user.can_access_canvas_data,
+                'canAccessAdvisingData': user.can_access_advising_data if user else False,
+                'canAccessCanvasData': user.can_access_canvas_data if user else False,
                 'canAccessPrivateNotes': can_access_ce3_features,
                 'canEditDegreeProgress': degree_progress_permission == 'read_write',
                 'canReadDegreeProgress': degree_progress_permission in ['read', 'read_write'],
                 'degreeProgressPermission': degree_progress_permission,
                 'departments': departments,
-                'inDemoMode': user and user.in_demo_mode,
+                'inDemoMode': user.in_demo_mode if user else False,
                 'isActive': is_active,
                 'isAdmin': is_admin,
                 'isAnonymous': not is_active,
                 'isAuthenticated': is_active,
+                'isPeerAdvisor': user.is_peer_advisor if user else False,
                 'uid': user and user.uid,
             },
         }
