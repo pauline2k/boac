@@ -20,6 +20,8 @@ const Login = () => import('./layouts/Login.vue')
 const ManageDegreeChecks = () => import('@/views/degree/ManageDegreeChecks.vue')
 const NotFound = () => import('@/views/NotFound.vue')
 const PassengerManifest = () => import('@/views/PassengerManifest.vue')
+const PeerAdvisingLayout = () => import('@/layouts/PeerAdvisingLayout.vue')
+const PeerAdvisingManager = () => import('@/views/PeerAdvisingManager.vue')
 const PrintableDegreeTemplate = () => import('@/views/degree/PrintableDegreeTemplate.vue')
 const Profile = () => import('@/views/Profile.vue')
 const SearchResults = () => import('@/views/SearchResults.vue')
@@ -34,7 +36,6 @@ import {filter, get, includes, size, toString, trim} from 'lodash'
 import {isAdvisor, isDirector} from '@/berkeley'
 import {useContextStore} from '@/stores/context'
 import {useSearchStore} from '@/stores/search'
-import PeerAdvisingLayout from '@/layouts/PeerAdvisingLayout.vue'
 
 const $_goToLogin = (to: RouteLocation, next: NavigationGuardNext) => {
   next({
@@ -114,20 +115,22 @@ const routes:RouteRecordRaw[] = [
       {
         path: '/curated/:id',
         component: CuratedGroup,
-        props: true,
         name: 'Curated Group'
       },
       {
         path: '/curate',
         component: CreateCuratedGroup,
-        props: true,
         name: 'Create Curated Group'
       },
       {
         path: '/note/drafts',
         component: DraftNotes,
-        props: true,
         name: 'Draft Notes'
+      },
+      {
+        path: '/peer/management/:id',
+        component: PeerAdvisingManager,
+        name: 'Manage Peer Advisors'
       },
       {
         path: '/search',
@@ -156,9 +159,6 @@ const routes:RouteRecordRaw[] = [
       } else {
         $_goToLogin(to, next)
       }
-    },
-    meta: {
-      hideSidebar: true,
     },
     children: [
       {

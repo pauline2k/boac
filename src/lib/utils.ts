@@ -45,6 +45,7 @@ export type CurrentUser = {
   myCohorts: Cohort[],
   myCuratedGroups: CuratedGroup[],
   myDraftNoteCount: number | undefined,
+  peerAdvisingDepartments: PeerAdvisingDepartment[],
   preferences: {
     termId: string | undefined
   },
@@ -66,6 +67,11 @@ export type ExportListOption = {
 export type Pagination = {
   currentPage: number,
   itemsPerPage: number
+}
+
+export type PeerAdvisingDepartment = {
+  id: number,
+  name: string
 }
 
 export type ScreenReaderAlert = {

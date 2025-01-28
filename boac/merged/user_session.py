@@ -133,6 +133,7 @@ class UserSession(UserMixin):
     def _get_api_json(cls, user=None):
         calnet_profile = None
         departments = []
+        peer_advising_departments = []
         if user:
             calnet_profile = calnet.get_calnet_user_for_uid(
                 app,
@@ -148,6 +149,14 @@ class UserSession(UserMixin):
                         'name': BERKELEY_DEPT_CODE_TO_NAME.get(dept_code, dept_code),
                         'role': m.role,
                     })
+            # TODO: Introduce the following code after the db table 'peer_advising_department_members' is in place.
+            # for m in user.peer_advising_department_memberships:
+            #     peer_advising_departments.append(
+            #         {
+            #             'id': m.id,
+            #             'name': m.name,
+            #             'role': m.role,
+            #         })
         is_active = False
         if user:
             if not calnet_profile:
@@ -183,6 +192,7 @@ class UserSession(UserMixin):
                 'isAnonymous': not is_active,
                 'isAuthenticated': is_active,
                 'isPeerAdvisor': user.is_peer_advisor if user else False,
+                'peerAdvisingDepartments': peer_advising_departments,
                 'uid': user and user.uid,
             },
         }

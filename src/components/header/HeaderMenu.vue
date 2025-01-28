@@ -30,6 +30,18 @@
             variant="text"
           />
         </v-list-item-action>
+        <v-list-item-action v-if="currentUser.isAdmin">
+          <v-btn
+            id="header-menu-peer-management"
+            :aria-current="route.path.startsWith('/peer/management') ? 'page' : false"
+            class="font-size-16 justify-start text-decoration-none w-100"
+            color="primary"
+            size="large"
+            text="Peer Advising"
+            to="/peer/management"
+            variant="text"
+          />
+        </v-list-item-action>
         <v-list-item-action v-if="currentUser.isAdmin || myDirectorDepartment">
           <v-btn
             id="header-menu-analytics"
@@ -66,9 +78,7 @@
             variant="text"
           />
         </v-list-item-action>
-        <v-list-item-action
-          v-if="!currentUser.isAdmin"
-        >
+        <v-list-item-action v-if="!currentUser.isAdmin">
           <v-btn
             id="header-menu-profile"
             :aria-current="route.path === '/profile' ? 'page' : false"
