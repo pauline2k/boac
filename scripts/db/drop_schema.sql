@@ -78,6 +78,8 @@ ALTER TABLE IF EXISTS ONLY public.university_dept_members DROP CONSTRAINT IF EXI
 ALTER TABLE IF EXISTS ONLY public.university_dept_members DROP CONSTRAINT IF EXISTS university_dept_members_university_dept_id_fkey;
 ALTER TABLE IF EXISTS ONLY public.user_logins DROP CONSTRAINT IF EXISTS user_logins_uid_fkey;
 ALTER TABLE IF EXISTS ONLY public.peer_advising_departments DROP CONSTRAINT IF EXISTS peer_advising_departments_university_dept_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.peer_advising_department_members DROP CONSTRAINT IF EXISTS peer_advising_department_members_peer_advising_department_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.peer_advising_department_members DROP CONSTRAINT IF EXISTS peer_advising_department_members_authorized_user_id_fkey;
 
 --
 
@@ -150,6 +152,7 @@ ALTER TABLE IF EXISTS ONLY public.university_dept_members DROP CONSTRAINT IF EXI
 ALTER TABLE IF EXISTS ONLY public.university_depts DROP CONSTRAINT IF EXISTS university_dept_members_pkey;
 ALTER TABLE IF EXISTS ONLY public.user_logins DROP CONSTRAINT IF EXISTS user_logins_pkey;
 ALTER TABLE IF EXISTS ONLY public.peer_advising_departments DROP CONSTRAINT IF EXISTS peer_advising_departments_pkey;
+ALTER TABLE IF EXISTS ONLY public.peer_advising_department_members DROP CONSTRAINT IF EXISTS peer_advising_department_members_pkey;
 ALTER TABLE IF EXISTS public.alerts ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.authorized_users ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.cohort_filters ALTER COLUMN id DROP DEFAULT;
@@ -209,7 +212,9 @@ DROP TABLE IF EXISTS public.user_logins;
 DROP SEQUENCE IF EXISTS public.user_logins_id_seq;
 DROP TABLE IF EXISTS public.peer_advising_departments;
 DROP SEQUENCE IF EXISTS public.peer_advising_departments_id_seq;
+DROP TABLE IF EXISTS public.peer_advising_department_members;
 
+DROP TYPE IF EXISTS public.role_type_enum;
 DROP TYPE IF EXISTS public.cohort_filter_event_types;
 DROP TYPE IF EXISTS public.cohort_domain_types;
 DROP TYPE IF EXISTS public.degree_progress_category_types;
