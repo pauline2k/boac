@@ -66,6 +66,10 @@ class AcademicStanding(object):
 
 class AcademicStandings(Enum):
 
+    DIQ = {
+        'code': 'DIQ',
+        'descrip': 'Disqualification',
+    }
     DIS = {
         'code': 'DIS',
         'descrip': 'Dismissed',
@@ -74,11 +78,23 @@ class AcademicStandings(Enum):
         'code': 'GST',
         'descrip': 'Good Standing',
     }
+    NOT = {
+        'code': 'NOT',
+        'descrip': 'Notice',
+    }
     PRO = {
         'code': 'PRO',
         'descrip': 'Probation',
     }
+    SSP = {
+        'code': 'SSP',
+        'descrip': 'Subject to Academic Suspension',
+    }
     SUB = {
         'code': 'SUB',
-        'descrip': 'Subject to Dismissal',
+        'descrip': 'Subject to Disqualification',
+    }
+    SUS = {
+        'code': 'SUS',
+        'descrip': 'Academic Suspension',
     }
