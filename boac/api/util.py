@@ -104,6 +104,21 @@ def advisor_or_peer_advisor_required(func):
     return _advisor_required
 
 
+def peer_advising_manager_required(func):
+    @wraps(func)
+    def _advisor_required(*args, **kw):
+        if (
+            current_user.is_admin
+            or _is_authorized_peer_advising_manager(current_user)
+            or _api_key_ok()
+        ):
+            return func(*args, **kw)
+        else:
+            app.logger.warning(f'Unauthorized request to {request.path}')
+            return app.login_manager.unauthorized()
+    return _advisor_required
+
+
 def advising_data_access_required(func):
     @wraps(func)
     def _advising_data_access_required(*args, **kw):
@@ -480,6 +495,13 @@ def _is_authorized_advisor(user):
 
 def _is_authorized_peer_advisor(user):
     return user.is_authenticated and user.is_peer_advisor
+
+
+def _is_authorized_peer_advising_manager(user):
+    # TODO: Implement this method when peer_advising_department_memberships table is introduced.
+    # return user.is_authenticated and _is_authorized_advisor(user) and len(user.peer_advising_department_memberships)
+    app.logger.info(f'TODO: Implement _is_authorized_peer_advising_manager (UID: {user.uid})')
+    return False
 
 
 def _response_with_students_csv_download(sids, fieldnames, benchmark, term_id):

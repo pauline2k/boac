@@ -1,6 +1,6 @@
 <template>
   <div>
-    Hello World
+    Peer Advisor
   </div>
 </template>
 
