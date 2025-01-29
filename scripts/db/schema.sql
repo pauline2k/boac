@@ -744,12 +744,12 @@ CREATE TABLE IF NOT EXISTS peer_advising_department_members (
   deleted_at timestamp with time zone
 );
 
-ALTER TABLE peer_advising_departments OWNER TO boac;
+ALTER TABLE peer_advising_department_members OWNER TO boac;
 
 ALTER TABLE ONLY peer_advising_department_members
     DROP CONSTRAINT IF EXISTS peer_advising_department_members_pkey;
 ALTER TABLE peer_advising_department_members
-    ADD CONSTRAINT peer_advising_departments_members_pkey PRIMARY KEY (peer_advising_department_id, authorized_user_id);
+    ADD CONSTRAINT peer_advising_department_members_pkey PRIMARY KEY (peer_advising_department_id, authorized_user_id);
 
 ALTER TABLE ONLY peer_advising_department_members
     DROP CONSTRAINT IF EXISTS peer_advising_department_members_peer_advising_department_id_fkey;
