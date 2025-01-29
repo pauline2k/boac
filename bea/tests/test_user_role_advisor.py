@@ -25,6 +25,7 @@ ENHANCEMENTS, OR MODIFICATIONS.
 import random
 
 from bea.config.bea_test_config import BEATestConfig
+from bea.models.cohorts_and_groups.cohort import Cohort
 from bea.models.cohorts_and_groups.cohort_admit_filter import CohortAdmitFilter
 from bea.models.cohorts_and_groups.cohort_filter import CohortFilter
 from bea.models.cohorts_and_groups.filtered_cohort import FilteredCohort
@@ -79,7 +80,8 @@ ls_groups = boa_utils.get_everyone_curated_groups(test_ls.dept)
 
 # My Students filter
 plan = '25429U'
-my_students_advisor = nessie_utils.get_my_students_test_advisor(plan)
+auth_users = boa_utils.get_authorized_users()
+my_students_advisor = nessie_utils.get_my_students_test_advisor(plan, auth_users)
 test.advisor = my_students_advisor
 my_students_filter = CohortFilter(data={'cohort_owner_acad_plans': [{'plan': plan}]}, dept=Department.L_AND_S)
 my_students_cohort = FilteredCohort({'search_criteria': my_students_filter, 'name': f'My Students {test.test_id}'})
@@ -332,7 +334,7 @@ class TestCoEAdvisor:
         utils.assert_actual_includes_expected(opts, 'Ethnicity (COE)')
         utils.assert_actual_includes_expected(opts, 'Inactive (COE)')
         utils.assert_actual_includes_expected(opts, 'PREP (COE)')
-        utils.assert_actual_includes_expected(opts, 'Probation (COE)')
+        utils.assert_actual_includes_expected(opts, 'Academic Standing (COE)')
         utils.assert_actual_includes_expected(opts, 'Underrepresented Minority (COE)')
         assert 'Inactive (ASC)' not in opts
         assert 'Intensive (ASC)' not in opts
@@ -556,6 +558,11 @@ class TestMyStudents:
         self.filtered_students_page.create_new_cohort(my_students_cohort)
 
     def test_default_my_students_cohort_export(self):
+        test_group = Cohort({'name': f'Group {test.test_id}'})
+        self.homepage.click_sidebar_create_student_group()
+        self.curated_students_page.create_group_with_bulk_sids(test_group, my_students_cohort.members)
+
+        self.filtered_students_page.load_cohort(my_students_cohort)
         downloaded_csv = self.filtered_students_page.export_default_student_list(my_students_cohort)
         self.filtered_students_page.verify_default_export_student_list(my_students_cohort, downloaded_csv)
 

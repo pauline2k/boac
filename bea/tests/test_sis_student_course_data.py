@@ -215,7 +215,7 @@ class TestStudentPageCourseData:
         is_waitlisted = tc.student.enrollment_data.is_course_waitlisted(tc.course)
         visible_wait_list = self.student_page.collapsed_course_wait_list_flag(tc.term_sis_id, tc.section_id)
         if is_waitlisted:
-            utils.assert_equivalence(visible_wait_list, 'Waitlisted')
+            utils.assert_equivalence(visible_wait_list, 'WAITLISTED')
         else:
             utils.assert_equivalence(visible_wait_list, None)
 

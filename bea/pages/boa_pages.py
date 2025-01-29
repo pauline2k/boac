@@ -50,7 +50,7 @@ class BoaPages(CreateNoteModal, SearchForm):
         time.sleep(1)
         try:
             if self.is_present(BoaPages.SPINNER):
-                self.when_not_visible(BoaPages.SPINNER, utils.get_short_timeout())
+                self.when_not_present(BoaPages.SPINNER, utils.get_short_timeout())
         except StaleElementReferenceException as e:
             app.logger.debug(f'{e}')
 

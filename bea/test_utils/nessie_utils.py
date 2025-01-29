@@ -36,7 +36,6 @@ from bea.models.student import Student
 from bea.models.student_enrollment_data import EnrollmentData
 from bea.models.student_profile_data import Profile
 from bea.models.term import Term
-from bea.models.user import User
 from bea.test_utils import utils
 from boac.externals import data_loch
 from flask import current_app as app
@@ -254,7 +253,7 @@ def get_admit_data_update_date():
 # ADVISORS
 
 
-def get_my_students_test_advisor(academic_plan_code):
+def get_my_students_test_advisor(academic_plan_code, auth_users):
     sql = f"""SELECT DISTINCT boac_advisor.advisor_students.advisor_sid AS sid,
                      COUNT(boac_advisor.advisor_students.student_uid) AS count,
                      boac_advisor.advisor_roles.uid AS uid
@@ -267,10 +266,10 @@ def get_my_students_test_advisor(academic_plan_code):
             ORDER BY count DESC LIMIT 1"""
     app.logger.info(sql)
     result = data_loch.safe_execute_rds(sql)[0]
-    return User({
-        'sid': result['sid'],
-        'uid': result['uid'],
-    })
+    user = next(filter(lambda u: u.uid == result['uid'], auth_users))
+    user.sid = result['sid']
+    app.logger.info(f'My Students advisor: {vars(user)}')
+    return user
 
 
 def get_academic_plans(advisor):
