@@ -23,7 +23,7 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 ENHANCEMENTS, OR MODIFICATIONS.
 """
 
-peer_advising_manager_uid = '29735'
+peer_advising_manager_uid = '222719'
 qcadv_advisor_uid = '53791'
 
 

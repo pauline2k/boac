@@ -83,7 +83,7 @@ _test_users = [
         'lastName': 'Cumberland',
     },
     {
-        'uid': '29735',
+        'uid': '222719',
         'csid': '5372973591',
         'isAdmin': False,
         'inDemoMode': False,
@@ -367,7 +367,7 @@ _university_depts = {
                 'automate_membership': False,
             },
             {
-                'uid': '29735',
+                'uid': '222719',
                 'role': 'director',
                 'automate_membership': False,
             },

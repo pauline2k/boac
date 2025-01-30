@@ -33,7 +33,7 @@ const StudentDegreeHistory = () => import('@/views/degree/StudentDegreeHistory.v
 import {CurrentUser} from './lib/utils'
 import {NavigationGuardNext, RouteLocation, RouteRecordRaw, createRouter, createWebHistory} from 'vue-router'
 import {filter, get, includes, size, toString, trim} from 'lodash'
-import {isAdvisor, isDirector} from '@/berkeley'
+import {isAdvisor, isDirector, isPeerAdvisingManager} from '@/berkeley'
 import {useContextStore} from '@/stores/context'
 import {useSearchStore} from '@/stores/search'
 
@@ -128,11 +128,6 @@ const routes:RouteRecordRaw[] = [
         name: 'Draft Notes'
       },
       {
-        path: '/peer/management/:id',
-        component: PeerAdvisingManager,
-        name: 'Manage Peer Advisors'
-      },
-      {
         path: '/search',
         component: SearchResults,
         name: 'Search Results'
@@ -141,6 +136,30 @@ const routes:RouteRecordRaw[] = [
         path: '/student/:uid',
         component: Student,
         name: 'Student'
+      }
+    ]
+  },
+  {
+    path: '/',
+    component: StandardLayout,
+    beforeEnter: (to: RouteLocation, from: RouteLocation, next: NavigationGuardNext) => {
+      // Requires Peer Advising Manager
+      const currentUser: CurrentUser = useContextStore().currentUser
+      if (currentUser.isAuthenticated) {
+        if (isPeerAdvisingManager(currentUser) || currentUser.isAdmin) {
+          next()
+        } else {
+          next({path: '/404'})
+        }
+      } else {
+        $_goToLogin(to, next)
+      }
+    },
+    children: [
+      {
+        component: PeerAdvisingManager,
+        name: 'Manage Peer Advisors',
+        path: '/peer/management/:id'
       }
     ]
   },
