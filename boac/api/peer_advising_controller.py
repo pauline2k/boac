@@ -36,14 +36,14 @@ from flask import current_app as app
 @peer_advising_manager_required
 def get_peer_advising_department(peer_advising_department_id):
     mock_names = [
-        'Patsy Simmons',
-        'Max Townsend',
-        'Lance Wright',
-        'Kirk Holloway',
-        'Lila Caldwell',
         'Amelia Cortez',
         'Cecil Copeland',
+        'Kirk Holloway',
+        'Lance Wright',
+        'Lila Caldwell',
+        'Max Townsend',
         'Patricia Dunn',
+        'Patsy Simmons',
     ]
     members = []
     for index, mock_name in enumerate(mock_names):
