@@ -218,6 +218,11 @@ export function isDirector(user: CurrentUser) {
   return !!size(filter(user.departments, d => d.role === 'director'))
 }
 
+export function isPeerAdvisingManager(user: CurrentUser) {
+  // TODO: Implement this method when peer_advising_department_memberships is wired up.
+  return user.uid === '222719'
+}
+
 export function lastActivityDays(analytics: object) {
   const timestamp = parseInt(get(analytics, 'lastActivity.student.raw', ''), 10)
   if (!timestamp || isNaN(timestamp)) {
