@@ -23,17 +23,48 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 ENHANCEMENTS, OR MODIFICATIONS.
 """
 
+from datetime import datetime
+from random import randrange
+
 from boac.api.util import peer_advising_manager_required
 from boac.lib.http import tolerant_jsonify
+from dateutil.tz import tzutc
 from flask import current_app as app
 
 
 @app.route('/api/peer/department/<peer_advising_department_id>')
 @peer_advising_manager_required
 def get_peer_advising_department(peer_advising_department_id):
+    mock_names = [
+        'Patsy Simmons',
+        'Max Townsend',
+        'Lance Wright',
+        'Kirk Holloway',
+        'Lila Caldwell',
+        'Amelia Cortez',
+        'Cecil Copeland',
+        'Patricia Dunn',
+    ]
+    members = []
+    for index, mock_name in enumerate(mock_names):
+        # TODO: Use approach similar to the '/api/users' API which leverages 'authorized_users_api_feed(...)'.
+        members.append({
+            'authorizedUserId': index,
+            'createdAt': _isoformat(datetime.now()),
+            'name': mock_name,
+            'notesCreatedCount': randrange(10),
+            'roleType': 'peer_advisor',
+            'updatedAt': _isoformat(datetime.now()),
+        })
     return tolerant_jsonify({
         'id': peer_advising_department_id,
-        'name': None,
-        'peerAdvisors': [],
-        'universityDeptId': None,
+        'createdAt': _isoformat(datetime.now()),
+        'name': 'Your Peer Advising Department',
+        'members': members,
+        'universityDeptId': 1,
+        'updatedAt': _isoformat(datetime.now()),
     })
+
+
+def _isoformat(value):
+    return value and value.astimezone(tzutc()).isoformat()
