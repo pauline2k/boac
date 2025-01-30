@@ -334,8 +334,8 @@ class TestNoteDraft:
         assert self.note_1.record_id not in api_ids
 
     def test_non_author_advisor_attachment_api(self):
-        attach_id = boa_utils.get_attachment_id_by_file_name(self.note_1, self.note_1.attachments[0])
-        self.api_notes_page.load_attachment_page(attach_id)
+        boa_utils.get_attachment_id_by_file_name(self.note_1, self.note_1.attachments[0])
+        self.api_notes_page.load_attachment_page(self.note_1.attachments[0].attachment_id)
         self.api_notes_page.when_present(self.api_notes_page.ATTACH_NOT_FOUND_MSG, utils.get_short_timeout())
 
     # An advisor who is the author

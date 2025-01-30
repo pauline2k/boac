@@ -241,6 +241,7 @@ class SearchForm(Page):
     def click_adv_search_cxl_button(self):
         app.logger.info('Canceling advanced search')
         self.wait_for_element_and_click(self.ADV_SEARCH_CXL_BUTTON)
+        self.when_not_present(self.ADV_SEARCH_CXL_BUTTON, 2)
 
     def close_adv_search_if_open(self):
         if self.is_visible(self.ADV_SEARCH_CXL_BUTTON):
