@@ -399,7 +399,7 @@ class TestGetUsers:
         response = client.post('/api/users', data=json.dumps({'deptCode': 'QCADV'}), content_type='application/json')
         assert response.status_code == 200
         users = response.json['users']
-        assert len(users) == 4
+        assert len(users) == 5
 
 
 class TestGetAdminUsers:

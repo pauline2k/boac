@@ -23,6 +23,9 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 ENHANCEMENTS, OR MODIFICATIONS.
 """
 
+peer_advising_manager_uid = '29735'
+qcadv_advisor_uid = '53791'
+
 
 class TestGetPeerAdvisingDepartment:
 
@@ -32,6 +35,19 @@ class TestGetPeerAdvisingDepartment:
         assert response.status_code == expected_status_code
         return response.json
 
-    def test_mark_read_not_authenticated(self, app, client):
+    def test_not_authenticated(self, app, client):
         """Returns 401 if not authenticated."""
-        self._api_get_peer_advising_department(client, 1, expected_status_code=401)
+        self._api_get_peer_advising_department(client, peer_advising_department_id=1, expected_status_code=401)
+
+    def test_unauthorized(self, client, fake_auth):
+        """Returns 401 if user is neither admin nor Peer Advising Manager."""
+        fake_auth.login(qcadv_advisor_uid)
+        self._api_get_peer_advising_department(client, peer_advising_department_id=1, expected_status_code=401)
+
+    def test_authorized(self, client, fake_auth):
+        """Delivers peer_advising_department data to authorized user."""
+        fake_auth.login(peer_advising_manager_uid)
+        api_json = self._api_get_peer_advising_department(client=client, peer_advising_department_id=1)
+        assert api_json['name']
+        assert len(api_json['members']) > 0
+        assert 'notesCreatedCount' in api_json['members'][0]

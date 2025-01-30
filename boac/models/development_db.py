@@ -83,6 +83,16 @@ _test_users = [
         'lastName': 'Cumberland',
     },
     {
+        'uid': '29735',
+        'csid': '5372973591',
+        'isAdmin': False,
+        'inDemoMode': False,
+        'canAccessAdvisingData': True,
+        'canAccessCanvasData': True,
+        'firstName': 'Dick',
+        'lastName': 'Hallorann',
+    },
+    {
         'uid': '53791',
         'csid': '53791',
         'isAdmin': False,
@@ -353,6 +363,11 @@ _university_depts = {
         'users': [
             {
                 'uid': '53791',
+                'role': 'director',
+                'automate_membership': False,
+            },
+            {
+                'uid': '29735',
                 'role': 'director',
                 'automate_membership': False,
             },
