@@ -761,6 +761,30 @@ ALTER TABLE ONLY peer_advising_department_members
 ALTER TABLE ONLY peer_advising_department_members
     ADD CONSTRAINT peer_advising_department_members_authorized_user_id_fkey FOREIGN KEY (authorized_user_id) REFERENCES authorized_users(id) ON DELETE CASCADE;
 
+
+--
+CREATE TABLE IF NOT EXISTS peer_advising_department_topics (
+    peer_advising_department_id integer NOT NULL,
+    topic_id integer NOT NULL
+);
+
+ALTER TABLE peer_advising_department_topics OWNER TO boac;
+
+ALTER TABLE ONLY peer_advising_department_topics
+    DROP CONSTRAINT IF EXISTS peer_advising_department_topics_pkey;
+ALTER TABLE peer_advising_department_topics
+    ADD CONSTRAINT peer_advising_department_topics_pkey PRIMARY KEY (peer_advising_department_id, topic_id);
+
+ALTER TABLE ONLY peer_advising_department_topics
+    DROP CONSTRAINT IF EXISTS peer_advising_department_topics_peer_advising_department_id_fkey;
+ALTER TABLE ONLY peer_advising_department_topics
+    ADD CONSTRAINT peer_advising_department_topics_peer_advising_department_id_fkey FOREIGN KEY (peer_advising_department_id) REFERENCES peer_advising_departments(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY peer_advising_department_topics
+    DROP CONSTRAINT IF EXISTS peer_advising_department_topics_topic_id_fkey;
+ALTER TABLE ONLY peer_advising_department_topics
+    ADD CONSTRAINT peer_advising_department_topics_topic_id_fkey FOREIGN KEY (topic_id) REFERENCES topics(id) ON DELETE CASCADE;
+
 --
 
 CREATE TABLE json_cache (

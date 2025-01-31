@@ -80,7 +80,8 @@ ALTER TABLE IF EXISTS ONLY public.user_logins DROP CONSTRAINT IF EXISTS user_log
 ALTER TABLE IF EXISTS ONLY public.peer_advising_departments DROP CONSTRAINT IF EXISTS peer_advising_departments_university_dept_id_fkey;
 ALTER TABLE IF EXISTS ONLY public.peer_advising_department_members DROP CONSTRAINT IF EXISTS peer_advising_department_members_peer_advising_department_id_fkey;
 ALTER TABLE IF EXISTS ONLY public.peer_advising_department_members DROP CONSTRAINT IF EXISTS peer_advising_department_members_authorized_user_id_fkey;
-
+ALTER TABLE IF EXISTS ONLY public.peer_advising_department_topics DROP CONSTRAINT IF EXISTS peer_advising_department_topics_peer_advising_department_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.peer_advising_department_topics DROP CONSTRAINT IF EXISTS peer_advising_department_topics_topic_id_fkey;
 --
 
 DROP INDEX IF EXISTS public.appointments_read_appointment_id_idx;
@@ -153,6 +154,8 @@ ALTER TABLE IF EXISTS ONLY public.university_depts DROP CONSTRAINT IF EXISTS uni
 ALTER TABLE IF EXISTS ONLY public.user_logins DROP CONSTRAINT IF EXISTS user_logins_pkey;
 ALTER TABLE IF EXISTS ONLY public.peer_advising_departments DROP CONSTRAINT IF EXISTS peer_advising_departments_pkey;
 ALTER TABLE IF EXISTS ONLY public.peer_advising_department_members DROP CONSTRAINT IF EXISTS peer_advising_department_members_pkey;
+ALTER TABLE IF EXISTS ONLY public.peer_advising_department_topics DROP CONSTRAINT IF EXISTS peer_advising_department_topics_pkey;
+
 ALTER TABLE IF EXISTS public.alerts ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.authorized_users ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.cohort_filters ALTER COLUMN id DROP DEFAULT;
@@ -213,6 +216,7 @@ DROP SEQUENCE IF EXISTS public.user_logins_id_seq;
 DROP TABLE IF EXISTS public.peer_advising_departments;
 DROP SEQUENCE IF EXISTS public.peer_advising_departments_id_seq;
 DROP TABLE IF EXISTS public.peer_advising_department_members;
+DROP TABLE IF EXISTS public.peer_advising_department_topics;
 
 DROP TYPE IF EXISTS public.role_type_enum;
 DROP TYPE IF EXISTS public.cohort_filter_event_types;
