@@ -48,84 +48,14 @@
           role="tabpanel"
           :value="item.key"
         >
-          <div class="pt-3">
-            <h2 class="font-size-16">{{ item.label }}</h2>
-          </div>
           <div v-if="item.key === 'account'">
-            <div class="align-center d-flex justify-space-between font-weight-bold">
-              <div class="w-40">
-                <PeerAdvisingAddStudent />
-              </div>
-              <div class="mr-3">
-                <v-switch
-                  id="toggle-inactive-students-button"
-                  v-model="showInactiveStudents"
-                  aria-label="Show Only My Notes"
-                  color="primary"
-                  density="compact"
-                  hide-details
-                  :label="`${showInactiveStudents ? 'Hide' : 'Show'} inactive students`"
-                  role="switch"
-                />
-                <span aria-live="polite" class="sr-only">Showing {{ showInactiveStudents ? 'all students' : 'active students' }}</span>
-              </div>
+            <div class="pt-3">
+              <h2 class="font-size-16">{{ item.label }}</h2>
             </div>
-            <div class="border-b-sm mt-6">
-              <v-data-table
-                density="compact"
-                fixed-header
-                :headers="headers"
-                :header-props="{class: 'data-table-header-cell'}"
-                hide-default-footer
-                hide-no-data
-                hover
-                :items="peerAdvisingDepartment.members"
-                :items-per-page="-1"
-                mobile-breakpoint="md"
-                :row-props="row => ({id: `row-topic-${normalizeId(row.item.topic)}`})"
-              >
-                <template #item.notesCreatedCount="{item}">
-                  <div class="float-right" :class="{'font-weight-medium text-red': item.deletedAt}">
-                    {{ item.notesCreatedCount }}
-                  </div>
-                </template>
-                <template #item.actions="{item}">
-                  <v-tooltip text="Delete">
-                    <template #activator="{props}">
-                      <v-btn
-                        v-if="!item.deletedAt"
-                        v-bind="props"
-                        :id="`delete-topic-${normalizeId(item.topic)}`"
-                        :aria-label="`Delete ${item.topic}`"
-                        color="primary"
-                        density="compact"
-                        text="Remove"
-                        variant="text"
-                        @click="deletePeerAdvisor(item)"
-                      />
-                    </template>
-                  </v-tooltip>
-                  <v-tooltip text="Undelete">
-                    <template #activator="{props}">
-                      <v-btn
-                        v-if="item.deletedAt"
-                        v-bind="props"
-                        :id="`undelete-topic-${normalizeId(item.topic)}`"
-                        :aria-label="`Un-delete ${item.topic}`"
-                        color="warning"
-                        density="compact"
-                        text="Restore"
-                        variant="plain"
-                        @click="undelete(item)"
-                      />
-                    </template>
-                  </v-tooltip>
-                </template>
-              </v-data-table>
-            </div>
+            <PeerAdvisingAccountMgmt :peer-advising-department="peerAdvisingDepartment" />
           </div>
-          <div v-if="item.key === 'templates'">
-            BBB
+          <div v-if="item.key === 'templates'" class="pt-3">
+            <PeerAdvisingNoteTemplates :peer-advising-department="peerAdvisingDepartment" />
           </div>
           <div v-if="item.key === 'reporting'">
             CCC
@@ -137,24 +67,18 @@
 </template>
 
 <script setup>
-import PeerAdvisingAddStudent from '@/components/peer/PeerAdvisingAddStudent.vue'
+import PeerAdvisingAccountMgmt from '@/components/peer/PeerAdvisingAccountMgmt'
+import PeerAdvisingNoteTemplates from '@/components/peer/PeerAdvisingNoteTemplates'
 import {computed, onMounted, ref} from 'vue'
 import {getPeerAdvisingDepartment} from '@/api/peer-advising'
-import {alertScreenReader, normalizeId, toInt} from '@/lib/utils'
+import {toInt} from '@/lib/utils'
 import {useContextStore} from '@/stores/context'
 import {useRoute} from 'vue-router'
 
 const contextStore = useContextStore()
 
-const headers = [
-  {align: 'start', key: 'name', title: 'Topic', width: '60%'},
-  {align: 'end', key: 'notesCreatedCount', title: 'Notes Created'},
-  {align: 'end', key: 'createdAt', title: 'Date Added'},
-  {align: 'end', key: 'actions', title: 'Actions', sortable: false},
-]
 const loading = computed(() => contextStore.loading)
 const peerAdvisingDepartment = ref([])
-const showInactiveStudents = ref(false)
 const tab = ref(undefined)
 const tabs = [
   {key: 'account', label: 'Account Management'},
@@ -171,12 +95,4 @@ onMounted(() => {
     contextStore.loadingComplete('Peer Advising Management Dashboard is ready.')
   })
 })
-
-const deletePeerAdvisor = member => {
-  alertScreenReader(member)
-}
-
-const undelete = member => {
-  alertScreenReader(member)
-}
 </script>
