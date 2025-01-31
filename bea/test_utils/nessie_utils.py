@@ -26,6 +26,7 @@ ENHANCEMENTS, OR MODIFICATIONS.
 import datetime
 import itertools
 import json
+import re
 
 from bea.models.academic_standings import AcademicStanding, AcademicStandings
 from bea.models.person import Person
@@ -326,7 +327,7 @@ def get_sections(term, section_ids, primary_only=False):
         instruction_format = section_group[0]['format']
         is_primary = section_group[0]['is_primary']
         number = section_group[0]['number']
-        title = section_group[0]['title']
+        title = section_group[0]['title'] and re.sub(r'\s+', ' ', section_group[0]['title'])
 
         meetings = []
         sorted_meets = sorted(section_group, key=lambda sec: [sec['start_date'], sec['location']])
@@ -341,7 +342,7 @@ def get_sections(term, section_ids, primary_only=False):
             days = _parse_meeting_days(meet_group[0]['days'])
             start_time = _parse_meeting_time(meet_group[0]['start_time'])
             end_time = _parse_meeting_time(meet_group[0]['end_time'])
-            location = meet_group[0]['location']
+            location = meet_group[0]['location'] and re.sub(r'\s+', ' ', meet_group[0]['location'])
             meetings.append(SectionMeeting(
                 days=days,
                 end_time=end_time,
