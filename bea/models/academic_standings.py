@@ -98,3 +98,47 @@ class AcademicStandings(Enum):
         'code': 'SUS',
         'descrip': 'Academic Suspension',
     }
+
+
+class AcademicStandingsCoE(Enum):
+
+    NOT = {
+        'code': 'N',
+        'descrip': 'Academic Notice',
+    }
+    SUS = {
+        'code': 'A',
+        'descrip': 'Academic Suspension',
+    }
+    DIS = {
+        'code': 'D',
+        'descrip': 'Dismissed',
+    }
+    SUQ = {
+        'code': 'U',
+        'descrip': 'Subject to Disqualification',
+    }
+    SUP = {
+        'code': 'S',
+        'descrip': 'Subject to Suspension',
+    }
+    SUD = {
+        'code': 'P',
+        'descrip': 'Subject to Dismissal',
+    }
+    SUPP = {
+        'code': '1',
+        'descrip': 'Subject to Suspension (pending)',
+    }
+    SUDP = {
+        'code': '2',
+        'descrip': 'Subject to Dismissal (pending)',
+    }
+    SUN = {
+        'code': '3',
+        'descrip': 'Subject to Academic Notice (pending)',
+    }
+    SUQP = {
+        'code': '4',
+        'descrip': 'Subject to Disqualification (pending)',
+    }

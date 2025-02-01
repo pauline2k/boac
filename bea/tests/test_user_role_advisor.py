@@ -72,6 +72,10 @@ coe_inactive_filter = CohortFilter(data={'coe_inactive': True}, dept=test_coe.de
 coe_inactive_sids = nessie_filter_students_utils.get_cohort_result(test_coe, coe_inactive_filter)
 student_coe_inactive = next(filter(lambda s: s.sid == coe_inactive_sids[0], test.students))
 
+coe_standing_filter = CohortFilter(data={'coe_academic_standings': [{'standing': 'U'}]}, dept=test_coe.dept)
+coe_standing_sids = nessie_filter_students_utils.get_cohort_result(test_coe, coe_standing_filter)
+student_coe_standing = next(filter(lambda s: s.sid == coe_standing_sids[0], test.students))
+
 # L&S config
 test_ls = BEATestConfig()
 test_ls.user_role_l_and_s(test)
@@ -101,6 +105,7 @@ app.logger.info(f'CE3 advisor: {test_ce3.advisor.uid}')
 app.logger.info(f'ASC active: {student_asc_active.uid}')
 app.logger.info(f'ASC inactive: {student_asc_inactive.uid}')
 app.logger.info(f'CoE inactive: {student_coe_inactive.uid}')
+app.logger.info(f'CoE standing: {student_coe_standing.uid}')
 app.logger.info(f'Admit: {admit.sid}')
 
 
@@ -178,6 +183,10 @@ class TestASCAdvisor:
     def test_student_page_coe_inactive_not_visible(self):
         self.student_page.load_page(student_coe_inactive)
         assert not self.student_page.is_present(self.student_page.INACTIVE_COE_FLAG)
+
+    def test_student_page_coe_standing_not_visible(self):
+        self.student_page.load_page(student_coe_standing)
+        assert not self.student_page.is_present(self.student_page.ACADEMIC_STANDING_COE)
 
     def test_student_api_coe_profile_not_present(self):
         assert not self.api_student_page.coe_profile(student_coe_inactive)
@@ -312,6 +321,10 @@ class TestCoEAdvisor:
     def test_student_page_coe_inactive_visible(self):
         self.student_page.load_page(student_coe_inactive)
         assert self.student_page.is_present(self.student_page.INACTIVE_COE_FLAG)
+
+    def test_student_page_coe_standing_visible(self):
+        self.student_page.load_page(student_coe_standing)
+        assert self.student_page.is_present(self.student_page.ACADEMIC_STANDING_COE)
 
     def test_student_api_asc_profile_not_present(self):
         assert not self.api_student_page.asc_profile(student_asc_inactive)
@@ -469,6 +482,10 @@ class TestLandSAdvisor:
 
     def test_student_page_coe_inactive_not_visible(self):
         self.student_page.load_page(student_coe_inactive)
+        assert not self.student_page.is_present(self.student_page.INACTIVE_COE_FLAG)
+
+    def test_student_page_coe_standing_not_visible(self):
+        self.student_page.load_page(student_coe_standing)
         assert not self.student_page.is_present(self.student_page.INACTIVE_COE_FLAG)
 
     def test_student_api_asc_inactive_profile_not_present(self):
