@@ -64,7 +64,7 @@ class TestNotesByDeptReport:
         self._api_notes_report(client, 'foo', expected_status_code=404)
 
     def test_director_can_access_report_per_dept(self, client, fake_auth):
-        """Director of L&S Advising can access L&S report."""
+        """Director of L&S Advising can access Notes by Department report."""
         fake_auth.login(l_s_director_uid)
         report = self._api_notes_report(client, 'qcadv')
         assert 'boa' in report

@@ -93,7 +93,9 @@ class UniversityDept(Base):
             UPDATE authorized_users SET deleted_at = now()
                 WHERE is_admin IS FALSE
                 AND deleted_at IS NULL
-                AND id NOT IN (SELECT authorized_user_id FROM university_dept_members);"""
+                AND id NOT IN (SELECT authorized_user_id FROM university_dept_members)
+                AND id NOT IN (SELECT authorized_user_id FROM peer_advising_department_members)
+        """
         db.session.execute(text(sql), {'id': self.id})
         std_commit()
 
