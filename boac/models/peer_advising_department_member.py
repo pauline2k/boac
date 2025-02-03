@@ -23,8 +23,7 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 ENHANCEMENTS, OR MODIFICATIONS.
 """
 
-
-from boac import db
+from boac import db, std_commit
 from boac.models.base import Base
 from sqlalchemy.dialects.postgresql import ENUM
 
@@ -44,12 +43,52 @@ class PeerAdvisingDepartmentMember(Base):
     authorized_user_id = db.Column(db.Integer, db.ForeignKey('authorized_users.id'), nullable=False, primary_key=True)
     deleted_at = db.Column(db.DateTime)
 
-    peer_advising_department = db.relationship('PeerAdvisingDepartment', back_populates='peer_advising_department_members')
-    authorized_user = db.relationship('AuthorizedUser', back_populates='peer_advising_department_memberships')
-
-    def __init__(self, name, peer_advising_department_id, authorized_user_id, role_type, deleted_at):
-        self.name = name
-        self.role_type = role_type
-        self.peer_advising_department_id = peer_advising_department_id
+    def __init__(self, authorized_user_id, peer_advising_department_id, role_type):
         self.authorized_user_id = authorized_user_id
-        self.deleted_at = deleted_at
+        self.peer_advising_department_id = peer_advising_department_id
+        self.role_type = role_type
+
+    @classmethod
+    def create_or_update_membership(
+            cls,
+            authorized_user_id,
+            peer_advising_department_id,
+            role_type,
+    ):
+        membership = cls.query.filter_by(
+            authorized_user_id=authorized_user_id,
+            peer_advising_department_id=peer_advising_department_id,
+            role_type=role_type,
+        ).first()
+        if membership:
+            membership.role_type = role_type
+        else:
+            membership = cls(
+                authorized_user_id=authorized_user_id,
+                peer_advising_department_id=peer_advising_department_id,
+                role_type=role_type,
+            )
+            db.session.add(membership)
+        std_commit()
+        return membership
+
+    @classmethod
+    def get_peer_advising_department_memberships(cls, authorized_user_id):
+        def _to_dict(row):
+            return {
+                'peer_advising_department_name': row['name'],
+                'peer_advising_department_id': row['peer_advising_department_id'],
+                'role_type': row['role_type'],
+            }
+        sql = """
+            SELECT
+                d.name,
+                m.peer_advising_department_id,
+                m.role_type
+            FROM peer_advising_department_members m
+            JOIN peer_advising_departments d ON d.id = m.peer_advising_department_id
+            WHERE
+                m.authorized_user_id = :authorized_user_id
+                AND m.deleted_at IS NULL
+        """
+        return [_to_dict(row) for row in db.session.execute(sql, {'authorized_user_id': authorized_user_id})]

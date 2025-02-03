@@ -43,6 +43,7 @@ from boac.models.cohort_filter import CohortFilter
 from boac.models.curated_group import CuratedGroup
 from boac.models.degree_progress_course import ACCENT_COLOR_CODES
 from boac.models.note import Note
+from boac.models.peer_advising_department_member import PeerAdvisingDepartmentMember
 from boac.models.user_login import UserLogin
 from dateutil.tz import tzutc
 from flask import current_app as app, request
@@ -249,6 +250,7 @@ def authorized_users_api_feed(users, sort_by=None, sort_descending=False):
             'isAdmin': user.is_admin,
             'isBlocked': user.is_blocked,
             'isPeerAdvisor': user.is_peer_advisor,
+            'peerAdvisingDepartments': [],
         })
         for m in user.department_memberships:
             profile['departments'].append({
@@ -256,6 +258,12 @@ def authorized_users_api_feed(users, sort_by=None, sort_descending=False):
                 'name': m.university_dept.dept_name,
                 'role': m.role,
                 'automateMembership': m.automate_membership,
+            })
+        for m in PeerAdvisingDepartmentMember.get_peer_advising_department_memberships(authorized_user_id=user.id):
+            profile['peerAdvisingDepartments'].append({
+                'name': m['peer_advising_department_name'],
+                'peerAdvisingDepartmentId': m['peer_advising_department_id'],
+                'roleType': m['role_type'],
             })
         user_login = UserLogin.last_login(user.uid)
         profile['lastLogin'] = _isoformat(user_login.created_at) if user_login else None

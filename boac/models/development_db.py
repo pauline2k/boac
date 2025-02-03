@@ -34,6 +34,8 @@ from boac.models.authorized_user import AuthorizedUser
 from boac.models.cohort_filter import CohortFilter
 from boac.models.curated_group import CuratedGroup
 from boac.models.json_cache import insert_row as insert_in_json_cache
+from boac.models.peer_advising_department import PeerAdvisingDepartment
+from boac.models.peer_advising_department_member import PeerAdvisingDepartmentMember
 from boac.models.topic import Topic
 from boac.models.university_dept import UniversityDept
 from boac.models.university_dept_member import UniversityDeptMember
@@ -316,18 +318,28 @@ _test_users = [
         'firstName': 'Crest',
         'lastName': 'Turrasco',
     },
+    {
+        'uid': '1563405',
+        'csid': '61563405340',
+        'isAdmin': False,
+        'inDemoMode': False,
+        'canAccessAdvisingData': False,
+        'canAccessCanvasData': False,
+        'deleted': False,
+        'firstName': 'Dechsa',
+        'lastName': 'Radechabh',
+    },
 ]
 
-_peer_advising_depts = {
-    'COENG': {
+_peer_advising_department_memberships = [
+    {
+        'peer_advising_department_name': 'Psychology',
+        'university_dept_code': 'QCADV',
         'users': [
-            {
-                'uid': '1133400',
-                'role': 'peer_advisor',
-            },
+            {'uid': '1563405', 'role': 'peer_advisor'},
         ],
     },
-}
+]
 
 _university_depts = {
     'COENG': {
@@ -541,17 +553,21 @@ def _create_department_memberships():
 
 
 def _create_peer_advising_department_memberships():
-    pass
-    # TODO: Implement when BOAC-5841 is resolved.
-    # for dept_code, dept_membership in _peer_advising_depts.items():
-    #     peer_advising_dept = PeerAdvisingDept.find_by_dept_code(dept_code)
-    #     db.session.add(peer_advising_dept)
-    #     for user in dept_membership['users']:
-    #         authorized_user = AuthorizedUser.find_by_uid(user['uid'])
-    #         PeerAdvisingDeptMember.create_or_update_membership(
-    #             peer_advising_dept_id=peer_advising_dept.id,
-    #             authorized_user_id=authorized_user.id,
-    #         )
+    for data in _peer_advising_department_memberships:
+        peer_advising_department_name = data['peer_advising_department_name']
+        university_dept = UniversityDept.find_by_dept_code(data['university_dept_code'])
+        peer_advising_department = PeerAdvisingDepartment.create(
+            name=peer_advising_department_name,
+            university_dept_id=university_dept.id,
+        )
+        for user in data['users']:
+            authorized_user = AuthorizedUser.find_by_uid(user['uid'])
+            PeerAdvisingDepartmentMember.create_or_update_membership(
+                authorized_user_id=authorized_user.id,
+                peer_advising_department_id=peer_advising_department.id,
+                role_type='peer_advisor',
+            )
+            std_commit(allow_test_environment=True)
 
 
 def _create_topics():

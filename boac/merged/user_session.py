@@ -27,6 +27,7 @@ from boac.lib.berkeley import BERKELEY_DEPT_CODE_TO_NAME
 from boac.merged import calnet
 from boac.models.authorized_user import AuthorizedUser
 from boac.models.json_cache import clear, stow
+from boac.models.peer_advising_department_member import PeerAdvisingDepartmentMember
 from flask import current_app as app
 from flask_login import UserMixin
 
@@ -149,14 +150,14 @@ class UserSession(UserMixin):
                         'name': BERKELEY_DEPT_CODE_TO_NAME.get(dept_code, dept_code),
                         'role': m.role,
                     })
-            # TODO: Introduce the following code after the db table 'peer_advising_department_members' is in place.
-            # for m in user.peer_advising_department_memberships:
-            #     peer_advising_departments.append(
-            #         {
-            #             'id': m.id,
-            #             'name': m.name,
-            #             'role': m.role,
-            #         })
+            peer_advising_department_memberships = PeerAdvisingDepartmentMember.get_peer_advising_department_memberships(authorized_user_id=user.id)
+            for m in peer_advising_department_memberships:
+                peer_advising_departments.append(
+                    {
+                        'name': m['peer_advising_department_name'],
+                        'peerAdvisingDepartmentId': m['peer_advising_department_id'],
+                        'roleType': m['role_type'],
+                    })
         is_active = False
         if user:
             if not calnet_profile:
@@ -168,6 +169,8 @@ class UserSession(UserMixin):
                     is_active = True if m.role else False
                     if is_active:
                         break
+            elif len(peer_advising_department_memberships):
+                is_active = True
 
         is_admin = user and user.is_admin
         degree_progress_permission = 'read_write' if is_admin else (user and user.degree_progress_permission)
@@ -191,6 +194,7 @@ class UserSession(UserMixin):
                 'isAdmin': is_admin,
                 'isAnonymous': not is_active,
                 'isAuthenticated': is_active,
+                # TODO: Is 'is_peer_advisor' necessary? Can we not deduce from 'peer_advising_departments' role_type?
                 'isPeerAdvisor': user.is_peer_advisor if user else False,
                 'peerAdvisingDepartments': peer_advising_departments,
                 'uid': user and user.uid,

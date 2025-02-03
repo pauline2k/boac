@@ -39,6 +39,7 @@ coe_advisor_uid = '1133399'
 coe_advisor_no_advising_data_uid = '1022796'
 deleted_user_uid = '33333'
 l_s_college_advisor_uid = '188242'
+peer_advisor_uid = '1563405'
 
 
 class TestUserProfile:
@@ -101,6 +102,27 @@ class TestUserProfile:
         assert departments[0]['code'] == 'UWASC'
         assert departments[0]['name'] == 'Athletic Study Center'
         assert departments[0]['role'] == 'advisor'
+
+    class TestPeerAdvising:
+        """Peer Advising in the User Profile API."""
+
+        @staticmethod
+        def _api_my_profile(client, expected_status_code=200):
+            response = client.get('/api/profile/my')
+            assert response.status_code == expected_status_code
+            return response.json
+
+        def test_peer_advising_department_memberships(self, client, fake_auth):
+            """Returns peer_advising_departments in user profile object."""
+            fake_auth.login(peer_advisor_uid)
+            api_json = self._api_my_profile(client)
+            assert 'peerAdvisingDepartments' in api_json
+            assert api_json['id']
+            assert api_json['isAuthenticated'] is True
+            peer_advising_departments = api_json['peerAdvisingDepartments']
+            assert len(peer_advising_departments) > 0
+            peer_advising_department = peer_advising_departments[0]
+            assert peer_advising_department['name'] == 'Psychology'
 
 
 class TestMyCohorts:
